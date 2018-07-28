@@ -1,0 +1,12 @@
+spring:
+ datasource:
+  driverClassName: org.h2.Driver
+  url: jdbc:h2:mem:test;MODE=PostgreSQL
+  schema: classpath:/schema.sql
+ jpa:
+  show-sql: true
+  properties:
+    hibernate:
+      event.merge.entity_copy_observer: allow
+      enable_lazy_load_no_trans: true
+      jdbc.lob.non_contextual_creation: true
