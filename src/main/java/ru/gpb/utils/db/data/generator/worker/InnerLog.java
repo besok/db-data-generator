@@ -21,7 +21,7 @@ import static java.time.format.DateTimeFormatter.*;
  */
 public class InnerLog {
   private final AtomicLong marker;
-  private final Deque<Log> deque;
+  private final Deque<LogEvent> deque;
 
   public InnerLog() {
     marker = new AtomicLong(0);
@@ -33,13 +33,13 @@ public class InnerLog {
   }
 
   public void push(String txt) {
-    deque.push(new Log(txt));
+    deque.push(new LogEvent(txt));
   }
 
   public String toString() {
     return deque
         .stream()
-        .map(Log::string)
+        .map(LogEvent::string)
         .collect(
             Collectors.joining(System.lineSeparator())
         );
@@ -50,7 +50,7 @@ public class InnerLog {
   }
 
   @Data
-  private class Log {
+  private class LogEvent {
 
     private String text;
     private long m;
@@ -60,7 +60,7 @@ public class InnerLog {
       return "[" + m + "][" + ldt.format(ISO_DATE_TIME) + "][" + text + "]";
     }
 
-    public Log(String text) {
+    public LogEvent(String text) {
       this.text = text;
       this.ldt = LocalDateTime.now();
       this.m = marker.incrementAndGet();

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -100,7 +99,7 @@ public class InnerCache {
   void warm() {
     init();
     for (MetaData metaData : metas()) {
-      warmingByPojo(metaData);
+      warmingByMetaData(metaData);
     }
     LOGGER.info("cache's been initialized : " + mapToString(snapshot()));
   }
@@ -111,7 +110,7 @@ public class InnerCache {
     }
   }
 
-  private void warmingByPojo(MetaData metaData) {
+  private void warmingByMetaData(MetaData metaData) {
     if (getValueSize(metaData) == 0) {
       repositories
           .getRepositoryFor(metaData.getAClass())
@@ -120,7 +119,7 @@ public class InnerCache {
   }
 
   private void findPage(MetaData metaData, JpaRepository r) {
-    r.findAll(PageRequest.of(0, cacheEntitySize())).forEach(o -> put(metaData, o));
+    r.findAll(PageRequest.of(0, cacheSize)).forEach(o -> put(metaData, o));
   }
 
   private String mapToString(Map<? extends MetaData, ? extends Number> map) {

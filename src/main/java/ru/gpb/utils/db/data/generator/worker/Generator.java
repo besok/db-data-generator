@@ -29,7 +29,9 @@ public class Generator {
     this.log = new InnerLog();
   }
 
-
+  public String report(){
+    return log.toString();
+  }
   /**
    * Generate new instance for Class.
    * It tries to find this {@link MetaDataList#byClass(Class)}

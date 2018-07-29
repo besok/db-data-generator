@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +30,7 @@ public class DatabaseEntityRelationsGenerator {
     this.cache = cache;
   }
 
-  protected void generateMultiObjects(MetaData metaData) throws DataGenerationException {
+  void generateMultiObjects(MetaData metaData) throws DataGenerationException {
     for (Object valueList : cache.getValueList(metaData)) {
       for (Map.Entry<Field, MetaData> neigbourEntry : metaData.getNeighbours().entrySet()) {
         processCollection(metaData, valueList, neigbourEntry.getKey(), neigbourEntry.getValue());
@@ -48,7 +49,7 @@ public class DatabaseEntityRelationsGenerator {
         ((Collection) collection).addAll(cache.getValueList(rightMetaData));
         save(metaData, e);
       } catch (InstantiationException | IllegalAccessException ex) {
-        LOGGER.info("exception's been caught: "+e.getClass().getSimpleName() + " for "+metaData.getAClass().getSimpleName() );
+        LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
         throw new DataGenerationException("Reflection exception ", ex);
       }
     }
@@ -60,13 +61,14 @@ public class DatabaseEntityRelationsGenerator {
       try {
         ((JpaRepository) rep.get()).save(o);
       } catch (DataIntegrityViolationException e) {
-        LOGGER.info("exception's been caught: "+e.getClass().getSimpleName() + " for "+metaData.getAClass().getSimpleName() );
+        LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
         throw new DataGenerationException("in most cases relation has already been", e);
       }
     } else
       throw new DataGenerationException("repository not found", new IllegalArgumentException());
 
   }
+
 
   private Class<?> createColFromInterface(Class<?> cl) {
     switch (cl.getSimpleName()) {
