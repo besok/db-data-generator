@@ -2,7 +2,14 @@
 Database data generator.It based on Spring Data Repository.
 
 #### Work stages:
-...
+* Scan all JpaRepository beans. Get Entity classes. 
+* Store meta data from @Table, @ManyToMany,@OneToMany,@OneToOne,@ManyToOne and etc .
+* Traversal all entities and construct relations(dependents and neighbours).
+* Generate plain instances without dependencies.
+* Generate parent instances having @OneToOne(optional=true),@OneToMany and etc
+* Generate child instances having parent object as dependency(usual haves a column with parent id)
+    * Put generated objects to cache if the cache is empty. 
+* Generate neighbour relations based on cache. It's a ManyToMany link.
 
 
 #### Properties:
@@ -16,6 +23,15 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
 * (optional) add property *generator.cache-entity-size* to your application file. 
     * It manages generated size between many2many relations. By default it is 20.
     * For example, we have 2 tables A and B with m2m rel. Generator takes 20 entities from each table and generate 400 relations each other.
+
+#### Subjects:
+* DatabaseDataGeneratorFactory - generator factory.
+* ? extends Generator - common class , which generates common logic.
+* InnerLog - log entity, which contains all activity.
+* InnerCache - inner cache with generated objects.It can be used for getting generated objects without an db impact.  
+* MetaData - inner data class which has all parsed information from JpaRepository.
+* AbstractPlainTypeGeneratorSupplier - class describes a method for generation plain types(integer, long, string and etc). 
+    * It takes Metadata instance for custom generation.
 
 #### Usage examples:
 
@@ -98,4 +114,13 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
             .predicate(ctx -> ctx.log.markerValue() < 10)
             .generateByClass(Customer.class)
             .log();
+```
+##### Generate by Class and get cache 
+```
+    InnerCache cache = factory
+        .generator()
+        .metronome(10,TimeUnit.MILLISECONDS)
+        .predicate(countPredicate(20))
+        .generateByClass(SimplePlainObject.class)
+        .cache();
 ```

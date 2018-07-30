@@ -9,6 +9,7 @@ import org.springframework.data.repository.support.Repositories;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.*;
@@ -38,9 +39,7 @@ public class InnerCache {
    * Get cache snapshot
    *
    * @return map consists of pair key + value list's size.
-   * 
    */
-
   public Map<MetaData, Integer> snapshot() {
     return cache
         .entrySet().stream()
@@ -51,24 +50,31 @@ public class InnerCache {
     return cacheSize;
   }
 
+  /**
+   * get value list by Class
+   */
+  public <T>List<T> getValueList(Class<T> cl) {
+    return
+        metaDataList
+            .byClass(cl)
+            .map(cache::get)
+            .map(l -> castList(l,cl))
+            .orElseGet(ArrayList::new);
+  }
+
 
   /**
    * get value list by {@link MetaData}
    */
-  public List<Object> getValueList(MetaData p) {
+  List<Object> getValueList(MetaData p) {
     List<Object> obj = cache.get(p);
     return obj == null ? new ArrayList<>() : obj;
   }
 
-  /**
-   * get value list by Class
-   */
-  public List<Object> getValueList(Class<?> cl) {
-    return metaDataList
-        .byClass(cl)
-        .map(cache::get)
-        .orElseGet(ArrayList::new);
+  private <T> List<T> castList(List<Object> list,Class<T> cl) {
+    return list.stream().map(cl::cast).collect(toList());
   }
+
 
   public InnerCache(MetaDataList metaDataList, ApplicationContext context) {
     this.metaDataList = metaDataList;

@@ -11,9 +11,12 @@ import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static java.util.stream.Collectors.toList;
+import static org.junit.Assert.*;
 import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate.*;
 
 // 2018.07.24 
@@ -33,7 +36,7 @@ public class MetaDataGeneratorTest {
   private SimplePlainObjectRepository repository;
 
   @Test
-  public void simpleObjectTest() {
+  public void generatePlainObjectsCountTest() {
     long marker =
         factory
             .generator()
@@ -43,21 +46,23 @@ public class MetaDataGeneratorTest {
 
     List<SimplePlainObject> objs = repository.findAll();
 
-    Assert.assertEquals(marker / 2, objs.size());
+    // m:2 -> because it does m2m rels
+    assertEquals(marker / 2, objs.size());
   }
 
   @Test
-  public void multiGenerate() {
+  public void generatePlainObjectsTest() {
     InnerCache cache = factory
-        .generator()
-        .metronome(10,TimeUnit.MILLISECONDS)
-        .predicate(countPredicate(20))
+        .generator().repeate(10)
         .generateByClass(SimplePlainObject.class)
         .cache();
 
-    List<Object> valueList = cache.getValueList(SimplePlainObject.class);
-    valueList.forEach(System.out::println);
+    assertArrayEquals(" arrays from db and from cache must be equal",
+        repository.findAll().stream().map(SimplePlainObject::getId).toArray(),
+        cache.getValueList(SimplePlainObject.class).stream().map(SimplePlainObject::getId).toArray());
   }
+
+
 
 }
 
