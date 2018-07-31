@@ -18,10 +18,12 @@ public class DatabaseEntityGenerator {
   private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
 
   private PlainTypeGeneratorSupplier plainValueGenerator;
-  public void setGenerator(PlainTypeGeneratorSupplier generatorSupplier){
-    LOGGER.info("generator's been changed = "+generatorSupplier.getClass().getName());
-    this.plainValueGenerator=generatorSupplier;
+
+  public void setGenerator(PlainTypeGeneratorSupplier generatorSupplier) {
+    LOGGER.info("generator's been changed = " + generatorSupplier.getClass().getName());
+    this.plainValueGenerator = generatorSupplier;
   }
+
   private Repositories repositories;
   protected final InnerCache cache;
 
@@ -32,7 +34,6 @@ public class DatabaseEntityGenerator {
   }
 
 
-
   protected Optional<Object> generateSimpleObject(MetaData metaData) throws DataGenerationException {
     Class<?> aClass = metaData.getAClass();
     Object ent = null;
@@ -41,11 +42,17 @@ public class DatabaseEntityGenerator {
       for (Field f : aClass.getDeclaredFields()) {
         f.setAccessible(true);
         Class<?> type = f.getType();
-        Object generate = plainValueGenerator.generate(type, metaData);
-        f.set(ent, generate);
+        Optional<MetaData.Column> column = metaData.findByField(f);
+        if (column.isPresent()) {
+          Object generate = plainValueGenerator.generate(type, column.get());
+          f.set(ent, generate);
+        }
+        else {
+          throw new InstantiationException();
+        }
       }
     } catch (InstantiationException | IllegalAccessException e) {
-      LOGGER.info("exception's been caught: "+e.getClass().getSimpleName() + " for "+metaData.getAClass().getSimpleName() );
+      LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
       throw new DataGenerationException("Reflection exception", e);
     }
 
@@ -61,21 +68,27 @@ public class DatabaseEntityGenerator {
     try {
       obj = aClass.newInstance();
 
-    for (Field f : aClass.getDeclaredFields()) {
-      f.setAccessible(true);
-      MetaData before = metaData.dependency(f);
-      if (before == null) {
-        Class<?> type = f.getType();
-        Object generate = plainValueGenerator.generate(type, metaData);
-        f.set(obj, generate);
-      } else {
-        Optional<Object> beforePojo = generateObject(before);
-        if (beforePojo.isPresent())
-          f.set(obj, beforePojo.get());
+      for (Field f : aClass.getDeclaredFields()) {
+        f.setAccessible(true);
+        MetaData before = metaData.dependency(f);
+        if (before == null) {
+          Class<?> type = f.getType();
+          Optional<MetaData.Column> column = metaData.findByField(f);
+          if (column.isPresent()) {
+            Object generate = plainValueGenerator.generate(type, column.get());
+            f.set(obj, generate);
+          }
+          else {
+              throw new InstantiationException();
+          }
+        } else {
+          Optional<Object> beforePojo = generateObject(before);
+          if (beforePojo.isPresent())
+            f.set(obj, beforePojo.get());
+        }
       }
-    }
     } catch (InstantiationException | IllegalAccessException e) {
-      LOGGER.info("exception's been caught: "+e.getClass().getSimpleName() + " for "+metaData.getAClass().getSimpleName() );
+      LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
       throw new DataGenerationException("Reflection exception ", e);
     }
     return save(aClass, obj).map(cache(metaData));
@@ -93,7 +106,7 @@ public class DatabaseEntityGenerator {
     return repositories.getRepositoryFor(aClass).map(o -> ((JpaRepository) o).save(ent));
   }
 
-  public interface MarkerSupplier{
+  public interface MarkerSupplier {
     String marker();
   }
 

@@ -3,12 +3,16 @@ package ru.gpb.utils.db.data.generator.worker;
 
 import lombok.*;
 
+import javax.persistence.Column;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Default data object.
+ *
  * @author Boris Zhguchev
  */
 @Data
@@ -32,20 +36,22 @@ public class MetaData {
   private Class<?> aClass;
   private Header header;
   private boolean plain;
+  private Field idField;
+
   private Map<Field, MetaData> dependencies;
   private Map<Field, MetaData> neighbours;
-  private Field idField;
+  private Set<Column> plainColumns;
 
   public MetaData dependency(Field f) {
     return dependencies.get(f);
   }
+
   public MetaData neighbour(Field f) {
     return neighbours.get(f);
   }
 
   @AllArgsConstructor
   @Getter
-  @Setter
   public class Header {
     private String name;
     private String table;
@@ -56,7 +62,40 @@ public class MetaData {
     }
   }
 
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  public class Column {
+    private String field;
+    private String column;
+    private int length;
+    private Class<?> aClass;
+
+    private boolean nullable;
+    private boolean collection;
+  }
+
+  public Optional<Column> findByField(Field field) {
+    for (Column c : plainColumns) {
+      if (Objects.equals(field.getName(), c.getField()))
+        return Optional.of(c);
+    }
+    return Optional.empty();
+  }
+
+  public void addPlainColumn(
+      String field,
+      String column,
+      int length,
+      Class<?> aClass,
+      boolean nullable,
+      boolean collection
+  ) {
+    plainColumns.add(new Column(field,column,length,aClass,nullable,collection));
+  }
+
   public void setHeader(String className, String tableName, String schemaName) {
     header = new Header(className, tableName, schemaName);
   }
+
 }

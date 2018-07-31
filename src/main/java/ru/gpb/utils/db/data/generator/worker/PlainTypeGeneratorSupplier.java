@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
 
+import static ru.gpb.utils.db.data.generator.worker.MetaData.*;
+
 /**
  * Basic interface supplier for generating values for plain fields.
  *
@@ -15,51 +17,51 @@ import java.util.function.Function;
 public interface PlainTypeGeneratorSupplier {
 
 
-  Function<MetaData, UUID> uuid();
+  Function<MetaData.Column, UUID> uuid();
 
-  Function<MetaData, String> string();
+  Function<MetaData.Column, String> string();
 
-  Function<MetaData, BigDecimal> bigDecimal();
+  Function<MetaData.Column, BigDecimal> bigDecimal();
 
-  Function<MetaData, Integer> integer();
+  Function<MetaData.Column, Integer> integer();
 
-  Function<MetaData, Double> doubleVal();
+  Function<MetaData.Column, Double> doubleVal();
 
-  Function<MetaData, Date> date();
+  Function<MetaData.Column, Date> date();
 
-  Function<MetaData, Timestamp> timestamp();
+  Function<MetaData.Column, Timestamp> timestamp();
 
-  Function<MetaData, Character> character();
+  Function<MetaData.Column, Character> character();
 
-  Function<MetaData, byte[]> bytes();
+  Function<MetaData.Column, byte[]> bytes();
 
-  Function<MetaData, Boolean> booleanV();
+  Function<MetaData.Column, Boolean> booleanV();
 
-  default Object generate(Class<?> clazz, MetaData metaData) {
+  default Object generate(Class<?> clazz, MetaData.Column metaDataColumn) {
     switch (clazz.getSimpleName()) {
       case "String":
-        return string().apply(metaData);
+        return string().apply(metaDataColumn);
       case "UUID":
-        return uuid().apply(metaData);
+        return uuid().apply(metaDataColumn);
       case "BigDecimal":
-        return bigDecimal().apply(metaData);
+        return bigDecimal().apply(metaDataColumn);
       case "Integer":
       case "int":
-        return integer().apply(metaData);
+        return integer().apply(metaDataColumn);
       case "Double":
-        return doubleVal().apply(metaData);
+        return doubleVal().apply(metaDataColumn);
       case "Date":
-        return date().apply(metaData);
+        return date().apply(metaDataColumn);
       case "Timestamp":
-        return timestamp().apply(metaData);
+        return timestamp().apply(metaDataColumn);
       case "Character":
       case "char":
-        return character().apply(metaData);
+        return character().apply(metaDataColumn);
       case "byte[]":
-        return bytes().apply(metaData);
+        return bytes().apply(metaDataColumn);
       case "boolean":
       case "Boolean":
-        return booleanV().apply(metaData);
+        return booleanV().apply(metaDataColumn);
     }
     return null;
   }

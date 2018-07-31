@@ -21,6 +21,7 @@ public class SimplePlainObject {
   @Id
   private UUID id;
 
+  @Column(length = 10)
   private String name;
   private BigDecimal sum;
 

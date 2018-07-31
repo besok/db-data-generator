@@ -14,7 +14,4 @@ public class SpringBootConfig {
   public static void main(String[] args) {
     SpringApplication.run(SpringBootConfig.class);
   }
-
-
-
 }

@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static java.util.concurrent.TimeUnit.*;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate.*;
@@ -37,12 +38,11 @@ public class MetaDataGeneratorTest {
 
   @Test
   public void generatePlainObjectsCountTest() {
-    long marker =
-        factory
-            .generator()
-            .repeate(10)
-            .generateByClass(SimplePlainObject.class)
-            .log().markerValue();
+    long marker = factory
+        .generator().metronome(50, MILLISECONDS)
+        .predicate(countPredicate(10))
+        .generateByClass(SimplePlainObject.class)
+        .log().markerValue();
 
     List<SimplePlainObject> objs = repository.findAll();
 
@@ -61,7 +61,6 @@ public class MetaDataGeneratorTest {
         repository.findAll().stream().map(SimplePlainObject::getId).toArray(),
         cache.getValueList(SimplePlainObject.class).stream().map(SimplePlainObject::getId).toArray());
   }
-
 
 
 }

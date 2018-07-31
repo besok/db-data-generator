@@ -1,7 +1,7 @@
-#### Description:
+### Introduction:
 Database data generator.It based on Spring Data Repository.
 
-#### Work stages:
+### Work stages:
 * Scan all JpaRepository beans. Get Entity classes. 
 * Store meta data from @Table, @ManyToMany,@OneToMany,@OneToOne,@ManyToOne and etc .
 * Traversal all entities and construct relations(dependents and neighbours).
@@ -12,7 +12,7 @@ Database data generator.It based on Spring Data Repository.
 * Generate neighbour relations based on cache. It's a ManyToMany link.
 
 
-#### Properties:
+### Properties:
 * set default jpa properties - @EnableJpaRepositories, @EntityScan and etc
 * should set **@EnableDatabaseDataGenerator**
 * for Tables with One To One relations should field optional=true to be exist for one of that tables 
@@ -22,9 +22,9 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
 ```
 * (optional) add property *generator.cache-entity-size* to your application file. 
     * It manages generated size between many2many relations. By default it is 20.
-    * For example, we have 2 tables A and B with m2m rel. Generator takes 20 entities from each table and generate 400 relations each other.
+      *For example, we have 2 tables A and B with m2m rel. Generator takes 20 entities from each table and generate 400 relations each other.*
 
-#### Subjects:
+### Subjects:
 * DatabaseDataGeneratorFactory - generator factory.
 * ? extends Generator - common class , which generates common logic.
 * InnerLog - log entity, which contains all activity.
@@ -33,7 +33,7 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
 * AbstractPlainTypeGeneratorSupplier - class describes a method for generation plain types(integer, long, string and etc). 
     * It takes Metadata instance for custom generation.
 
-#### Usage examples:
+### Usage examples:
 
 ##### Get the factory:
 ```

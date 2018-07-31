@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * BeanPostProcessor
@@ -18,8 +20,8 @@ import java.util.HashMap;
  * then get information about database properties(table,schema name, columns and etc)
  *
  * <div>
- *   The field optional exists is very important for {@link OneToOne} relation.
- *   One of that tables must be optional.
+ * The field optional exists is very important for {@link OneToOne} relation.
+ * One of that tables must be optional.
  * </div>
  *
  * @author Boris Zhguchev
@@ -48,26 +50,40 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
       metaData.setHeader(jt.getName(), tbl.name(), tbl.schema());
       metaData.setDependencies(new HashMap<>());
       metaData.setNeighbours(new HashMap<>());
+      metaData.setPlainColumns(new HashSet<>());
       metaData.setPlain(false);
 
       Field[] fields = jt.getDeclaredFields();
       for (Field f : fields) {
         f.setAccessible(true);
+        boolean plain = true;
+
 
         if (f.isAnnotationPresent(Id.class)) metaData.setIdField(f);
 
         if (f.isAnnotationPresent(ManyToOne.class)) {
           metaData.getDependencies().put(f, null);
+          plain = false;
         }
         if (f.isAnnotationPresent(OneToOne.class)) {
+          plain = false;
           OneToOne an = f.getDeclaredAnnotation(OneToOne.class);
-          if (!an.optional())
-            metaData.getDependencies().put(f, null);
+          if (!an.optional()) metaData.getDependencies().put(f, null);
         }
+
         if (isNeighbour(f)) {
+          plain = false;
           metaData.getNeighbours().put(f, null);
         }
 
+        if (plain) {
+          if (f.isAnnotationPresent(Column.class)) {
+            Column col = f.getAnnotation(Column.class);
+            metaData.addPlainColumn(f.getName(), col.name(), col.length(), f.getType(), col.nullable(), isCollection(f));
+          } else {
+            metaData.addPlainColumn(f.getName(), f.getName(), 0, f.getType(), true, isCollection(f));
+          }
+        }
       }
 
       if (metaData.getNeighbours().size() == 0 && metaData.getDependencies().size() == 0)
@@ -81,5 +97,9 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 
   private boolean isNeighbour(Field f) {
     return f.isAnnotationPresent(ManyToMany.class);
+  }
+
+  private boolean isCollection(Field field) {
+    return Collection.class.isAssignableFrom(field.getType());
   }
 }

@@ -15,52 +15,52 @@ import java.util.function.Function;
  */
 public abstract class AbstractPlainTypeGeneratorSupplier implements PlainTypeGeneratorSupplier {
   @Override
-  public Function<MetaData, UUID> uuid() {
+  public Function<MetaData.Column, UUID> uuid() {
     return p -> UUID.randomUUID();
   }
 
   @Override
-  public Function<MetaData, String> string() {
+  public Function<MetaData.Column, String> string() {
     return p -> "";
   }
 
   @Override
-  public Function<MetaData, BigDecimal> bigDecimal() {
+  public Function<MetaData.Column, BigDecimal> bigDecimal() {
     return p -> BigDecimal.ONE;
   }
 
   @Override
-  public Function<MetaData, Integer> integer() {
+  public Function<MetaData.Column, Integer> integer() {
     return p -> 1;
   }
 
   @Override
-  public Function<MetaData, Double> doubleVal() {
+  public Function<MetaData.Column, Double> doubleVal() {
     return p -> 1d;
   }
 
   @Override
-  public Function<MetaData, Date> date() {
+  public Function<MetaData.Column, Date> date() {
     return p -> new Date(0);
   }
 
   @Override
-  public Function<MetaData, Timestamp> timestamp() {
+  public Function<MetaData.Column, Timestamp> timestamp() {
     return p -> new Timestamp(0);
   }
 
   @Override
-  public Function<MetaData, Character> character() {
+  public Function<MetaData.Column, Character> character() {
     return p -> 'D';
   }
 
   @Override
-  public Function<MetaData, byte[]> bytes() {
+  public Function<MetaData.Column, byte[]> bytes() {
     return p -> "".getBytes();
   }
 
   @Override
-  public Function<MetaData, Boolean> booleanV() {
+  public Function<MetaData.Column, Boolean> booleanV() {
     return p -> true;
   }
 
