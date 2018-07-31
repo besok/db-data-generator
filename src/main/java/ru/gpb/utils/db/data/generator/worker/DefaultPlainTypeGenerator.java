@@ -16,12 +16,12 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGeneratorSupplie
   private Random random = new Random(1000);
   private Long counter = 0l;
 
-  private String counter(int max){
+  private String counter(int max) {
     String counter = this.counter.toString();
-    if(counter.length() < max){
+    if (counter.length() < max) {
       return counter;
     }
-    return counter.substring(0,max);
+    return counter.substring(0, max);
   }
 
   @Override
@@ -31,16 +31,19 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGeneratorSupplie
 
       if (len == 0)
         return c.getColumn() + "-" + counter++;
-      else if (len < 3)
+      else if (len < 4)
         return counter(4);
       else {
+        // TODO: 7/31/2018 don't understand - default 127 in db...
+        if (len == 255) len = 127;
         Random rand = new Random();
-        char[] chars = new char[len-3];
-        for (int i = 0; i < chars.length - 3; i++) {
+        char[] chars = new char[len];
+        for (int i = 0; i < chars.length; i++) {
           chars[i] = (char) (rand.nextInt(26) + 'a');
         }
-        return String.valueOf(chars) + counter(4);
+        return String.valueOf(chars);
       }
+
     };
   }
 

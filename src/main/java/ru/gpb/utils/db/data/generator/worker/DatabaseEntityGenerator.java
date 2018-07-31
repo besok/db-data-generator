@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 /**
  * @author Boris Zhguchev
  */
+@SuppressWarnings("unchecked")
 public class DatabaseEntityGenerator {
 
   private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
