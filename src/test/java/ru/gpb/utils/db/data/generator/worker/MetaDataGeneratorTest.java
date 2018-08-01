@@ -72,6 +72,15 @@ public class MetaDataGeneratorTest {
     );
   }
 
+  @Test
+  public void testLdt(){
+    List<SimplePlainObject> valueList = factory
+        .generator()
+        .generateByClass(SimplePlainObject.class)
+        .cache().getValueList(SimplePlainObject.class);
+    assertEquals(1,valueList.size());
+    assertNotNull(valueList.get(0).getLdt());
+  }
 
   private Object[] toArray(List<SimplePlainObject> objs) {
     return objs.stream().map(SimplePlainObject::getId).toArray();

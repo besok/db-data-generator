@@ -78,7 +78,5 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGeneratorSupplie
     return p -> (p.toString() + "+" + random.nextLong()).getBytes();
   }
 
-  private <R> Function<MetaData.Column, R> unpack(R r) {
-    return p -> r;
-  }
+
 }

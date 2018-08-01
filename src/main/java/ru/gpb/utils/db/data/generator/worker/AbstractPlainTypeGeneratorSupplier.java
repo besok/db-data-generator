@@ -3,6 +3,7 @@ package ru.gpb.utils.db.data.generator.worker;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
@@ -64,5 +65,12 @@ public abstract class AbstractPlainTypeGeneratorSupplier implements PlainTypeGen
     return p -> true;
   }
 
+  @Override
+  public Function<MetaData.Column, LocalDateTime> localDateTime() {
+    return unpack(LocalDateTime.now());
+  }
 
+  protected  <R> Function<MetaData.Column, R> unpack(R r) {
+    return p -> r;
+  }
 }

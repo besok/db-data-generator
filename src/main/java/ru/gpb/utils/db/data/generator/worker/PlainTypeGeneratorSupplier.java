@@ -3,6 +3,7 @@ package ru.gpb.utils.db.data.generator.worker;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
@@ -28,6 +29,7 @@ public interface PlainTypeGeneratorSupplier {
   Function<MetaData.Column, Double> doubleVal();
 
   Function<MetaData.Column, Date> date();
+  Function<MetaData.Column, LocalDateTime> localDateTime();
 
   Function<MetaData.Column, Timestamp> timestamp();
 
@@ -52,6 +54,8 @@ public interface PlainTypeGeneratorSupplier {
         return doubleVal().apply(metaDataColumn);
       case "Date":
         return date().apply(metaDataColumn);
+      case "LocalDateTime":
+        return localDateTime().apply(metaDataColumn);
       case "Timestamp":
         return timestamp().apply(metaDataColumn);
       case "Character":

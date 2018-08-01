@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,6 +29,8 @@ public class SimplePlainObject {
   private boolean plain;
   private Integer code;
   private Date created;
+
+  private LocalDateTime ldt;
 
   @Column(name = "add_sum", precision = 19, scale = 4)
   private BigDecimal addSum;
