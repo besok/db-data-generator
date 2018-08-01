@@ -1,10 +1,12 @@
 package ru.gpb.utils.db.data.generator.worker;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
@@ -29,40 +31,50 @@ import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.Metronome
 @RunWith(SpringRunner.class)
 public class MetaDataGeneratorTest {
 
-  private Logger LOGGER = Logger.getLogger(MetaDataGeneratorTest.class.getName());
 
   @Autowired
   private DatabaseDataGeneratorFactory factory;
   @Autowired
   private SimplePlainObjectRepository repository;
 
+  @Before
+  public void clean() {
+    repository.deleteAll();
+  }
+
   @Test
+  @Repeat(5)
   public void generatePlainObjectsCountTest() {
     long marker = factory
+        .generator()
+        .repeate(5)
+        .generateByClass(SimplePlainObject.class)
+        .log()
+        .markerValue();
+
+    assertEquals(marker / 2, repository.findAll().size());
+  }
+
+  @Test
+  @Repeat(5)
+  public void generatePlainObjectsTest() {
+    List<SimplePlainObject> objs = factory
         .generator().metronome(50, MILLISECONDS)
         .predicate(countPredicate(10))
         .generateByClass(SimplePlainObject.class)
-        .log().markerValue();
+        .cache()
+        .getValueList(SimplePlainObject.class);
 
-    List<SimplePlainObject> objs = repository.findAll();
-
-    // m:2 -> because it does m2m rels
-    assertEquals(marker / 2, objs.size());
-  }
-
-  @Test
-  public void generatePlainObjectsTest() {
-    InnerCache cache = factory
-        .generator().repeate(10)
-        .generateByClass(SimplePlainObject.class)
-        .cache();
-
-    assertArrayEquals(" arrays from db and from cache must be equal",
-        repository.findAll().stream().map(SimplePlainObject::getId).toArray(),
-        cache.getValueList(SimplePlainObject.class).stream().map(SimplePlainObject::getId).toArray());
+    assertArrayEquals(
+        " arrays from db and from cache must be equal",
+        toArray(repository.findAll()),
+        toArray(objs)
+    );
   }
 
 
-
+  private Object[] toArray(List<SimplePlainObject> objs) {
+    return objs.stream().map(SimplePlainObject::getId).toArray();
+  }
 }
 
