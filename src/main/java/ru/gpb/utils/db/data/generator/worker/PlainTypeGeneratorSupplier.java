@@ -38,6 +38,8 @@ public interface PlainTypeGeneratorSupplier {
   Function<MetaData.Column, byte[]> bytes();
 
   Function<MetaData.Column, Boolean> booleanV();
+  Function<MetaData.Column, Long> longV();
+
 
   default Object generate(Class<?> clazz, MetaData.Column metaDataColumn) {
     switch (clazz.getSimpleName()) {
@@ -66,6 +68,9 @@ public interface PlainTypeGeneratorSupplier {
       case "boolean":
       case "Boolean":
         return booleanV().apply(metaDataColumn);
+      case "long":
+      case "Long":
+        return longV().apply(metaDataColumn);
     }
     return null;
   }

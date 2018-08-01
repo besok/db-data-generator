@@ -70,7 +70,14 @@ public abstract class AbstractPlainTypeGeneratorSupplier implements PlainTypeGen
     return unpack(LocalDateTime.now());
   }
 
+  @Override
+  public Function<MetaData.Column, Long> longV() {
+    return unpack(0L);
+  }
+
   protected  <R> Function<MetaData.Column, R> unpack(R r) {
     return p -> r;
   }
+
+
 }
