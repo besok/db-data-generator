@@ -53,12 +53,12 @@ public class InnerCache {
   /**
    * get value list by Class
    */
-  public <T>List<T> getValueList(Class<T> cl) {
+  public <T> List<T> getValueList(Class<T> cl) {
     return
         metaDataList
             .byClass(cl)
             .map(cache::get)
-            .map(l -> castList(l,cl))
+            .map(l -> castList(l, cl))
             .orElseGet(ArrayList::new);
   }
 
@@ -71,7 +71,7 @@ public class InnerCache {
     return obj == null ? new ArrayList<>() : obj;
   }
 
-  private <T> List<T> castList(List<Object> list,Class<T> cl) {
+  private <T> List<T> castList(List<Object> list, Class<T> cl) {
     return list.stream().map(cl::cast).collect(toList());
   }
 
@@ -84,7 +84,12 @@ public class InnerCache {
 
   void put(MetaData metaData, Object o) {
     cache.compute(metaData, (p, l) -> {
-      if (l == null) l = new ArrayList<>();
+      if (l == null)
+        l = new ArrayList<>();
+      if(l.size() >= cacheSize){
+        int s = l.size();
+        l = l.subList(s/4,s);
+      }
       l.add(o);
       return l;
     });
@@ -111,8 +116,15 @@ public class InnerCache {
   }
 
   private void init() {
+    assertCacheSizeIsNull();
     for (MetaData metaData : this.metaDataList.getMetaDataList()) {
       cache.put(metaData, new ArrayList<>());
+    }
+  }
+
+  private void assertCacheSizeIsNull() {
+    if(cacheSize == 0){
+      throw new IllegalArgumentException("generator.cache-entity-size must not be 0 or null. By default it is 20.");
     }
   }
 

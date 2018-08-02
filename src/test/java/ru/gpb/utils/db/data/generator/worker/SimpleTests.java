@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
@@ -29,7 +30,7 @@ import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.Metronome
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class MetaDataGeneratorTest {
+public class SimpleTests {
 
 
   @Autowired
@@ -81,6 +82,28 @@ public class MetaDataGeneratorTest {
     assertEquals(1,valueList.size());
     assertNotNull(valueList.get(0).getLdt());
   }
+
+
+  @Test
+  public void testCacheSize(){
+
+    int s1 = factory
+        .dummyGenerator()
+        .repeate(20)
+        .generateByClass(SimplePlainObject.class)
+        .cache().getValueList(SimplePlainObject.class).size();
+    assertEquals(20,s1);
+
+    int s2 = factory
+        .dummyGenerator()
+        .repeate(21)
+        .generateByClass(SimplePlainObject.class)
+        .cache().getValueList(SimplePlainObject.class).size();
+
+    assertTrue(21 > s2);
+    assertEquals(16,s2);
+  }
+
 
   private Object[] toArray(List<SimplePlainObject> objs) {
     return objs.stream().map(SimplePlainObject::getId).toArray();
