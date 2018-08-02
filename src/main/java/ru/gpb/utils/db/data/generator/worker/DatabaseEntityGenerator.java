@@ -76,6 +76,7 @@ public class DatabaseEntityGenerator {
           Class<?> type = f.getType();
           Optional<MetaData.Column> column = metaData.findByField(f);
           if (column.isPresent()) {
+            // TODO: 8/2/2018 Сделать обработку если это коллекция
             Object generate = plainValueGenerator.generate(type, column.get());
             f.set(obj, generate);
           }
