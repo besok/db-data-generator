@@ -17,7 +17,7 @@ import java.util.UUID;
 @Data
 public class SimplePlainObject {
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
+//  @GeneratedValue
   private int id;
 
   @Column(length = 10)

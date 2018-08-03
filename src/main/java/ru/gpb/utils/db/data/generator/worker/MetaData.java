@@ -36,8 +36,7 @@ public class MetaData {
   private Class<?> aClass;
   private Header header;
   private boolean plain;
-  private Field idField;
-
+  private Id id;
   private Map<Field, MetaData> dependencies;
   private Map<Field, MetaData> neighbours;
   private Set<Column> plainColumns;
@@ -70,9 +69,16 @@ public class MetaData {
     private String column;
     private int length;
     private Class<?> aClass;
-
+    private Field val;
     private boolean nullable;
     private boolean collection;
+  }
+
+  @AllArgsConstructor
+  @Getter
+  public class Id{
+    private Field idField;
+    private boolean generated;
   }
 
   public Optional<Column> findByField(Field field) {
@@ -82,20 +88,29 @@ public class MetaData {
     }
     return Optional.empty();
   }
-
+  public void addId(Field id,boolean generated){
+    this.id = new Id(id,generated);
+  }
   public void addPlainColumn(
       String field,
       String column,
       int length,
       Class<?> aClass,
       boolean nullable,
-      boolean collection
+      boolean collection,
+      Field f
   ) {
-    plainColumns.add(new Column(field,column,length,aClass,nullable,collection));
+    plainColumns.add(new Column(field,column,length,aClass,f,nullable,collection));
   }
 
   public void setHeader(String className, String tableName, String schemaName) {
     header = new Header(className, tableName, schemaName);
   }
+
+
+  public boolean isId(Field field){
+    return id.idField.equals(field);
+  }
+
 
 }

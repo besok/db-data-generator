@@ -59,39 +59,51 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
         boolean plain = true;
 
 
-        if (f.isAnnotationPresent(Id.class)) metaData.setIdField(f);
+        if (!checkIdField(metaData, f)) {
 
-        if (f.isAnnotationPresent(ManyToOne.class)) {
-          metaData.getDependencies().put(f, null);
-          plain = false;
-        }
-        if (f.isAnnotationPresent(OneToOne.class)) {
-          plain = false;
-          OneToOne an = f.getDeclaredAnnotation(OneToOne.class);
-          if (!an.optional()) metaData.getDependencies().put(f, null);
-        }
+          if (f.isAnnotationPresent(ManyToOne.class)) {
+            metaData.getDependencies().put(f, null);
+            plain = false;
+          }
+          if (f.isAnnotationPresent(OneToOne.class)) {
+            plain = false;
+            OneToOne an = f.getDeclaredAnnotation(OneToOne.class);
+            if (!an.optional()) metaData.getDependencies().put(f, null);
+          }
 
-        if (isNeighbour(f)) {
-          plain = false;
-          metaData.getNeighbours().put(f, null);
-        }
+          if (isNeighbour(f)) {
+            plain = false;
+            metaData.getNeighbours().put(f, null);
+          }
 
-        if (plain) {
-          if (f.isAnnotationPresent(Column.class)) {
-            Column col = f.getAnnotation(Column.class);
-            metaData.addPlainColumn(f.getName(), col.name(), col.length(), f.getType(), col.nullable(), isCollection(f));
-          } else {
-            metaData.addPlainColumn(f.getName(), f.getName(), 0, f.getType(), true, isCollection(f));
+          if (plain) {
+            if (f.isAnnotationPresent(Column.class)) {
+              Column col = f.getAnnotation(Column.class);
+              metaData.addPlainColumn(f.getName(), col.name(), col.length(), f.getType(), col.nullable(), isCollection(f), f);
+            } else {
+              metaData.addPlainColumn(f.getName(), f.getName(), 0, f.getType(), true, isCollection(f), f);
+            }
           }
         }
       }
+        if (metaData.getNeighbours().size() == 0 && metaData.getDependencies().size() == 0)
+          metaData.setPlain(true);
+        metaDataList.add(metaData);
 
-      if (metaData.getNeighbours().size() == 0 && metaData.getDependencies().size() == 0)
-        metaData.setPlain(true);
-      metaDataList.add(metaData);
     }
-
     return bean;
+  }
+
+  private boolean checkIdField(MetaData metaData, Field f) {
+    if (f.isAnnotationPresent(Id.class)) {
+      if (f.isAnnotationPresent(GeneratedValue.class)) {
+        metaData.addId(f,true);
+      } else {
+        metaData.addId(f,false);
+      }
+      return true;
+    }
+    return false;
   }
 
 

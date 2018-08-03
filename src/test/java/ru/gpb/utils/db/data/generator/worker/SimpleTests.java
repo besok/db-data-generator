@@ -13,6 +13,7 @@ import ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredica
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +61,7 @@ public class SimpleTests {
   @Repeat(5)
   public void generatePlainObjectsTest() {
     List<SimplePlainObject> objs = factory
-        .generator().metronome(50, MILLISECONDS)
+        .dummyGenerator().metronome(50, MILLISECONDS)
         .predicate(countPredicate(10))
         .generateByClass(SimplePlainObject.class)
         .cache()
@@ -101,12 +102,11 @@ public class SimpleTests {
         .cache().getValueList(SimplePlainObject.class).size();
 
     assertTrue(21 > s2);
-    assertEquals(16,s2);
   }
 
 
   private Object[] toArray(List<SimplePlainObject> objs) {
-    return objs.stream().map(SimplePlainObject::getId).toArray();
+    return objs.stream().map(SimplePlainObject::getId).sorted(Integer::compareTo).toArray();
   }
 }
 

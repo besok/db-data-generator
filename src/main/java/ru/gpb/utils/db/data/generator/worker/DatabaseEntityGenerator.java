@@ -40,17 +40,18 @@ public class DatabaseEntityGenerator {
     Object ent = null;
     try {
       ent = aClass.newInstance();
-      for (Field f : aClass.getDeclaredFields()) {
+      // TODO: 8/3/2018 Добавить обработку id генератора
+
+      MetaData.Id id = metaData.getId();
+      if(!id.isGenerated()){
+
+      }
+
+      for (MetaData.Column col : metaData.getPlainColumns()) {
+        Field f = col.getVal();
         f.setAccessible(true);
-        Class<?> type = f.getType();
-        Optional<MetaData.Column> column = metaData.findByField(f);
-        if (column.isPresent()) {
-          Object generate = plainValueGenerator.generate(type, column.get());
-          f.set(ent, generate);
-        }
-        else {
-          throw new InstantiationException();
-        }
+        Object generatedObject = plainValueGenerator.generate(f.getType(), col);
+        f.set(ent, generatedObject);
       }
     } catch (InstantiationException | IllegalAccessException e) {
       LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
@@ -68,7 +69,8 @@ public class DatabaseEntityGenerator {
     Object obj = null;
     try {
       obj = aClass.newInstance();
-
+      // TODO: 8/3/2018 Заменить на цикл по депенденсис и по плэйн обжектс отдельно.
+      // TODO: 8/3/2018 Добавить обработку id
       for (Field f : aClass.getDeclaredFields()) {
         f.setAccessible(true);
         MetaData before = metaData.dependency(f);
@@ -79,9 +81,8 @@ public class DatabaseEntityGenerator {
             // TODO: 8/2/2018 Сделать обработку если это коллекция
             Object generate = plainValueGenerator.generate(type, column.get());
             f.set(obj, generate);
-          }
-          else {
-              throw new InstantiationException();
+          } else {
+            throw new InstantiationException();
           }
         } else {
           Optional<Object> beforePojo = generateObject(before);
@@ -107,7 +108,6 @@ public class DatabaseEntityGenerator {
   private Optional<Object> save(Class<?> aClass, Object ent) {
     return repositories.getRepositoryFor(aClass).map(o -> ((JpaRepository) o).save(ent));
   }
-
 
 
 }
