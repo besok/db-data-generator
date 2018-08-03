@@ -108,8 +108,6 @@ public class DatabaseEntityGenerator {
     return repositories.getRepositoryFor(aClass).map(o -> ((JpaRepository) o).save(ent));
   }
 
-  public interface MarkerSupplier {
-    String marker();
-  }
+
 
 }
