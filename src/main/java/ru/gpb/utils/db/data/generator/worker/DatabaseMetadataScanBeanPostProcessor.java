@@ -68,7 +68,8 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
           if (f.isAnnotationPresent(OneToOne.class)) {
             plain = false;
             OneToOne an = f.getDeclaredAnnotation(OneToOne.class);
-            if (!an.optional()) metaData.getDependencies().put(f, null);
+            if (!an.optional())
+              metaData.getDependencies().put(f, null);
           }
 
           if (isNeighbour(f)) {
@@ -77,12 +78,7 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
           }
 
           if (plain) {
-            if (f.isAnnotationPresent(Column.class)) {
-              Column col = f.getAnnotation(Column.class);
-              metaData.addPlainColumn(f.getName(), col.name(), col.length(), f.getType(), col.nullable(), isCollection(f), f);
-            } else {
-              metaData.addPlainColumn(f.getName(), f.getName(), 0, f.getType(), true, isCollection(f), f);
-            }
+            processPlainObj(metaData, f);
           }
         }
       }
@@ -92,6 +88,15 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 
     }
     return bean;
+  }
+
+  private void processPlainObj(MetaData metaData, Field f) {
+    if (f.isAnnotationPresent(Column.class)) {
+      Column col = f.getAnnotation(Column.class);
+      metaData.addPlainColumn(f.getName(), col.name(), col.length(), f.getType(), col.nullable(), isCollection(f), f);
+    } else {
+      metaData.addPlainColumn(f.getName(), f.getName(), 0, f.getType(), true, isCollection(f), f);
+    }
   }
 
   private boolean checkIdField(MetaData metaData, Field f) {
