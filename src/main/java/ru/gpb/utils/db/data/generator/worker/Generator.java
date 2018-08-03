@@ -62,6 +62,7 @@ public class Generator {
     return this;
   }
 
+
   /**
    * Generate new instance for Class based on table name(schema.table)
    * It tries to find this {@link MetaDataList#bySchemaTable(String, String)}}

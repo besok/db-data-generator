@@ -3,10 +3,7 @@ package ru.gpb.utils.db.data.generator.worker.data;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -20,7 +17,8 @@ import java.util.UUID;
 @Data
 public class SimplePlainObject {
   @Id
-  private UUID id;
+  @GeneratedValue(strategy = GenerationType.TABLE)
+  private int id;
 
   @Column(length = 10)
   private String name;
