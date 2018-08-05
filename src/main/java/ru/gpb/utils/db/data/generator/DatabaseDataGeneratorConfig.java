@@ -3,9 +3,16 @@ package ru.gpb.utils.db.data.generator;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 @Configuration
 @ComponentScan(basePackages = "ru.gpb.utils.db.data.generator")
-public class DatabaseDataGeneratorConfig { }
+public class DatabaseDataGeneratorConfig {
+
+
+}
 
 // TODO: 7/25/2018 Корректно обработать связи одной таблицы друг с другом -> parent child ex - Limit
 // TODO: 7/26/2018 Если в соседней таблице нет записей(m2m), то связи, естественно не будет. Нужно предсумотреть.
