@@ -15,6 +15,7 @@ import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -31,7 +32,7 @@ import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.Metronome
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class SimpleTests {
+public class SimpleCommonTests {
 
 
   @Autowired
@@ -75,25 +76,25 @@ public class SimpleTests {
   }
 
   @Test
-  public void testLdt(){
+  public void ldtTest() {
     List<SimplePlainObject> valueList = factory
         .generator()
         .generateByClass(SimplePlainObject.class)
         .cache().getValueList(SimplePlainObject.class);
-    assertEquals(1,valueList.size());
+    assertEquals(1, valueList.size());
     assertNotNull(valueList.get(0).getLdt());
   }
 
 
   @Test
-  public void testCacheSize(){
+  public void cacheSizeTest() {
 
     int s1 = factory
         .dummyGenerator()
         .repeate(20)
         .generateByClass(SimplePlainObject.class)
         .cache().getValueList(SimplePlainObject.class).size();
-    assertEquals(20,s1);
+    assertEquals(20, s1);
 
     int s2 = factory
         .dummyGenerator()
@@ -104,6 +105,19 @@ public class SimpleTests {
     assertTrue(21 > s2);
   }
 
+  @Test
+  public void idSeqTest() {
+
+    Integer expectedId= factory
+        .generator()
+        .setStartForId(10)
+        .repeate(10)
+        .generateByClass(SimplePlainObject.class)
+        .cache().getValueList(SimplePlainObject.class)
+        .stream().map(SimplePlainObject::getId).max(Integer::compareTo).get();
+
+    assertTrue("expected = "+expectedId+"==20",expectedId==20);
+  }
 
   private Object[] toArray(List<SimplePlainObject> objs) {
     return objs.stream().map(SimplePlainObject::getId).sorted(Integer::compareTo).toArray();

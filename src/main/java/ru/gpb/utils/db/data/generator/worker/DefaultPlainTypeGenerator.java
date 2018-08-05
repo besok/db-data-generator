@@ -3,7 +3,6 @@ package ru.gpb.utils.db.data.generator.worker;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 import java.util.function.Function;
@@ -11,7 +10,7 @@ import java.util.function.Function;
 /**
  * @author Boris Zhguchev
  */
-public class DefaultPlainTypeGenerator extends AbstractPlainTypeGeneratorSupplier {
+public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
   private Random random = new Random(1000);
   private Long counter = 0l;
@@ -34,7 +33,7 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGeneratorSupplie
       else if (len < 4)
         return counter(4);
       else {
-        // TODO: 7/31/2018 don't understand - default 127 in db...
+        // FIXME: 8/4/2018 don't understand - default 127 in db...
         if (len == 255) len = 127;
         Random rand = new Random();
         char[] chars = new char[len];

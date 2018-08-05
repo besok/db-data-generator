@@ -10,11 +10,11 @@ import java.util.function.Function;
 
 /**
  *
- * Based abstract implementation for {@link PlainTypeGeneratorSupplier}.
+ * Based abstract implementation for {@link PlainTypeGenerator}.
  *
  * @author Boris Zhguchev
  */
-public abstract class AbstractPlainTypeGeneratorSupplier implements PlainTypeGeneratorSupplier {
+public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
   @Override
   public Function<MetaData.Column, UUID> uuid() {
     return p -> UUID.randomUUID();

@@ -3,11 +3,11 @@ package ru.gpb.utils.db.data.generator.worker;
 
 /**
  *
- * Empty implementation for {@link AbstractPlainTypeGeneratorSupplier}
+ * Empty implementation for {@link AbstractPlainTypeGenerator}
  * do nothing.
  *
  * @author Boris Zhguchev
  */
-public class DummyPlainTypeGenerator extends AbstractPlainTypeGeneratorSupplier {
+public class DummyPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
 }

@@ -15,7 +15,7 @@ import static ru.gpb.utils.db.data.generator.worker.MetaData.*;
  *
  * @author Boris Zhguchev
  */
-public interface PlainTypeGeneratorSupplier {
+public interface PlainTypeGenerator {
 
 
   Function<MetaData.Column, UUID> uuid();

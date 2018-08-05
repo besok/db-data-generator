@@ -204,7 +204,10 @@ public class Generator {
     return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome);
   }
 
-
+  public Generator setStartForId(long val){
+    this.dbEntityGenerator.setStartSeq(val);
+    return this;
+  }
   private void process(MetaData metaData) throws DataGenerationException {
     dbEntityGenerator.generateObject(metaData);
     log.push("generate object: " + metaData.getHeader().toString());

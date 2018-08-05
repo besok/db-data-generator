@@ -40,10 +40,10 @@ public class DatabaseDataGeneratorFactory {
   /**
    * custom generator
    *
-   * @param generator - custom plainTypeGenerator {@link PlainTypeGeneratorSupplier}
+   * @param generator - custom plainTypeGenerator {@link PlainTypeGenerator}
    */
 
-  public Generator customGenerator(PlainTypeGeneratorSupplier generator) {
+  public Generator customGenerator(PlainTypeGenerator generator) {
     Objects.requireNonNull(generator);
     LOGGER.info("custom's been created. generator:" + generator.getClass().getName());
     singleEntityGenerator.setGenerator(generator);

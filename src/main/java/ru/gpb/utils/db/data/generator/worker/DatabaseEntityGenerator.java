@@ -6,7 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.support.Repositories;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -18,9 +24,9 @@ public class DatabaseEntityGenerator {
 
   private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
 
-  private PlainTypeGeneratorSupplier plainValueGenerator;
-
-  public void setGenerator(PlainTypeGeneratorSupplier generatorSupplier) {
+  private PlainTypeGenerator plainValueGenerator;
+  private IdSeqGenerator seqGen;
+  public void setGenerator(PlainTypeGenerator generatorSupplier) {
     LOGGER.info("generator's been changed = " + generatorSupplier.getClass().getName());
     this.plainValueGenerator = generatorSupplier;
   }
@@ -30,10 +36,14 @@ public class DatabaseEntityGenerator {
 
 
   public DatabaseEntityGenerator(ApplicationContext context, InnerCache cache) {
+    this.seqGen=new IdSeqGenerator(0);
     this.repositories = new Repositories(context);
     this.cache = cache;
   }
 
+  public void setStartSeq(long startSeq){
+    seqGen =new IdSeqGenerator(startSeq);
+  }
 
   protected Optional<Object> generateSimpleObject(MetaData metaData) throws DataGenerationException {
     Class<?> aClass = metaData.getAClass();
@@ -44,7 +54,10 @@ public class DatabaseEntityGenerator {
 
       MetaData.Id id = metaData.getId();
       if(!id.isGenerated()){
-
+        Field idField = id.getIdField();
+        idField.setAccessible(true);
+        Object generatedId = seqGen.generate(idField.getType(), null);
+        idField.set(ent,generatedId);
       }
 
       for (MetaData.Column col : metaData.getPlainColumns()) {
@@ -69,25 +82,34 @@ public class DatabaseEntityGenerator {
     Object obj = null;
     try {
       obj = aClass.newInstance();
-      // TODO: 8/3/2018 Заменить на цикл по депенденсис и по плэйн обжектс отдельно.
-      // TODO: 8/3/2018 Добавить обработку id
+
       for (Field f : aClass.getDeclaredFields()) {
         f.setAccessible(true);
-        MetaData before = metaData.dependency(f);
-        if (before == null) {
-          Class<?> type = f.getType();
-          Optional<MetaData.Column> column = metaData.findByField(f);
-          if (column.isPresent()) {
-            // TODO: 8/2/2018 Сделать обработку если это коллекция
-            Object generate = plainValueGenerator.generate(type, column.get());
-            f.set(obj, generate);
-          } else {
-            throw new InstantiationException();
+        if(metaData.isId(f)){
+          if(!metaData.getId().isGenerated()){
+            MetaData.Id id = metaData.getId();
+            Field idField = id.getIdField();
+            idField.setAccessible(true);
+            Object generatedId = seqGen.generate(idField.getType(), null);
+            idField.set(obj,generatedId);
           }
-        } else {
-          Optional<Object> beforePojo = generateObject(before);
-          if (beforePojo.isPresent())
-            f.set(obj, beforePojo.get());
+        }else {
+          MetaData before = metaData.dependency(f);
+          if (before == null) {
+            Class<?> type = f.getType();
+            Optional<MetaData.Column> column = metaData.findByField(f);
+            if (column.isPresent()) {
+              // TODO: 8/2/2018 Сделать обработку если это коллекция
+              Object generate = plainValueGenerator.generate(type, column.get());
+              f.set(obj, generate);
+            } else {
+              throw new InstantiationException();
+            }
+          } else {
+            Optional<Object> beforePojo = generateObject(before);
+            if (beforePojo.isPresent())
+              f.set(obj, beforePojo.get());
+          }
         }
       }
     } catch (InstantiationException | IllegalAccessException e) {
@@ -109,5 +131,41 @@ public class DatabaseEntityGenerator {
     return repositories.getRepositoryFor(aClass).map(o -> ((JpaRepository) o).save(ent));
   }
 
+
+  private class IdSeqGenerator extends AbstractPlainTypeGenerator {
+
+
+    private AtomicLong seq;
+
+    public IdSeqGenerator(long seqStart) {
+      this.seq = new AtomicLong(seqStart);
+    }
+
+    @Override
+    public Function<MetaData.Column, UUID> uuid() {
+      return unpack(UUID.randomUUID());
+    }
+
+
+    @Override
+    public Function<MetaData.Column, BigDecimal> bigDecimal() {
+      return unpack(BigDecimal.valueOf(seq.incrementAndGet()));
+    }
+
+    @Override
+    public Function<MetaData.Column, Integer> integer() {
+      return unpack(Math.toIntExact(seq.incrementAndGet()));
+    }
+
+    @Override
+    public Function<MetaData.Column, Double> doubleVal() {
+      return unpack((double) seq.incrementAndGet());
+    }
+
+    @Override
+    public Function<MetaData.Column, Long> longV() {
+      return unpack(seq.incrementAndGet());
+    }
+  }
 
 }

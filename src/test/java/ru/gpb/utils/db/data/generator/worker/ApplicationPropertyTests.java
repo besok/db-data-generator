@@ -25,7 +25,7 @@ import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.Metronome
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @TestPropertySource(locations = "classpath:application-wrong-arg-test.yml")
-public class SimpleApplicationTests {
+public class ApplicationPropertyTests {
   @Autowired
   private DatabaseDataGeneratorFactory factory;
 
