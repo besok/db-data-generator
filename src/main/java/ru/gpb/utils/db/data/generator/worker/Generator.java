@@ -110,7 +110,7 @@ public class Generator {
 
     for (MetaData md : metaData) {
       try {
-        dbEntityGenerator.generateObject(md);
+        dbEntityGenerator.generateAndSaveObject(md);
         log.push("entity generation for " + md.getHeader().toString());
       } catch (DataGenerationException e) {
         exception = e;
@@ -204,12 +204,12 @@ public class Generator {
     return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome);
   }
 
-  public Generator setStartForId(long val){
+  public Generator startId(long val){
     this.dbEntityGenerator.setStartSeq(val);
     return this;
   }
   private void process(MetaData metaData) throws DataGenerationException {
-    dbEntityGenerator.generateObject(metaData);
+    dbEntityGenerator.generateAndSaveObject(metaData);
     log.push("generate object: " + metaData.getHeader().toString());
     dbEntityRelationsGenerator.generateMultiObjects(metaData);
     log.push("generate relations: " + metaData.getHeader().toString());

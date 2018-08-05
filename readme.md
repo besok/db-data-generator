@@ -23,7 +23,10 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
 * (optional) add property *generator.cache-entity-size* to your application file. 
     * It manages generated size between many2many relations. By default it is 20.
       *For example, we have 2 tables A and B with m2m rel. Generator takes 20 entities from each table and generate 400 relations each other.*
-
+* if you have id fields without @GeneratedValue generator will use sequence for numeric and random for uuid. For set start sequence value , using 
+```
+    generator.startId() // 0 by default
+```
 ### Subjects:
 * DatabaseDataGeneratorFactory - generator factory.
 * ? extends Generator - common class , which generates common logic.

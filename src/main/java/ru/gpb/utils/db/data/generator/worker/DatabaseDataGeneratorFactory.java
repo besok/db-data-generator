@@ -43,7 +43,7 @@ public class DatabaseDataGeneratorFactory {
    * @param generator - custom plainTypeGenerator {@link PlainTypeGenerator}
    */
 
-  public Generator customGenerator(PlainTypeGenerator generator) {
+  public Generator generator(PlainTypeGenerator generator) {
     Objects.requireNonNull(generator);
     LOGGER.info("custom's been created. generator:" + generator.getClass().getName());
     singleEntityGenerator.setGenerator(generator);

@@ -1,27 +1,18 @@
 package ru.gpb.utils.db.data.generator.worker;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import static java.util.concurrent.TimeUnit.*;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate.*;
 
@@ -110,7 +101,7 @@ public class SimpleCommonTests {
 
     Integer expectedId= factory
         .generator()
-        .setStartForId(10)
+        .startId(10)
         .repeate(10)
         .generateByClass(SimplePlainObject.class)
         .cache().getValueList(SimplePlainObject.class)

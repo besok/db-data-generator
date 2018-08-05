@@ -10,40 +10,37 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- *
  * MetaData relations builder.
  * This builder builds neighbours relation(m2m) and before relations(m2o,o2o)
- * @see MetaData
+ *
  * @author Boris Zhguchev
+ * @see MetaData
  */
 @Service
 public class MetaDataGraphBuilder {
-  private final MetaDataList metaDataList;
+  private final MetaDataList mdList;
 
 
   @Autowired
-  public MetaDataGraphBuilder(MetaDataList metaDataList) {
-    this.metaDataList = metaDataList;
+  public MetaDataGraphBuilder(MetaDataList mdList) {
+    this.mdList = mdList;
   }
 
 
   /**
-   *
    * @throws DataGenerationException it is wrapper for {@link ClassNotFoundException}
-   * */
+   */
   public void buildRelation() throws DataGenerationException {
-    List<MetaData> mdList = this.metaDataList.getMetaDataList();
+    List<MetaData> mdList = this.mdList.getMetaDataList();
 
     for (MetaData md : mdList) {
       for (Field field : md.getDependencies().keySet()) {
-        this.metaDataList.byClass(field.getType()).ifPresent(p -> md.getDependencies().putIfAbsent(field, p));
+        this.mdList.byClass(field.getType()).ifPresent(p -> md.getDependencies().putIfAbsent(field, p));
       }
 
       for (Field field : md.getNeighbours().keySet()) {
         try {
-          this.metaDataList
-              .byClass(fromColl(field))
-              .ifPresent(p -> md.getNeighbours().put(field, p));
+          this.mdList.byClass(fromColl(field)).ifPresent(p -> md.getNeighbours().put(field, p));
         } catch (ClassNotFoundException e) {
           throw new DataGenerationException(
               "Class not found = [" + md.getAClass().getSimpleName() + "] , field = [" + field.getName() + "]", e);
