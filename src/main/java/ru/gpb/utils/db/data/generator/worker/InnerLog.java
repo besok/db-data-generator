@@ -15,7 +15,7 @@ import static java.time.format.DateTimeFormatter.*;
  *
  * Inner logger.
  * It collects all results and can gathering them to string.
- * Also it has {@link InnerLog#marker} which represents count state for this log.
+ * Also it has {@link InnerLog#marker} which represents COUNT state for this log.
  *
  * @author Boris Zhguchev
  */

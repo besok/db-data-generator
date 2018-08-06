@@ -53,8 +53,8 @@ public class SimpleCommonTests {
   @Repeat(5)
   public void generatePlainObjectsTest() {
     List<SimplePlainObject> objs = factory
-        .dummyGenerator().metronome(50, MILLISECONDS)
-        .predicate(countPredicate(10))
+        .dummyGenerator()
+        .metronome(50, MILLISECONDS, COUNT(10))
         .generateByClass(SimplePlainObject.class)
         .cache()
         .getValueList(SimplePlainObject.class);
@@ -107,7 +107,7 @@ public class SimpleCommonTests {
         .cache().getValueList(SimplePlainObject.class)
         .stream().map(SimplePlainObject::getId).max(Integer::compareTo).get();
 
-    assertTrue("expected = "+expectedId+"==20",expectedId==20);
+    assertEquals("expected = " + expectedId + "==20", 20, (int) expectedId);
   }
 
   private Object[] toArray(List<SimplePlainObject> objs) {

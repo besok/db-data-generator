@@ -15,6 +15,7 @@ import java.util.logging.Logger;
  *
  * @author Boris Zhguchev
  */
+@SuppressWarnings("unchecked")
 public class Generator {
   private Logger LOGGER = Logger.getLogger(Generator.class.getName());
   private DatabaseEntityRelationsGenerator dbEntityRelationsGenerator;
@@ -29,9 +30,10 @@ public class Generator {
     this.log = new InnerLog();
   }
 
-  public String report(){
+  public String report() {
     return log.toString();
   }
+
   /**
    * Generate new instance for Class.
    * It tries to find this {@link MetaDataList#byClass(Class)}
@@ -154,8 +156,8 @@ public class Generator {
 
   /**
    * inner cache {@link InnerCache}
-   * */
-  public InnerCache cache(){
+   */
+  public InnerCache cache() {
     return dbEntityRelationsGenerator.getCache();
   }
 
@@ -178,7 +180,7 @@ public class Generator {
    *
    * @param cycles - cycles for repeate
    */
-  public RepeatableGenerator repeate(int cycles) {
+  public Generator repeate(int cycles) {
     return new RepeatableGenerator(dbEntityRelationsGenerator, dbEntityGenerator, cycles);
   }
 
@@ -190,24 +192,34 @@ public class Generator {
    * @param period metronome period
    * @param metric {@link TimeUnit} metric
    */
-  public MetronomeGenerator metronome(long period, TimeUnit metric) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric);
+  public Generator metronome(long period, TimeUnit metric) {
+    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric,ctx -> true);
   }
-
   /**
    * Making new {@link MetronomeGenerator} for generating repeated events with special pauses.
    * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
    *
-   * @param metronome custom metronome
+   * @param period metronome period
+   * @param metric {@link TimeUnit} metric
    */
-  public Generator metronome(Metronome metronome) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome);
+  public Generator metronome(long period, TimeUnit metric, MetronomeGenerator.MetronomePredicate predicate) {
+    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric,predicate);
   }
 
-  public Generator startId(long val){
+
+
+  public Generator startId(long val) {
     this.dbEntityGenerator.setStartSeq(val);
     return this;
   }
+
+  /**
+   * Making new {@link ParallelGenerator} for generating events each in separate thread .
+   */
+  public Generator parallel(){
+    return new ParallelGenerator(dbEntityRelationsGenerator,dbEntityGenerator,this);
+  }
+
   private void process(MetaData metaData) throws DataGenerationException {
     dbEntityGenerator.generateAndSaveObject(metaData);
     log.push("generate object: " + metaData.getHeader().toString());

@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class MetronomeGenerator extends Generator {
   MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator,
-                     long period, TimeUnit metric) {
+                     long period, TimeUnit metric,
+                     MetronomePredicate predicate) {
     super(multiEntityGenerator, singleEntityGenerator);
     this.metronome = Metronome.systemParker(period, metric);
+    this.predicate=predicate;
   }
 
   MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator,
@@ -24,17 +26,12 @@ public class MetronomeGenerator extends Generator {
     this.metronome = metronome;
   }
 
+
   private Metronome metronome;
+
   private MetronomePredicate predicate = ctx -> true;
 
 
-  /**
-   * It is a predicate for stopping work. @See {@link MetronomePredicate}
-   * */
-  public MetronomeGenerator predicate (MetronomePredicate condition){
-    this.predicate=condition;
-    return this;
-  }
 
   @Override
   public Generator generateByClass(Class<?> cl) {
@@ -103,13 +100,15 @@ public class MetronomeGenerator extends Generator {
 
   }
 
-
+  /**
+   * It is a predicate for stopping work. @See {@link MetronomePredicate}
+   * */
   public interface MetronomePredicate {
     /**
      * @param ctx context from around class
      * */
     boolean test(MetronomeGenerator ctx);
-    static MetronomePredicate countPredicate(int count){
+    static MetronomePredicate COUNT(int count){
     return ctx -> ctx.log().markerValue() < count;
     }
   }
