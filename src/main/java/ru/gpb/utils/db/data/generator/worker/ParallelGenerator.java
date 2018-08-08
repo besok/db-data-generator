@@ -91,7 +91,7 @@ public class ParallelGenerator extends Generator {
 
 
   @Override
-  public Generator parallel() {
-    throw new IllegalStateGeneratorException(" It can't possible invoking parallel for parallel generator.  ");
+  public Generator async() {
+    throw new IllegalStateGeneratorException(" It can't possible invoking async for async generator.  ");
   }
 }

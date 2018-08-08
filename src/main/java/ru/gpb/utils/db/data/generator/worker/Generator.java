@@ -216,7 +216,7 @@ public class Generator {
   /**
    * Making new {@link ParallelGenerator} for generating events each in separate thread .
    */
-  public Generator parallel(){
+  public Generator async(){
     return new ParallelGenerator(dbEntityRelationsGenerator,dbEntityGenerator,this);
   }
 
