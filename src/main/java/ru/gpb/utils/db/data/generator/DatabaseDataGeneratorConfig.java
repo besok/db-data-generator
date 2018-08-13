@@ -3,8 +3,8 @@ package ru.gpb.utils.db.data.generator;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 
 @Configuration

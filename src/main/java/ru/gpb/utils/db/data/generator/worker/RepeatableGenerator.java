@@ -17,17 +17,17 @@ public class RepeatableGenerator extends Generator {
 
 
   @Override
-  public Generator generateByClass(Class<?> cl) {
+  public Generator generateBy(Class<?> cl) {
     for (int i = 0; i < limit; i++) {
-      super.generateByClass(cl);
+      super.generateBy(cl);
     }
     return this;
   }
 
   @Override
-  public Generator generateByTable(String schema, String table) {
+  public Generator generateBy(String schema, String table) {
     for (int i = 0; i < limit; i++) {
-      super.generateByTable(schema, table);
+      super.generateBy(schema, table);
     }
     return this;
   }

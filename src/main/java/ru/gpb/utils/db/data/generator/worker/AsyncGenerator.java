@@ -1,18 +1,37 @@
 package ru.gpb.utils.db.data.generator.worker;
 // 2018.08.06 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author Boris Zhguchev
  */
 // FIXME: 8/6/2018
-public class ParallelGenerator extends Generator {
-  ParallelGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator,Generator initGen) {
+public class AsyncGenerator extends Generator {
+  AsyncGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator,
+                 DatabaseEntityGenerator singleEntityGenerator,
+                 Generator initGen) {
     super(multiEntityGenerator, singleEntityGenerator);
     this.inner=initGen;
+    this.executor=Executors.newFixedThreadPool(10);
+  }  AsyncGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator,
+                 DatabaseEntityGenerator singleEntityGenerator,
+                 Generator initGen,int nThreads) {
+    super(multiEntityGenerator, singleEntityGenerator);
+    this.inner=initGen;
+    this.executor=Executors.newFixedThreadPool(nThreads);
+    this.generators =new ArrayList<>();
   }
+
   private Generator inner;
+  private List<Future<? extends Generator>> generators;
+  private ExecutorService executor;
 
   @Override
   public Generator withException() throws DataGenerationException {
@@ -40,13 +59,15 @@ public class ParallelGenerator extends Generator {
   }
 
   @Override
-  public Generator generateByClass(Class<?> cl) {
-    return super.generateByClass(cl);
+  public Generator generateBy(Class<?> cl) {
+    inner.generateBy(cl);
+    return this;
   }
 
   @Override
-  public Generator generateByTable(String schema, String table) {
-    return super.generateByTable(schema, table);
+  public Generator generateBy(String schema, String table) {
+    inner.generateBy(schema,table);
+    return this;
   }
 
   @Override
@@ -63,8 +84,6 @@ public class ParallelGenerator extends Generator {
   public Generator generateRelations() {
     return inner.generateRelations();
   }
-
-
 
   @Override
   public Generator repeate(int cycles) {
@@ -94,4 +113,11 @@ public class ParallelGenerator extends Generator {
   public Generator async() {
     throw new IllegalStateGeneratorException(" It can't possible invoking async for async generator.  ");
   }
+
+  @Override
+  public Generator async(int nThreads) {
+    throw new IllegalStateGeneratorException(" It can't possible invoking async for async generator.  ");
+  }
+
+
 }

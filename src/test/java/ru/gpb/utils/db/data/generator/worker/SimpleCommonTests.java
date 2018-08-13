@@ -42,7 +42,7 @@ public class SimpleCommonTests {
     long marker = factory
         .generator()
         .repeate(5)
-        .generateByClass(SimplePlainObject.class)
+        .generateBy(SimplePlainObject.class)
         .log()
         .markerValue();
 
@@ -55,7 +55,7 @@ public class SimpleCommonTests {
     List<SimplePlainObject> objs = factory
         .dummyGenerator()
         .metronome(50, MILLISECONDS, COUNT(10))
-        .generateByClass(SimplePlainObject.class)
+        .generateBy(SimplePlainObject.class)
         .cache()
         .getValueList(SimplePlainObject.class);
 
@@ -70,7 +70,7 @@ public class SimpleCommonTests {
   public void ldtTest() {
     List<SimplePlainObject> valueList = factory
         .generator()
-        .generateByClass(SimplePlainObject.class)
+        .generateBy(SimplePlainObject.class)
         .cache().getValueList(SimplePlainObject.class);
     assertEquals(1, valueList.size());
     assertNotNull(valueList.get(0).getLdt());
@@ -83,14 +83,14 @@ public class SimpleCommonTests {
     int s1 = factory
         .dummyGenerator()
         .repeate(20)
-        .generateByClass(SimplePlainObject.class)
+        .generateBy(SimplePlainObject.class)
         .cache().getValueList(SimplePlainObject.class).size();
     assertEquals(20, s1);
 
     int s2 = factory
         .dummyGenerator()
         .repeate(21)
-        .generateByClass(SimplePlainObject.class)
+        .generateBy(SimplePlainObject.class)
         .cache().getValueList(SimplePlainObject.class).size();
 
     assertTrue(21 > s2);
@@ -103,13 +103,24 @@ public class SimpleCommonTests {
         .generator()
         .startId(10)
         .repeate(10)
-        .generateByClass(SimplePlainObject.class)
+        .generateBy(SimplePlainObject.class)
         .cache().getValueList(SimplePlainObject.class)
         .stream().map(SimplePlainObject::getId).max(Integer::compareTo).get();
 
     assertEquals("expected = " + expectedId + "==20", 20, (int) expectedId);
   }
+  @Test
+  public void asyncTest(){
+    InnerCache cache = factory
+        .generator().async()
+        .repeate(100)
+        .generateBy(SimplePlainObject.class)
+        .cache();
 
+    System.out.println(cache.getValueList(SimplePlainObject.class));
+    System.out.println(repository.findAll().size());
+
+  }
   private Object[] toArray(List<SimplePlainObject> objs) {
     return objs.stream().map(SimplePlainObject::getId).sorted(Integer::compareTo).toArray();
   }

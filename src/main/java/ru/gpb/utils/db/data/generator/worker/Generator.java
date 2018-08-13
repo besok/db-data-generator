@@ -41,7 +41,7 @@ public class Generator {
    *
    * @param cl class for searching. Must have {@link javax.persistence.Entity} annotation.
    */
-  public Generator generateByClass(Class<?> cl) {
+  public Generator generateBy(Class<?> cl) {
     Optional<MetaData> pojoOpt = dbEntityRelationsGenerator.cache.metaDataList.byClass(cl);
     if (pojoOpt.isPresent()) {
       MetaData metaData = pojoOpt.get();
@@ -73,7 +73,7 @@ public class Generator {
    * @param schema sch for searching. Must be present in {@link javax.persistence.Table} annotation.
    * @param table  sch for searching. Must be present in {@link javax.persistence.Table} annotation.
    */
-  public Generator generateByTable(String schema, String table) {
+  public Generator generateBy(String schema, String table) {
     Optional<MetaData> pojoOpt = dbEntityRelationsGenerator.cache.metaDataList.bySchemaTable(schema, table);
     if (pojoOpt.isPresent()) {
       MetaData metaData = pojoOpt.get();
@@ -214,10 +214,13 @@ public class Generator {
   }
 
   /**
-   * Making new {@link ParallelGenerator} for generating events each in separate thread .
+   * Making new {@link AsyncGenerator} for generating events each in separate thread .
    */
   public Generator async(){
-    return new ParallelGenerator(dbEntityRelationsGenerator,dbEntityGenerator,this);
+    return new AsyncGenerator(dbEntityRelationsGenerator,dbEntityGenerator,this);
+  }
+  public Generator async(int nThreads){
+    return new AsyncGenerator(dbEntityRelationsGenerator,dbEntityGenerator,this,nThreads);
   }
 
   private void process(MetaData metaData) throws DataGenerationException {
@@ -226,6 +229,5 @@ public class Generator {
     dbEntityRelationsGenerator.generateMultiObjects(metaData);
     log.push("generate relations: " + metaData.getHeader().toString());
   }
-
 
 }

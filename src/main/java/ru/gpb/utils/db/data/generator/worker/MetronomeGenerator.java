@@ -26,6 +26,11 @@ public class MetronomeGenerator extends Generator {
     this.metronome = metronome;
   }
 
+  public MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator, Metronome metronome, MetronomePredicate predicate) {
+    super(multiEntityGenerator, singleEntityGenerator);
+    this.metronome = metronome;
+    this.predicate = predicate;
+  }
 
   private Metronome metronome;
 
@@ -34,12 +39,12 @@ public class MetronomeGenerator extends Generator {
 
 
   @Override
-  public Generator generateByClass(Class<?> cl) {
+  public Generator generateBy(Class<?> cl) {
 
     while (predicate.test(this)) {
       try {
         metronome.pause();
-        super.generateByClass(cl);
+        super.generateBy(cl);
       } catch (InterruptedException e) {
         log.push(e.getClass() + ".");
       }
@@ -48,11 +53,11 @@ public class MetronomeGenerator extends Generator {
   }
 
   @Override
-  public Generator generateByTable(String schema, String table) {
+  public Generator generateBy(String schema, String table) {
     while (predicate.test(this)) {
       try {
         metronome.pause();
-        super.generateByTable(schema, table);
+        super.generateBy(schema, table);
       } catch (InterruptedException e) {
         log.push(e.getClass() + ".");
       }
