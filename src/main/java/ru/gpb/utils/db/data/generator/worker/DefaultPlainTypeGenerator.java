@@ -33,7 +33,7 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
       else if (len < 4)
         return counter(4);
       else {
-        // FIXME: 8/4/2018 don't understand - default 127 in db...
+        // FIXME: 8/4/2018 - default 127 in db...
         if (len == 255) len = 127;
         Random rand = new Random();
         char[] chars = new char[len];

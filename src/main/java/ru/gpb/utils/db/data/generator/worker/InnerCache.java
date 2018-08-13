@@ -9,6 +9,8 @@ import org.springframework.data.repository.support.Repositories;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -33,7 +35,7 @@ public class InnerCache {
 
   protected Repositories repositories;
   protected final MetaDataList metaDataList;
-  private Map<MetaData, List<Object>> cache;
+  private ConcurrentMap<MetaData, List<Object>> cache;
 
   /**
    * Get cache snapshot
@@ -79,7 +81,7 @@ public class InnerCache {
   public InnerCache(MetaDataList metaDataList, ApplicationContext context) {
     this.metaDataList = metaDataList;
     repositories = new Repositories(context);
-    cache = new HashMap<>();
+    cache = new ConcurrentHashMap<>();
   }
 
   void put(MetaData metaData, Object o) {
@@ -124,7 +126,7 @@ public class InnerCache {
 
   private void assertCacheSizeIsNull() {
     if (cacheSize == 0) {
-      throw new IllegalArgumentException("generator.cache-entity-size must not be 0 or null. By default it is 20.");
+      throw new IllegalStateGeneratorException("generator.cache-entity-size must not be 0 or null. By default it is 20.");
     }
   }
 
@@ -148,16 +150,4 @@ public class InnerCache {
   }
 
 
-  public static InnerCache concat(InnerCache accum, InnerCache addCache) {
-    Map<MetaData, List<Object>> cache = accum.cache;
-    for (Map.Entry<MetaData, List<Object>> entry : addCache.cache.entrySet()) {
-      if (!cache.containsKey(entry.getKey()))
-        cache.put(entry.getKey(), entry.getValue());
-
-      for (Object o : entry.getValue()) {
-        accum.put(entry.getKey(),o);
-      }
-    }
-    return accum;
-  }
 }

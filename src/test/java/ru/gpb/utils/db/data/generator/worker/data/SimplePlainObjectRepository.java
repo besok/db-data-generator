@@ -15,5 +15,5 @@ import java.util.UUID;
 /**
  * @author Boris Zhguchev
  */
-public interface SimplePlainObjectRepository extends JpaRepository<SimplePlainObject,UUID> {
+public interface SimplePlainObjectRepository extends JpaRepository<SimplePlainObject,Integer> {
 }

@@ -127,3 +127,15 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
         .generateByClass(SimplePlainObject.class)
         .cache();
 ```
+
+##### Generate by Class and do it async
+```
+    factory
+        .generator().async()
+        .repeate(100)
+        .generateBy(SimplePlainObject.class)
+        .generateBy(SimplePlainObject2.class)
+        .generateBy(SimplePlainObject3.class)
+        .finish();
+```
+

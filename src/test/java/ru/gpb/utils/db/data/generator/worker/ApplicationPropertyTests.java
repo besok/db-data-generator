@@ -18,9 +18,9 @@ public class ApplicationPropertyTests {
   @Autowired
   private DatabaseDataGeneratorFactory factory;
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = IllegalStateGeneratorException.class)
   public void testNullCacheSize() {
-    factory.dummyGenerator().generateBy(SimplePlainObject.class); // expected IllegalArgumentException
+    factory.dummyGenerator().generateBy(SimplePlainObject.class); // expected IllegalStateGeneratorException
   }
 
 }

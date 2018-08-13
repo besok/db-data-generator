@@ -49,6 +49,7 @@ public class InnerLog {
     return marker.longValue();
   }
 
+
   @Data
   private class LogEvent {
 

@@ -6,11 +6,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
 
-
+// TODO: 8/13/2018 Доки!
+// FIXME: 8/13/2018 Если запустить асинк на 1 таблицу 2 раза генерайтедбай, возникает гонка - меньше100
 /**
  * @author Boris Zhguchev
+ *
+ * Class for processing data in different threads.
+ * it needed terminal operation @see {@link AsyncGenerator#log()}
+ * or @see {@link AsyncGenerator#report()}
+ * or @see {@link AsyncGenerator#finish()}
+ *
  */
-// FIXME: 8/6/2018
 public class AsyncGenerator extends Generator {
   AsyncGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator,
                  DatabaseEntityGenerator singleEntityGenerator,
@@ -40,47 +46,74 @@ public class AsyncGenerator extends Generator {
       try {
         Generator gen = genFuture.get();
         if (Objects.nonNull(gen.lastExeption())) {
+          close();
           return gen.withException();
         }
       } catch (InterruptedException | ExecutionException e) {
         throw new DataGenerationException(e);
       }
     }
+
     return inner.withException();
   }
 
   @Override
   public InnerCache cache() {
-    InnerCache cache = inner.cache();
     for (Future<? extends Generator> genFuture : workers) {
       try {
         Generator gen = genFuture.get();
-        cache=InnerCache.concat(cache, gen.cache());
-      } catch (InterruptedException | ExecutionException e) {}
+      } catch (InterruptedException | ExecutionException e) {
+      }
     }
+    close();
     return inner.cache();
   }
 
   @Override
   public InnerLog log() {
-    return inner.log();
+    InnerLog log = inner.log();
+    for (Future<? extends Generator> genFuture : workers) {
+      try {
+        Generator gen = genFuture.get();
+        log = new InnerLog(gen.log());
+      } catch (InterruptedException | ExecutionException e) { }
+    }
+    close();
+    return log;
   }
 
   @Override
   public String report() {
-    return inner.report();
+    StringBuilder sb = new StringBuilder();
+    for (Future<? extends Generator> genFuture : workers) {
+      try {
+        sb.append(genFuture.get().report());
+      } catch (InterruptedException | ExecutionException e) { }
+    }
+    close();
+    return sb.toString();
   }
 
   @Override
   public Exception lastExeption() {
+    for (Future<? extends Generator> genFuture : workers) {
+      try {
+        Generator gen = genFuture.get();
+        if (Objects.nonNull(gen.lastExeption())) {
+          return gen.lastExeption();
+        }
+      } catch (InterruptedException | ExecutionException e) {
+
+      }
+    }
+    close();
     return inner.lastExeption();
   }
 
   @Override
   public Generator generateBy(Class<?> cl) {
     Generator splittedGenerator = this.inner.split();
-    Future<Generator> submittedGenerator = executor.submit(() -> splittedGenerator.generateBy(cl));
-    workers.add(submittedGenerator);
+    workers.add(executor.submit(() -> splittedGenerator.generateBy(cl)));
     return this;
   }
 
@@ -92,8 +125,6 @@ public class AsyncGenerator extends Generator {
     return this;
   }
 
-
-  // TODO: 8/13/2018 добавить параллелизм
   @Override
   public Generator generateAll() {
     return inner.generateAll();
@@ -141,6 +172,33 @@ public class AsyncGenerator extends Generator {
   @Override
   public Generator async(int nThreads) {
     return this;
+  }
+
+  public void close(){
+    executor.shutdown();
+    try {
+      if (!executor.awaitTermination(2, TimeUnit.SECONDS)) {
+        executor.shutdownNow();
+      }
+    } catch (InterruptedException e) {
+      executor.shutdownNow();
+    }
+  }
+
+  /**
+   * terminal operation. It waits all futures completed.
+   *
+   * @return this
+   * */
+  @Override
+  public Generator finish(){
+    for (Future<? extends Generator> worker : workers) {
+      try {
+        worker.get();
+      } catch (InterruptedException | ExecutionException e) {}
+    }
+    close();
+    return inner;
   }
 
   @Override

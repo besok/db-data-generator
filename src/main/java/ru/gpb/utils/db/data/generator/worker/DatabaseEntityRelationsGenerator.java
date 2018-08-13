@@ -46,6 +46,7 @@ public class DatabaseEntityRelationsGenerator {
         if (Objects.isNull(collection)) {
           collection = createColFromInterface(f.getType()).newInstance();
         }
+        // TODO: 8/13/2018 Изменить фунцию, что бы сначала брать из кеша, а затем генерить.
         ((Collection) collection).addAll(cache.getValueList(rightMetaData));
         save(metaData, e);
       } catch (InstantiationException | IllegalAccessException ex) {
@@ -55,11 +56,11 @@ public class DatabaseEntityRelationsGenerator {
     }
   }
 
-  private void save(MetaData metaData, Object o) throws DataGenerationException {
+  private Object save(MetaData metaData, Object o) throws DataGenerationException {
     Optional<Object> rep = cache.repositories.getRepositoryFor(metaData.getAClass());
     if (rep.isPresent()) {
       try {
-        ((JpaRepository) rep.get()).save(o);
+        return ((JpaRepository) rep.get()).save(o);
       } catch (DataIntegrityViolationException e) {
         LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
         throw new DataGenerationException("in most cases relation has already been", e);

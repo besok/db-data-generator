@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
+import ru.gpb.utils.db.data.generator.worker.data.*;
 
 import java.util.List;
 
@@ -30,6 +29,10 @@ public class SimpleCommonTests {
   private DatabaseDataGeneratorFactory factory;
   @Autowired
   private SimplePlainObjectRepository repository;
+  @Autowired
+  private ComplexObjectRepository complexObjectRepository;
+  @Autowired
+  private SimplePlainObject2Repository simplePlainObject2Repository;
 
   @Before
   public void clean() {
@@ -111,16 +114,27 @@ public class SimpleCommonTests {
   }
   @Test
   public void asyncTest(){
-    InnerCache cache = factory
+    factory
         .generator().async()
         .repeate(100)
         .generateBy(SimplePlainObject.class)
-        .cache();
+        .finish();
 
-    System.out.println(cache.getValueList(SimplePlainObject.class));
-    System.out.println(repository.findAll().size());
+   assertEquals(100,repository.findAll().size());
 
   }
+
+  @Test
+  public void simpleComplexTest(){
+    Generator generator = factory
+        .generator()
+        .repeate(500)
+        .generateBy(ComplexObject.class)
+        .finish();
+
+    assertEquals(500,complexObjectRepository.findAll().size());
+  }
+
   private Object[] toArray(List<SimplePlainObject> objs) {
     return objs.stream().map(SimplePlainObject::getId).sorted(Integer::compareTo).toArray();
   }

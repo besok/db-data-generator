@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
+// TODO: 8/13/2018 Доки!
 /**
  * Major class for processing generation request.
  * It has a fluent interface.
@@ -231,6 +231,14 @@ public class Generator {
     log.push("generate object: " + metaData.getHeader().toString());
     dbEntityRelationsGenerator.generateMultiObjects(metaData);
     log.push("generate relations: " + metaData.getHeader().toString());
+  }
+
+  /**
+   * Terminal finish operation.
+   * @return this
+   * */
+  public Generator finish(){
+    return this;
   }
 
   Generator split(){
