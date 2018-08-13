@@ -3,10 +3,8 @@ package ru.gpb.utils.db.data.generator.worker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.concurrent.*;
 
 
 /**
@@ -18,28 +16,48 @@ public class AsyncGenerator extends Generator {
                  DatabaseEntityGenerator singleEntityGenerator,
                  Generator initGen) {
     super(multiEntityGenerator, singleEntityGenerator);
-    this.inner=initGen;
-    this.executor=Executors.newFixedThreadPool(10);
-  }  AsyncGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator,
+    this.inner = initGen;
+    this.executor = Executors.newFixedThreadPool(10);
+    this.workers = new ArrayList<>();
+  }
+
+  AsyncGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator,
                  DatabaseEntityGenerator singleEntityGenerator,
-                 Generator initGen,int nThreads) {
+                 Generator initGen, int nThreads) {
     super(multiEntityGenerator, singleEntityGenerator);
-    this.inner=initGen;
-    this.executor=Executors.newFixedThreadPool(nThreads);
-    this.generators =new ArrayList<>();
+    this.inner = initGen;
+    this.executor = Executors.newFixedThreadPool(nThreads);
+    this.workers = new ArrayList<>();
   }
 
   private Generator inner;
-  private List<Future<? extends Generator>> generators;
+  private List<Future<? extends Generator>> workers;
   private ExecutorService executor;
 
   @Override
   public Generator withException() throws DataGenerationException {
+    for (Future<? extends Generator> genFuture : workers) {
+      try {
+        Generator gen = genFuture.get();
+        if (Objects.nonNull(gen.lastExeption())) {
+          return gen.withException();
+        }
+      } catch (InterruptedException | ExecutionException e) {
+        throw new DataGenerationException(e);
+      }
+    }
     return inner.withException();
   }
 
   @Override
   public InnerCache cache() {
+    InnerCache cache = inner.cache();
+    for (Future<? extends Generator> genFuture : workers) {
+      try {
+        Generator gen = genFuture.get();
+        cache=InnerCache.concat(cache, gen.cache());
+      } catch (InterruptedException | ExecutionException e) {}
+    }
     return inner.cache();
   }
 
@@ -60,16 +78,22 @@ public class AsyncGenerator extends Generator {
 
   @Override
   public Generator generateBy(Class<?> cl) {
-    inner.generateBy(cl);
+    Generator splittedGenerator = this.inner.split();
+    Future<Generator> submittedGenerator = executor.submit(() -> splittedGenerator.generateBy(cl));
+    workers.add(submittedGenerator);
     return this;
   }
 
   @Override
   public Generator generateBy(String schema, String table) {
-    inner.generateBy(schema,table);
+    Generator splittedGenerator = this.inner.split();
+    Future<Generator> submittedGenerator = executor.submit(() -> splittedGenerator.generateBy(schema, table));
+    workers.add(submittedGenerator);
     return this;
   }
 
+
+  // TODO: 8/13/2018 добавить параллелизм
   @Override
   public Generator generateAll() {
     return inner.generateAll();
@@ -99,7 +123,7 @@ public class AsyncGenerator extends Generator {
 
   @Override
   public Generator metronome(long period, TimeUnit metric, MetronomeGenerator.MetronomePredicate predicate) {
-    this.inner =  super.metronome(period, metric, predicate);
+    this.inner = super.metronome(period, metric, predicate);
     return this;
   }
 
@@ -111,13 +135,17 @@ public class AsyncGenerator extends Generator {
 
   @Override
   public Generator async() {
-    throw new IllegalStateGeneratorException(" It can't possible invoking async for async generator.  ");
+    return this;
   }
 
   @Override
   public Generator async(int nThreads) {
-    throw new IllegalStateGeneratorException(" It can't possible invoking async for async generator.  ");
+    return this;
   }
 
+  @Override
+  Generator split() {
+    throw new IllegalStateGeneratorException(" It can't possible invoking async for async generator.  ");
+  }
 
 }

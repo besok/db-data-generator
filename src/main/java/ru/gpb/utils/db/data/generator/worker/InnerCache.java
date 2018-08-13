@@ -86,9 +86,9 @@ public class InnerCache {
     cache.compute(metaData, (p, l) -> {
       if (l == null)
         l = new ArrayList<>();
-      if(l.size() >= cacheSize){
+      if (l.size() >= cacheSize) {
         int s = l.size();
-        l = l.subList(s/4,s);
+        l = l.subList(s / 4, s);
       }
       l.add(o);
       return l;
@@ -123,7 +123,7 @@ public class InnerCache {
   }
 
   private void assertCacheSizeIsNull() {
-    if(cacheSize == 0){
+    if (cacheSize == 0) {
       throw new IllegalArgumentException("generator.cache-entity-size must not be 0 or null. By default it is 20.");
     }
   }
@@ -145,5 +145,19 @@ public class InnerCache {
         .stream()
         .map(e -> e.getKey().getAClass().getName() + "=" + e.getValue())
         .collect(joining(","));
+  }
+
+
+  public static InnerCache concat(InnerCache accum, InnerCache addCache) {
+    Map<MetaData, List<Object>> cache = accum.cache;
+    for (Map.Entry<MetaData, List<Object>> entry : addCache.cache.entrySet()) {
+      if (!cache.containsKey(entry.getKey()))
+        cache.put(entry.getKey(), entry.getValue());
+
+      for (Object o : entry.getValue()) {
+        accum.put(entry.getKey(),o);
+      }
+    }
+    return accum;
   }
 }

@@ -195,6 +195,9 @@ public class Generator {
   public Generator metronome(long period, TimeUnit metric) {
     return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric,ctx -> true);
   }
+  public Generator metronome(Metronome metronome, MetronomeGenerator.MetronomePredicate predicate) {
+    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome,predicate);
+  }
   /**
    * Making new {@link MetronomeGenerator} for generating repeated events with special pauses.
    * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
@@ -230,4 +233,7 @@ public class Generator {
     log.push("generate relations: " + metaData.getHeader().toString());
   }
 
+  Generator split(){
+    return new Generator(this.dbEntityRelationsGenerator,this.dbEntityGenerator);
+  }
 }

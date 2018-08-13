@@ -20,22 +20,26 @@ public class MetronomeGenerator extends Generator {
     this.predicate=predicate;
   }
 
+  public MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator,
+                            DatabaseEntityGenerator singleEntityGenerator,
+                            Metronome metronome, MetronomePredicate predicate) {
+
+    super(multiEntityGenerator, singleEntityGenerator);
+    this.metronome = metronome;
+    this.predicate = predicate;
+  }
+
   MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator,
                      Metronome metronome) {
     super(multiEntityGenerator, singleEntityGenerator);
     this.metronome = metronome;
   }
 
-  public MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator, Metronome metronome, MetronomePredicate predicate) {
-    super(multiEntityGenerator, singleEntityGenerator);
-    this.metronome = metronome;
-    this.predicate = predicate;
-  }
+
 
   private Metronome metronome;
 
   private MetronomePredicate predicate = ctx -> true;
-
 
 
   @Override
@@ -118,4 +122,8 @@ public class MetronomeGenerator extends Generator {
     }
   }
 
+  @Override
+  Generator split() {
+    return super.metronome(this.metronome,predicate);
+  }
 }

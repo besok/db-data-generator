@@ -56,5 +56,8 @@ public class RepeatableGenerator extends Generator {
     return this;
   }
 
-
+  @Override
+  Generator split() {
+    return super.repeate(this.limit);
+  }
 }
