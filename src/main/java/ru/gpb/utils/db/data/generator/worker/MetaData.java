@@ -15,7 +15,8 @@ import java.util.Set;
  *
  * @author Boris Zhguchev
  */
-@Data
+@Getter
+@Setter(AccessLevel.PACKAGE)
 @AllArgsConstructor(staticName = "of")
 @NoArgsConstructor
 public class MetaData {
@@ -62,7 +63,7 @@ public class MetaData {
   }
 
   @Getter
-  @Setter
+  @Setter(AccessLevel.PACKAGE)
   @AllArgsConstructor
   public class Column {
     private String field;
@@ -72,6 +73,7 @@ public class MetaData {
     private Field val;
     private boolean nullable;
     private boolean collection;
+    private MetaData parent;
   }
 
   @AllArgsConstructor
@@ -81,17 +83,17 @@ public class MetaData {
     private boolean generated;
   }
 
-  public Optional<Column> findByField(Field field) {
+  Optional<Column> findByField(Field field) {
     for (Column c : plainColumns) {
       if (Objects.equals(field.getName(), c.getField()))
         return Optional.of(c);
     }
     return Optional.empty();
   }
-  public void addId(Field id,boolean generated){
+  void addId(Field id, boolean generated){
     this.id = new Id(id,generated);
   }
-  public void addPlainColumn(
+  void addPlainColumn(
       String field,
       String column,
       int length,
@@ -100,15 +102,15 @@ public class MetaData {
       boolean collection,
       Field f
   ) {
-    plainColumns.add(new Column(field,column,length,aClass,f,nullable,collection));
+    plainColumns.add(new Column(field,column,length,aClass,f,nullable,collection,this));
   }
 
-  public void setHeader(String className, String tableName, String schemaName) {
+  void setHeader(String className, String tableName, String schemaName) {
     header = new Header(className, tableName, schemaName);
   }
 
 
-  public boolean isId(Field field){
+  boolean isId(Field field){
     return id.idField.equals(field);
   }
 
