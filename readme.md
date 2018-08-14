@@ -60,10 +60,10 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
     String report =
             factory
                 .generator()
-                .generateByClass(Limit.class)
-                .generateByClass(Customer.class)
-                .generateByClass(Currency.class)
-                .generateByClass(OrganizationUnit.class)
+                .generateBy(Limit.class)
+                .generateBy(Customer.class)
+                .generateBy(Currency.class)
+                .generateBy(OrganizationUnit.class)
                 .report();
 
 ```
@@ -72,7 +72,7 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
        String report =
             factory
                 .generator()
-                .generateByTable("schema","table")
+                .generateBy("schema","table")
                 .report();
 
 ```
@@ -84,7 +84,7 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
       InnerLog log =
           factory
               .generator()
-              .generateByTable("schema", "table")
+              .generateBy("schema", "table")
               .withException()
               .log;
     } catch (DataGenerationException e) {
@@ -98,7 +98,7 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
  InnerLog log =
           factory
               .generator().repeate(10)
-              .generateByClass(Limit.class)
+              .generateBy(Limit.class)
               .log;
 
 ```
@@ -108,14 +108,14 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
         factory
             .generator().metronome(1, TimeUnit.SECONDS)
             .predicate(countPredicate(10))
-            .generateByClass(Customer.class)
+            .generateBy(Customer.class)
             .log();
 
     InnerLog s =
         factory
             .generator().metronome(1, TimeUnit.SECONDS)
             .predicate(ctx -> ctx.log.markerValue() < 10)
-            .generateByClass(Customer.class)
+            .generateBy(Customer.class)
             .log();
 ```
 ##### Generate by Class and get cache 
@@ -123,8 +123,8 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
     InnerCache cache = factory
         .generator()
         .metronome(10,TimeUnit.MILLISECONDS)
-        .predicate(countPredicate(20))
-        .generateByClass(SimplePlainObject.class)
+        .predicate(COUNT(10))
+        .generateBy(SimplePlainObject.class)
         .cache();
 ```
 
@@ -133,7 +133,7 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
     factory
         .generator().async()
         .repeate(100)
-        .generateBy(SimplePlainObject.class)
+        .generateBy(SimplePlainObject1.class)
         .generateBy(SimplePlainObject2.class)
         .generateBy(SimplePlainObject3.class)
         .finish();
