@@ -53,6 +53,7 @@ public interface PlainTypeGenerator {
       case "int":
         return integer().apply(metaDataColumn);
       case "Double":
+      case "double":
         return doubleVal().apply(metaDataColumn);
       case "Date":
         return date().apply(metaDataColumn);
