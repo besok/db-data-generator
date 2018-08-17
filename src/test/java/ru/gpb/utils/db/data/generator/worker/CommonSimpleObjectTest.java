@@ -23,7 +23,7 @@ import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.Metronome
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class SimpleCommonTests {
+public class CommonSimpleObjectTest {
 
 
   @Autowired

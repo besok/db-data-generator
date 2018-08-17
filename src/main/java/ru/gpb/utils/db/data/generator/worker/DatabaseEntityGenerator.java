@@ -100,7 +100,9 @@ public class DatabaseEntityGenerator {
               Object generate = plainValueGenerator.generate(type, column.get());
               f.set(obj, generate);
             } else {
-              throw new InstantiationException();
+              if (metaData.neighbour(f) == null) {
+                throw new InstantiationException();
+              }
             }
           } else {
             Optional<Object> beforePojo = generateAndSaveObject(before);
