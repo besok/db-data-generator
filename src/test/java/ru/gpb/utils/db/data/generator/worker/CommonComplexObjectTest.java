@@ -32,8 +32,9 @@ public class CommonComplexObjectTest {
 
   @Test
   public void generateEntWithManyToManyReleationTest() throws DataGenerationException {
-    factory.generator()
+    factory.generator().async()
         .generateBy(ManyToManyObjectLeft.class)
+        .generateBy(ManyToManyObjectRight.class)
         .withException();
 
   }

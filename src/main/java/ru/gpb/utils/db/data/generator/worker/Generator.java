@@ -20,8 +20,8 @@ public class Generator {
   private Logger LOGGER = Logger.getLogger(Generator.class.getName());
   private DatabaseEntityRelationsGenerator dbEntityRelationsGenerator;
   private DatabaseEntityGenerator dbEntityGenerator;
-  protected InnerLog log;
   private DataGenerationException exception;
+  protected InnerLog log; // temporary disabled
 
 
   Generator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator) {
@@ -29,6 +29,7 @@ public class Generator {
     this.dbEntityGenerator = singleEntityGenerator;
     this.log = new InnerLog();
   }
+
 
   public String report() {
     return log.toString();
@@ -50,7 +51,7 @@ public class Generator {
       } catch (DataGenerationException e) {
         LOGGER.info("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
         exception = e;
-        log.push(e.toString());
+//        log.push(e.toString());
       }
     } else {
       DataGenerationException ex =
@@ -58,7 +59,7 @@ public class Generator {
               + " is not found. Please check your configuration", new IllegalAccessException());
       LOGGER.info("generation by class " + cl.getSimpleName() + "has been failed - " + ex.toString());
       exception = ex;
-      log.push(ex.toString());
+//      log.push(ex.toString());
     }
 
     return this;
@@ -82,14 +83,14 @@ public class Generator {
       } catch (DataGenerationException e) {
         LOGGER.info("generation by table " + schema + "." + table + "has been failed - " + e.toString());
         exception = e;
-        log.push(e.toString());
+//        log.push(e.toString());
       }
     } else {
       DataGenerationException ex = new DataGenerationException("MetaData class for table " + schema
           + "." + table + " is not found. Please check your configuration", new IllegalAccessException());
       LOGGER.info("generation by table " + schema + "." + table + "has been failed - " + ex.toString());
       exception = ex;
-      log.push(ex.toString());
+//      log.push(ex.toString());
 
     }
     return this;
@@ -113,10 +114,10 @@ public class Generator {
     for (MetaData md : metaData) {
       try {
         dbEntityGenerator.generateAndSaveObject(md);
-        log.push("entity generation for " + md.getHeader().toString());
+//        log.push("entity generation for " + md.getHeader().toString());
       } catch (DataGenerationException e) {
         exception = e;
-        log.push(e.toString());
+//        log.push(e.toString());
       }
     }
 
@@ -131,10 +132,10 @@ public class Generator {
     for (MetaData metaData : dbEntityRelationsGenerator.cache.metas()) {
       try {
         dbEntityRelationsGenerator.generateMultiObjects(metaData);
-        log.push("relations generation for " + metaData.getHeader().toString());
+//        log.push("relations generation for " + metaData.getHeader().toString());
       } catch (DataGenerationException e) {
         exception = e;
-        log.push(e.toString());
+//        log.push(e.toString());
       }
     }
     return this;
@@ -228,9 +229,9 @@ public class Generator {
 
   private void process(MetaData metaData) throws DataGenerationException {
     dbEntityGenerator.generateAndSaveObject(metaData);
-    log.push("generate object: " + metaData.getHeader().toString());
+//    log.push("generate object: " + metaData.getHeader().toString());
     dbEntityRelationsGenerator.generateMultiObjects(metaData);
-    log.push("generate relations: " + metaData.getHeader().toString());
+//    log.push("generate relations: " + metaData.getHeader().toString());
   }
 
   /**

@@ -126,6 +126,15 @@ public class CommonSimpleObjectTest {
    assertEquals(100,repository.findAll().size());
 
   }
+  @Test()
+  public void hugeLogFailedTest(){
+    factory
+        .generator()
+        .repeate(1000000)
+        .generateBy(SimplePlainObject.class)
+        .finish();
+
+  }
 
   @Test
   public void simpleComplexTest(){

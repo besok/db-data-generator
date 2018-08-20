@@ -90,7 +90,7 @@ public class InnerCache {
         l = new ArrayList<>();
       if (l.size() >= cacheSize) {
         int s = l.size();
-        l = l.subList(s / 4, s);
+        l = new ArrayList<>(l.subList(s / 4, s));
       }
       l.add(o);
       return l;

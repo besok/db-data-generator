@@ -50,7 +50,7 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateBy(cl);
       } catch (InterruptedException e) {
-        log.push(e.getClass() + ".");
+//        log.push(e.getClass() + ".");
       }
     }
     return this;
@@ -63,7 +63,7 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateBy(schema, table);
       } catch (InterruptedException e) {
-        log.push(e.getClass() + ".");
+//        log.push(e.getClass() + ".");
       }
     }
     return this;
@@ -76,7 +76,7 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateAll();
       } catch (InterruptedException e) {
-        log.push(e.getClass() + ".");
+//        log.push(e.getClass() + ".");
       }
     }
     return this;
@@ -89,7 +89,7 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateObjects();
       } catch (InterruptedException e) {
-        log.push(e.getClass() + ".");
+//        log.push(e.getClass() + ".");
       }
     }
     return this;
@@ -102,7 +102,7 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateRelations();
       } catch (InterruptedException e) {
-        log.push(e.getClass() + ".");
+//        log.push(e.getClass() + ".");
       }
     }
     return this;

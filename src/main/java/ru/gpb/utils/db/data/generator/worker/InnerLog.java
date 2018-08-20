@@ -19,6 +19,7 @@ import static java.time.format.DateTimeFormatter.*;
  *
  * @author Boris Zhguchev
  */
+// FIXME: 8/20/2018 !!!!!!! -> на больших сущностях ошибка, так как переполняется лог - выключил его.
 public class InnerLog {
   private final AtomicLong marker;
   private final Deque<LogEvent> deque;

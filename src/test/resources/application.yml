@@ -4,7 +4,7 @@ spring:
   url: jdbc:h2:mem:test;MODE=PostgreSQL
   schema: classpath:/schema.sql
  jpa:
-  show-sql: true
+  show-sql: false
   properties:
     hibernate:
       event.merge.entity_copy_observer: allow
