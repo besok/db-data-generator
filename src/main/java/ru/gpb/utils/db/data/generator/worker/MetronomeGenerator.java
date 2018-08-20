@@ -4,6 +4,7 @@ package ru.gpb.utils.db.data.generator.worker;
 import ru.gpb.utils.db.data.generator.timer.Metronome;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,9 +37,9 @@ public class MetronomeGenerator extends Generator {
   }
 
 
+  private Logger LOGGER = Logger.getLogger(MetronomeGenerator.class.getName());
 
   private Metronome metronome;
-
   private MetronomePredicate predicate = ctx -> true;
 
 
@@ -50,7 +51,8 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateBy(cl);
       } catch (InterruptedException e) {
-//        log.push(e.getClass() + ".");
+        log.failureInc();
+        LOGGER.info("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
       }
     }
     return this;
@@ -63,7 +65,8 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateBy(schema, table);
       } catch (InterruptedException e) {
-//        log.push(e.getClass() + ".");
+        log.failureInc();
+        LOGGER.info("generation by class " + schema+"."+table + "has been failed - " + e.toString());
       }
     }
     return this;
@@ -76,7 +79,8 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateAll();
       } catch (InterruptedException e) {
-//        log.push(e.getClass() + ".");
+        log.failureInc();
+        LOGGER.info("generation has been failed - " + e.toString());
       }
     }
     return this;
@@ -89,7 +93,8 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateObjects();
       } catch (InterruptedException e) {
-//        log.push(e.getClass() + ".");
+        log.failureInc();
+        LOGGER.info("generation has been failed - " + e.toString());
       }
     }
     return this;
@@ -102,7 +107,8 @@ public class MetronomeGenerator extends Generator {
         metronome.pause();
         super.generateRelations();
       } catch (InterruptedException e) {
-//        log.push(e.getClass() + ".");
+        log.failureInc();
+        LOGGER.info("generation has been failed - " + e.toString());
       }
     }
     return this;
@@ -118,7 +124,13 @@ public class MetronomeGenerator extends Generator {
      * */
     boolean test(MetronomeGenerator ctx);
     static MetronomePredicate COUNT(int count){
-    return ctx -> ctx.log().markerValue() < count;
+    return ctx -> ctx.log().marker() < count;
+    }
+    static MetronomePredicate COUNT_SUCCESS(int count){
+    return ctx -> ctx.log().success() < count;
+    }
+    static MetronomePredicate COUNT_FAILURE(int count){
+    return ctx -> ctx.log().failure() < count;
     }
   }
 

@@ -50,7 +50,7 @@ public class DatabaseEntityRelationsGenerator {
         ((Collection) collection).addAll(cache.getValueList(rightMetaData));
         save(metaData, e);
       } catch (InstantiationException | IllegalAccessException ex) {
-        LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
+        LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
         throw new DataGenerationException("Reflection exception ", ex);
       }
     }
@@ -62,7 +62,7 @@ public class DatabaseEntityRelationsGenerator {
       try {
         return ((JpaRepository) rep.get()).save(o);
       } catch (DataIntegrityViolationException e) {
-        LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
+        LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
         throw new DataGenerationException("in most cases relation has already been", e);
       }
     } else

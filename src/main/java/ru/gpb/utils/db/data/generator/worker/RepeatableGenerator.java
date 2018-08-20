@@ -1,6 +1,8 @@
 package ru.gpb.utils.db.data.generator.worker;
 // 2018.07.25 
 
+import java.util.logging.Logger;
+
 /**
  *
  * Generator for repeating events.
@@ -12,7 +14,6 @@ public class RepeatableGenerator extends Generator {
     super(multiEntityGenerator, singleEntityGenerator);
     this.limit = cycles;
   }
-
   private int limit;
 
 

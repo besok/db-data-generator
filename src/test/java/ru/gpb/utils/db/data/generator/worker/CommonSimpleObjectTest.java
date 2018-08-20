@@ -48,9 +48,9 @@ public class CommonSimpleObjectTest {
         .repeate(5)
         .generateBy(SimplePlainObject.class)
         .log()
-        .markerValue();
+        .success();
 
-    assertEquals(marker / 2, repository.findAll().size());
+    assertEquals(marker , repository.findAll().size());
   }
 
   @Test
@@ -130,7 +130,7 @@ public class CommonSimpleObjectTest {
   public void hugeLogFailedTest(){
     factory
         .generator()
-        .repeate(1000000)
+        .repeate(100_000)
         .generateBy(SimplePlainObject.class)
         .finish();
 

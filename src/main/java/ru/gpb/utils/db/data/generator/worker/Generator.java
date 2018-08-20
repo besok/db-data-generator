@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 // TODO: 8/13/2018 Доки!
+
 /**
  * Major class for processing generation request.
  * It has a fluent interface.
@@ -21,13 +22,13 @@ public class Generator {
   private DatabaseEntityRelationsGenerator dbEntityRelationsGenerator;
   private DatabaseEntityGenerator dbEntityGenerator;
   private DataGenerationException exception;
-  protected InnerLog log; // temporary disabled
+  protected InnerLog log;
 
 
   Generator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator) {
     this.dbEntityRelationsGenerator = multiEntityGenerator;
     this.dbEntityGenerator = singleEntityGenerator;
-    this.log = new InnerLog();
+    this.log = new InnerLog("common generator");
   }
 
 
@@ -49,17 +50,17 @@ public class Generator {
       try {
         process(metaData);
       } catch (DataGenerationException e) {
-        LOGGER.info("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
-        exception = e;
-//        log.push(e.toString());
+        LOGGER.finest("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
+        log.failureInc();
+        this.exception=e;
       }
     } else {
       DataGenerationException ex =
           new DataGenerationException("MetaData class " + cl.getName()
               + " is not found. Please check your configuration", new IllegalAccessException());
-      LOGGER.info("generation by class " + cl.getSimpleName() + "has been failed - " + ex.toString());
-      exception = ex;
-//      log.push(ex.toString());
+      LOGGER.finest("generation by class " + cl.getSimpleName() + "has been failed - " + ex.toString());
+      log.failureInc();
+      this.exception=ex;
     }
 
     return this;
@@ -81,16 +82,16 @@ public class Generator {
       try {
         process(metaData);
       } catch (DataGenerationException e) {
-        LOGGER.info("generation by table " + schema + "." + table + "has been failed - " + e.toString());
-        exception = e;
-//        log.push(e.toString());
+        LOGGER.finest("generation by table " + schema + "." + table + "has been failed - " + e.toString());
+        log.failureInc();
+        this.exception=e;
       }
     } else {
       DataGenerationException ex = new DataGenerationException("MetaData class for table " + schema
           + "." + table + " is not found. Please check your configuration", new IllegalAccessException());
-      LOGGER.info("generation by table " + schema + "." + table + "has been failed - " + ex.toString());
-      exception = ex;
-//      log.push(ex.toString());
+      LOGGER.finest("generation by table " + schema + "." + table + "has been failed - " + ex.toString());
+      log.failureInc();
+      this.exception=ex;
 
     }
     return this;
@@ -114,10 +115,10 @@ public class Generator {
     for (MetaData md : metaData) {
       try {
         dbEntityGenerator.generateAndSaveObject(md);
-//        log.push("entity generation for " + md.getHeader().toString());
+        log.successInc();
       } catch (DataGenerationException e) {
-        exception = e;
-//        log.push(e.toString());
+        log.failureInc();
+        this.exception=e;
       }
     }
 
@@ -132,10 +133,10 @@ public class Generator {
     for (MetaData metaData : dbEntityRelationsGenerator.cache.metas()) {
       try {
         dbEntityRelationsGenerator.generateMultiObjects(metaData);
-//        log.push("relations generation for " + metaData.getHeader().toString());
+        log.successInc();
       } catch (DataGenerationException e) {
-        exception = e;
-//        log.push(e.toString());
+        log.failureInc();
+        this.exception=e;
       }
     }
     return this;
@@ -194,11 +195,13 @@ public class Generator {
    * @param metric {@link TimeUnit} metric
    */
   public Generator metronome(long period, TimeUnit metric) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric,ctx -> true);
+    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, ctx -> true);
   }
+
   public Generator metronome(Metronome metronome, MetronomeGenerator.MetronomePredicate predicate) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome,predicate);
+    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome, predicate);
   }
+
   /**
    * Making new {@link MetronomeGenerator} for generating repeated events with special pauses.
    * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
@@ -207,9 +210,8 @@ public class Generator {
    * @param metric {@link TimeUnit} metric
    */
   public Generator metronome(long period, TimeUnit metric, MetronomeGenerator.MetronomePredicate predicate) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric,predicate);
+    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, predicate);
   }
-
 
 
   public Generator startId(long val) {
@@ -220,29 +222,30 @@ public class Generator {
   /**
    * Making new {@link AsyncGenerator} for generating events each in separate thread .
    */
-  public Generator async(){
-    return new AsyncGenerator(dbEntityRelationsGenerator,dbEntityGenerator,this);
+  public Generator async() {
+    return new AsyncGenerator(dbEntityRelationsGenerator, dbEntityGenerator, this);
   }
-  public Generator async(int nThreads){
-    return new AsyncGenerator(dbEntityRelationsGenerator,dbEntityGenerator,this,nThreads);
+
+  public Generator async(int nThreads) {
+    return new AsyncGenerator(dbEntityRelationsGenerator, dbEntityGenerator, this, nThreads);
   }
 
   private void process(MetaData metaData) throws DataGenerationException {
     dbEntityGenerator.generateAndSaveObject(metaData);
-//    log.push("generate object: " + metaData.getHeader().toString());
     dbEntityRelationsGenerator.generateMultiObjects(metaData);
-//    log.push("generate relations: " + metaData.getHeader().toString());
+    log.successInc();
   }
 
   /**
    * Terminal finish operation.
+   *
    * @return this
-   * */
-  public Generator finish(){
+   */
+  public Generator finish() {
     return this;
   }
 
-  Generator split(){
-    return new Generator(this.dbEntityRelationsGenerator,this.dbEntityGenerator);
+  Generator split() {
+    return new Generator(this.dbEntityRelationsGenerator, this.dbEntityGenerator);
   }
 }

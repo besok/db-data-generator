@@ -23,20 +23,18 @@ public class DatabaseEntityGenerator {
 
   private PlainTypeGenerator plainValueGenerator;
   private IdSeqGenerator seqGen;
-
-  public void setGenerator(PlainTypeGenerator generatorSupplier) {
-    LOGGER.info("generator's been changed = " + generatorSupplier.getClass().getName());
-    this.plainValueGenerator = generatorSupplier;
-  }
-
   private Repositories repositories;
   protected final InnerCache cache;
-
 
   DatabaseEntityGenerator(ApplicationContext context, InnerCache cache) {
     this.seqGen = new IdSeqGenerator(0);
     this.repositories = new Repositories(context);
     this.cache = cache;
+  }
+
+  public void setGenerator(PlainTypeGenerator generatorSupplier) {
+    LOGGER.info("generator's been changed = " + generatorSupplier.getClass().getName());
+    this.plainValueGenerator = generatorSupplier;
   }
 
   public void setStartSeq(long startSeq) {
@@ -63,10 +61,12 @@ public class DatabaseEntityGenerator {
         Object generatedObject = plainValueGenerator.generate(f.getType(), col);
         f.set(ent, generatedObject);
       }
+
     } catch (InstantiationException | IllegalAccessException e) {
-      LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
+      LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
       throw new DataGenerationException("Reflection exception", e);
     }
+      LOGGER.finest("plain object is being tried to save  = "+ent);
 
     return save(aClass, ent).map(cache(metaData));
   }
@@ -112,9 +112,10 @@ public class DatabaseEntityGenerator {
         }
       }
     } catch (InstantiationException | IllegalAccessException e) {
-      LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
+      LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
       throw new DataGenerationException("Reflection exception ", e);
     }
+    LOGGER.finest("plain object is being tried to save  = "+obj);
     return save(aClass, obj).map(cache(metaData));
 
   }

@@ -17,17 +17,17 @@ import java.util.function.Function;
 public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
   @Override
   public Function<MetaData.Column, UUID> uuid() {
-    return p -> UUID.randomUUID();
+    return unpack(UUID.randomUUID());
   }
 
   @Override
   public Function<MetaData.Column, String> string() {
-    return p -> "";
+    return unpack("");
   }
 
   @Override
   public Function<MetaData.Column, BigDecimal> bigDecimal() {
-    return p -> BigDecimal.ONE;
+    return unpack(BigDecimal.ONE);
   }
 
   @Override
@@ -37,32 +37,32 @@ public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
 
   @Override
   public Function<MetaData.Column, Double> doubleVal() {
-    return p -> 1d;
+    return unpack(1d);
   }
 
   @Override
   public Function<MetaData.Column, Date> date() {
-    return p -> new Date(0);
+    return unpack(new Date(0));
   }
 
   @Override
   public Function<MetaData.Column, Timestamp> timestamp() {
-    return p -> new Timestamp(0);
+    return unpack(new Timestamp(0));
   }
 
   @Override
   public Function<MetaData.Column, Character> character() {
-    return p -> 'D';
+    return unpack('A');
   }
 
   @Override
   public Function<MetaData.Column, byte[]> bytes() {
-    return p -> "".getBytes();
+    return unpack("".getBytes());
   }
 
   @Override
   public Function<MetaData.Column, Boolean> booleanV() {
-    return p -> true;
+    return unpack(true);
   }
 
   @Override

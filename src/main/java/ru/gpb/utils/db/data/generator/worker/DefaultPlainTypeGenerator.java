@@ -12,7 +12,7 @@ import java.util.function.Function;
  */
 public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
-  private Random random = new Random(1000);
+  private Random random = new Random();
   private Long counter = 0l;
 
   private String counter(int max) {
