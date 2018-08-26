@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  *
- * Pojos with relations @see {@link MetaData}
+ * Metadatas with relations @see {@link MetaData}
  * @author Boris Zhguchev
  */
 @Data

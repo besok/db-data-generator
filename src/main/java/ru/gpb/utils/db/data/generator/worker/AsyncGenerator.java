@@ -57,7 +57,7 @@ public class AsyncGenerator extends Generator {
       }
     }
 
-    return inner.withException();
+    return this;
   }
 
   @Override

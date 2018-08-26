@@ -1,8 +1,11 @@
 package ru.gpb.utils.db.data.generator.worker;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 
 import static org.junit.Assert.*;
 
@@ -15,6 +18,19 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 public class GeneratorTest {
 
-  // TODO: 8/5/2018 ТЕСТ
+  @Autowired
+  private DatabaseDataGeneratorFactory factory;
 
+  @Test
+  public void contextSavesSequenceGeneratorCall() {
+    String report = factory
+        .generator()
+        .repeate(1)
+        .repeate(1)
+        .generateBy(SimplePlainObject.class)
+        .report();
+
+    System.out.println(report);
+
+  }
 }

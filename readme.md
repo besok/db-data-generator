@@ -36,6 +36,11 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
 * AbstractPlainTypeGeneratorSupplier - class describes a method for generation plain types(integer, long, string and etc). 
     * It takes Metadata instance for custom generation.
 
+
+### Notes:
+* if a field hasn't an annotation @Column with column name the generator takes column 
+name from field name converting camel case to snake case.
+
 ### Usage examples:
 
 ##### Get the factory:

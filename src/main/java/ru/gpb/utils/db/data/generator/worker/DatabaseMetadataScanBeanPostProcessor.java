@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * BeanPostProcessor
@@ -43,11 +41,15 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 
       EntityInformation ei = ((JpaRepositoryFactoryBean) bean).getEntityInformation();
       Class<?> jt = ei.getJavaType();
-
-      Table tbl = jt.getDeclaredAnnotation(Table.class);
       MetaData metaData = new MetaData();
       metaData.setAClass(jt);
-      metaData.setHeader(jt.getName(), tbl.name(), tbl.schema());
+
+      if (jt.isAnnotationPresent(Table.class)) {
+        Table tbl = jt.getDeclaredAnnotation(Table.class);
+        metaData.setHeader(jt.getName(), tbl.name(), tbl.schema());
+      } else {
+        metaData.setHeader(jt.getName(), "", "");
+      }
       metaData.setDependencies(new HashMap<>());
       metaData.setNeighbours(new HashMap<>());
       metaData.setPlainColumns(new HashSet<>());
@@ -82,41 +84,58 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
           }
         }
       }
-        if (metaData.getNeighbours().size() == 0 && metaData.getDependencies().size() == 0)
-          metaData.setPlain(true);
-        metaDataList.add(metaData);
+      if (metaData.getNeighbours().size() == 0 && metaData.getDependencies().size() == 0)
+        metaData.setPlain(true);
+      metaDataList.add(metaData);
 
     }
     return bean;
   }
+
 
   private void processPlainObj(MetaData metaData, Field f) {
     if (f.isAnnotationPresent(Column.class)) {
       Column col = f.getAnnotation(Column.class);
       metaData.addPlainColumn(f.getName(), col.name(), col.length(), f.getType(), col.nullable(), isCollection(f), f);
     } else {
-      metaData.addPlainColumn(f.getName(), f.getName(), 0, f.getType(), true, isCollection(f), f);
+      metaData.addPlainColumn(f.getName(), camelToSnake(f.getName()), 0, f.getType(), true, isCollection(f), f);
     }
   }
-
   private boolean checkIdField(MetaData metaData, Field f) {
     if (f.isAnnotationPresent(Id.class)) {
       if (f.isAnnotationPresent(GeneratedValue.class)) {
-        metaData.addId(f,true);
+        metaData.addId(f, true);
       } else {
-        metaData.addId(f,false);
+        metaData.addId(f, false);
       }
       return true;
     }
     return false;
   }
-
-
   private boolean isNeighbour(Field f) {
     return f.isAnnotationPresent(ManyToMany.class);
   }
-
   private boolean isCollection(Field field) {
     return Collection.class.isAssignableFrom(field.getType());
+  }
+  private String camelToSnake(String field) {
+    Queue<Character> q = new ArrayDeque<>();
+    int i = 0;
+    for (char c : field.toCharArray()) {
+      if (Character.isUpperCase(c)) {
+        if (i != 0) {
+          q.add('_');
+        }
+        q.add(Character.toLowerCase(c));
+      } else {
+        q.add(c);
+      }
+      i++;
+    }
+    StringBuilder sb = new StringBuilder();
+    for (Character ch : q) {
+      sb.append(ch);
+    }
+    return sb.toString();
   }
 }
