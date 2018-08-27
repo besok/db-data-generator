@@ -21,8 +21,9 @@ public class GeneratorTest {
   @Autowired
   private DatabaseDataGeneratorFactory factory;
 
+  // TODO: 8/6/2018 Если сначала metronome а потом  repeate то в report, и т.д. теряются все предыдущие операции. Нужен CTX
   @Test
-  public void contextSavesSequenceGeneratorCall() {
+  public void infoGetLastGeneratorOnly() {
     String report = factory
         .generator()
         .repeate(1)
