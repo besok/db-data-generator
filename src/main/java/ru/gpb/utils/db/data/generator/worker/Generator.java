@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-// TODO: 8/13/2018 Доки!
 
 /**
  * Major class for processing generation request.
@@ -32,6 +31,11 @@ public class Generator {
   }
 
 
+  /**
+   *
+   * @return report @see {@link InnerLog#toString()}
+   *
+   * */
   public String report() {
     return log.toString();
   }
@@ -197,7 +201,13 @@ public class Generator {
   public Generator metronome(long period, TimeUnit metric) {
     return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, ctx -> true);
   }
-
+  /**
+   * Making new {@link MetronomeGenerator} for generating repeated events with special pauses.
+   * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
+   *
+   * @param metronome @see {@link Metronome}
+   * @param predicate condition for stopping generator @see {@link ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate}
+   */
   public Generator metronome(Metronome metronome, MetronomeGenerator.MetronomePredicate predicate) {
     return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome, predicate);
   }
@@ -214,6 +224,15 @@ public class Generator {
   }
 
 
+  /**
+   * set startId for default id generator(incrementing from 0 by default).
+   *
+   * If annotation Id has no annotation GeneratedValue a generator will be generate id from sequence
+   * by incrementing numbers or making random values from UUID or String
+   *
+   * @param val initial value for generating id.
+   *
+   * */
   public Generator startId(long val) {
     this.dbEntityGenerator.setStartSeq(val);
     return this;

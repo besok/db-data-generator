@@ -15,9 +15,10 @@ import java.util.logging.Logger;
 
 /**
  * @author Boris Zhguchev
+ * inner generator for db entity
  */
 @SuppressWarnings("unchecked")
-public class DatabaseEntityGenerator {
+class DatabaseEntityGenerator {
 
   private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
 
@@ -66,7 +67,7 @@ public class DatabaseEntityGenerator {
       LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
       throw new DataGenerationException("Reflection exception", e);
     }
-      LOGGER.finest("plain object is being tried to save  = "+ent);
+    LOGGER.finest("plain object is being tried to save  = " + ent);
 
     return save(aClass, ent).map(cache(metaData));
   }
@@ -115,7 +116,7 @@ public class DatabaseEntityGenerator {
       LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
       throw new DataGenerationException("Reflection exception ", e);
     }
-    LOGGER.finest("plain object is being tried to save  = "+obj);
+    LOGGER.finest("plain object is being tried to save  = " + obj);
     return save(aClass, obj).map(cache(metaData));
 
   }

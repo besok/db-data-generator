@@ -36,17 +36,27 @@ public class InnerLog {
     failure=log.failure;
   }
 
-  public void successInc(){
+  void successInc(){
     success.incrementAndGet();
   }
-  public void failureInc(){
+  void failureInc(){
     failure.incrementAndGet();
   }
 
+  /**
+   * @return effort count
+   * */
   public long marker(){return success()+failure();}
-  public long success(){
-    return success.longValue();
-  }
+
+  /**
+   * @return succes count
+   * */
+  public long success(){ return success.longValue(); }
+
+
+  /**
+   * @return failure count
+   * */
   public long failure(){
     return failure.longValue();
   }

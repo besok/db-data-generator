@@ -14,10 +14,12 @@ import java.util.logging.Logger;
 
 /**
  * @author Boris Zhguchev
+ *
+ * inner generator for db relations
  */
 @Service
 @SuppressWarnings("unchecked")
-public class DatabaseEntityRelationsGenerator {
+class DatabaseEntityRelationsGenerator {
 
   private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
 

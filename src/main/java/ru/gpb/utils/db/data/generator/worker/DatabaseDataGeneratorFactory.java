@@ -51,6 +51,11 @@ public class DatabaseDataGeneratorFactory {
     return new Generator(multiEntityGenerator, singleEntityGenerator);
   }
 
+  /**
+   * default generator
+   *
+   */
+
   public Generator generator() {
 
     LOGGER.info("default generator's been created");

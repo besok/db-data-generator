@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Default data object.
+ * meta data object.
  *
  * @author Boris Zhguchev
  */

@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.*;
 
 /**
  * Cache implementation.
- * It needed for making relations between tables many2many.
+ * It is needed for making relations between tables many2many.
  *
  * @author Boris Zhguchev
  */
@@ -35,8 +35,8 @@ public class InnerCache {
 
   protected Repositories repositories;
   protected final MetaDataList metaDataList;
-  private ConcurrentMap<MetaData, List<Object>> cache;
 
+  private ConcurrentMap<MetaData, List<Object>> cache;
   /**
    * Get cache snapshot
    *
@@ -83,6 +83,7 @@ public class InnerCache {
     repositories = new Repositories(context);
     cache = new ConcurrentHashMap<>();
   }
+
 
   void put(MetaData metaData, Object o) {
     cache.compute(metaData, (p, l) -> {

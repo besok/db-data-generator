@@ -8,7 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
+import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject2;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
+
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -26,6 +29,7 @@ public class AsyncGeneratorTest {
   @Autowired
   private SimplePlainObjectRepository repository;
 
+
   @Test
   @Repeat(50)
   public void cache() {
@@ -39,6 +43,34 @@ public class AsyncGeneratorTest {
 
 
     assertEquals(50, repository.findAll().size());
+  }
+
+
+  // FIXME: 8/13/2018 Если запустить асинк на 1 таблицу 2 раза генерайтедбай, возникает гонка - меньше 100(id generator)
+  @Test
+  public void reaceConditionToDB() {
+    factory
+        .generator()
+        .async().repeate(100)
+        .generateBy(SimplePlainObject.class)
+        .generateBy(SimplePlainObject2.class)
+        .log().marker();
+    assertEquals(200, repository.findAll().size());
+  }
+
+  // FIXME: 9/2/2018 log/report возвращают последнюю запись вместо всех если generateBy два класса
+  @Test
+  public void logOrReportWithDupAreCorrect() {
+    int length =
+        factory
+            .generator()
+            .async().repeate(100)
+            .generateBy(SimplePlainObject.class)
+            .generateBy(SimplePlainObject.class) // дубли
+            .report()
+            .split(System.lineSeparator()).length;
+
+    assertEquals(2, length);
   }
 
   @Before

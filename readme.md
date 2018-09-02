@@ -118,8 +118,7 @@ name from field name converting camel case to snake case.
 
     InnerLog s =
         factory
-            .generator().metronome(1, TimeUnit.SECONDS)
-            .predicate(ctx -> ctx.log.markerValue() < 10)
+            .generator().metronome(1, TimeUnit.SECONDS,ctx -> ctx.log.markerValue() < 10)
             .generateBy(Customer.class)
             .log();
 ```
@@ -127,8 +126,7 @@ name from field name converting camel case to snake case.
 ```
     InnerCache cache = factory
         .generator()
-        .metronome(10,TimeUnit.MILLISECONDS)
-        .predicate(COUNT(10))
+        .metronome(10,TimeUnit.MILLISECONDS,COUNT(10))
         .generateBy(SimplePlainObject.class)
         .cache();
 ```

@@ -10,7 +10,7 @@ import java.util.concurrent.locks.LockSupport;
 
 /**
  *
- * Class for generation equal pauses by interrupted thread.
+ * Class for generation  pauses by interrupted thread.
  *
  * */
 public interface Metronome {

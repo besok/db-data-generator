@@ -3,7 +3,7 @@ package ru.gpb.utils.db.data.generator.timer;
 
 /**
  *
- * Class for getting current time in nanos. It needed for metronome.
+ * Class for getting current time in nanos. It needs for a metronome.
  *
  */
 public interface Clock {
@@ -15,7 +15,9 @@ public interface Clock {
   long currentTimeInMillis();
 
 
-  /**default implementation from system time*/
+  /**
+   * default implementation from system time
+   * */
   static Clock system() {
     return new Clock() {
       @Override

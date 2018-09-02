@@ -42,7 +42,13 @@ public class MetronomeGenerator extends Generator {
   private Metronome metronome;
   private MetronomePredicate predicate = ctx -> true;
 
-
+  /**
+   * Generate new instance for Class.
+   * It tries to find this {@link MetaDataList#byClass(Class)}
+   * Then it construct entity and relations.
+   *
+   * @param cl class for searching. Must have {@link javax.persistence.Entity} annotation.
+   */
   @Override
   public Generator generateBy(Class<?> cl) {
 
@@ -58,6 +64,14 @@ public class MetronomeGenerator extends Generator {
     return this;
   }
 
+  /**
+   * Generate new instance for Class based on table name(schema.table)
+   * It tries to find this {@link MetaDataList#bySchemaTable(String, String)}}
+   * Then it construct entity and relations.
+   *
+   * @param schema sch for searching. Must be present in {@link javax.persistence.Table} annotation.
+   * @param table  sch for searching. Must be present in {@link javax.persistence.Table} annotation.
+   */
   @Override
   public Generator generateBy(String schema, String table) {
     while (predicate.test(this)) {
@@ -72,6 +86,9 @@ public class MetronomeGenerator extends Generator {
     return this;
   }
 
+  /**
+   * Generate new instance and relations for all founded Class
+   **/
   @Override
   public Generator generateAll() {
     while (predicate.test(this)) {
@@ -86,6 +103,9 @@ public class MetronomeGenerator extends Generator {
     return this;
   }
 
+  /**
+   * generate all instances except m2m relations.
+   */
   @Override
   public Generator generateObjects() {
     while (predicate.test(this)) {
@@ -100,6 +120,10 @@ public class MetronomeGenerator extends Generator {
     return this;
   }
 
+  /**
+   * generate all relations except generating instances.
+   * They can be found in the cache {@link InnerCache}
+   */
   @Override
   public Generator generateRelations() {
     while (predicate.test(this)) {

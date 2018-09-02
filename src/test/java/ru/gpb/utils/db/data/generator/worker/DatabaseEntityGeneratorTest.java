@@ -61,5 +61,4 @@ public class DatabaseEntityGeneratorTest {
 
   }
 
-  // TODO: 8/5/2018 Добавить тест для комплексных обьектов
 }
