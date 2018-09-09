@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Data
-@Table(schema = "test")
+@Table(schema = "test",name = "complex_object")
 public class ComplexObject {
 
   @Id

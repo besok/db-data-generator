@@ -1,7 +1,6 @@
 package ru.gpb.utils.db.data.generator.worker;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,8 @@ public class CommonSimpleObjectTest {
   private ComplexObjectRepository complexObjectRepository;
   @Autowired
   private SimplePlainObject2Repository simplePlainObject2Repository;
+  @Autowired
+  private SimplePlaiObjectGenIdRepository simplePlaiObjectGenIdRepository;
 
   @Before
   public void clean() {
@@ -100,20 +101,22 @@ public class CommonSimpleObjectTest {
     assertTrue(21 > s2);
   }
 
-  // FIXME: 8/14/2018 Поломался изза общего сиквенсера
   @Test
-  @Ignore
   public void idSeqTest() {
 
     Integer expectedId= factory
         .generator()
         .startId(10)
-        .repeate(10)
-        .generateBy(SimplePlainObject.class)
-        .cache().getValueList(SimplePlainObject.class)
-        .stream().map(SimplePlainObject::getId).max(Integer::compareTo).get();
+        .repeate(5)
+        .generateBy(SimplePlaiObjectGenId.class)
+        .cache()
+        .getValueList(SimplePlaiObjectGenId.class)
+        .stream()
+        .map(SimplePlaiObjectGenId::getId)
+        .max(Integer::compareTo)
+        .get();
 
-    assertEquals("expected = " + expectedId + "==20", 20, (int) expectedId);
+    assertEquals("expected = " + expectedId + "==15", 15, (int) expectedId);
   }
   @Test
   public void asyncTest(){
@@ -126,7 +129,7 @@ public class CommonSimpleObjectTest {
    assertEquals(100,repository.findAll().size());
 
   }
-  @Test()
+  @Test
   public void hugeLogFailedTest(){
     factory
         .generator()

@@ -20,7 +20,7 @@ public class ApplicationPropertyTests {
 
   @Test(expected = IllegalStateGeneratorException.class)
   public void testNullCacheSize() {
-    factory.dummyGenerator().generateBy(SimplePlainObject.class); // expected IllegalStateGeneratorException
+    factory.dummyGenerator().generateBy(SimplePlainObject.class);
   }
 
 }
