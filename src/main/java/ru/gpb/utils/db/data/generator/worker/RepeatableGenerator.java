@@ -3,17 +3,17 @@ package ru.gpb.utils.db.data.generator.worker;
 
 
 /**
- *
  * Generator for repeating events.
  *
  * @author Boris Zhguchev
  */
 public class RepeatableGenerator extends Generator {
-  RepeatableGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator, int cycles) {
-    super(multiEntityGenerator, singleEntityGenerator);
-    this.limit = cycles;
-  }
   private int limit;
+
+  RepeatableGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator, int cycles) {
+	super(multiEntityGenerator, singleEntityGenerator);
+	this.limit = cycles;
+  }
 
   /**
    * Generate new instance for Class.
@@ -24,10 +24,10 @@ public class RepeatableGenerator extends Generator {
    */
   @Override
   public Generator generateBy(Class<?> cl) {
-    for (int i = 0; i < limit; i++) {
-      super.generateBy(cl);
-    }
-    return this;
+	for (int i = 0; i < limit; i++) {
+	  super.generateBy(cl);
+	}
+	return this;
   }
 
   /**
@@ -40,10 +40,10 @@ public class RepeatableGenerator extends Generator {
    */
   @Override
   public Generator generateBy(String schema, String table) {
-    for (int i = 0; i < limit; i++) {
-      super.generateBy(schema, table);
-    }
-    return this;
+	for (int i = 0; i < limit; i++) {
+	  super.generateBy(schema, table);
+	}
+	return this;
   }
 
   /**
@@ -51,10 +51,10 @@ public class RepeatableGenerator extends Generator {
    **/
   @Override
   public Generator generateAll() {
-    for (int i = 0; i < limit; i++) {
-    super.generateAll();
-    }
-    return this;
+	for (int i = 0; i < limit; i++) {
+	  super.generateAll();
+	}
+	return this;
   }
 
   /**
@@ -62,10 +62,10 @@ public class RepeatableGenerator extends Generator {
    */
   @Override
   public Generator generateObjects() {
-    for (int i = 0; i < limit; i++) {
-      super.generateObjects();
-    }
-    return this;
+	for (int i = 0; i < limit; i++) {
+	  super.generateObjects();
+	}
+	return this;
   }
 
   /**
@@ -74,14 +74,28 @@ public class RepeatableGenerator extends Generator {
    */
   @Override
   public Generator generateRelations() {
-    for (int i = 0; i < limit; i++) {
-    super.generateRelations();
-    }
-    return this;
+	for (int i = 0; i < limit; i++) {
+	  super.generateRelations();
+	}
+	return this;
+  }
+
+  /**
+   * method adds rules for processing specific fields or columns or class
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param predicate condition for action. @see {@link ColumnPredicate}
+   * @param vClass value type. If it is different with field it will do nothing, in order to it is additional filter
+   * @return this
+   *
+   * */
+  @Override
+  public <V> Generator rule(ColumnPredicate predicate, Action<V> action, Class<V> vClass) {
+	super.rule(predicate, action, vClass);
+	return this;
   }
 
   @Override
   Generator split() {
-    return super.repeate(this.limit);
+	return super.repeate(this.limit);
   }
 }

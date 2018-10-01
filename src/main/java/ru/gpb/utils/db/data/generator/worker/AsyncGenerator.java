@@ -241,15 +241,30 @@ public class AsyncGenerator extends Generator {
   }
 
   /**
+   * method adds rules for processing specific fields or columns or class
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param predicate condition for action. @see {@link ColumnPredicate}
+   * @param vClass value type. If it is different with field it will do nothing, in order to it is additional filter
+   * @return this
+   *
+   * */
+
+  @Override
+  public <V> Generator rule(ColumnPredicate predicate, Action<V> action, Class<V> vClass) {
+    inner.rule(predicate, action, vClass);
+    return this;
+  }
+
+  /**
    * Making new {@link MetronomeGenerator} for generating repeated events with special pauses.
    * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
    *
    * @param period metronome period
    * @param metric {@link TimeUnit} metric
-   * @param predicate condition for stopping generator @see {@link ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate}
+   * @param predicate condition for stopping generator @see {@link ru.gpb.utils.db.data.generator.worker.MetronomePredicate}
    */
   @Override
-  public Generator metronome(long period, TimeUnit metric, MetronomeGenerator.MetronomePredicate predicate) {
+  public Generator metronome(long period, TimeUnit metric, MetronomePredicate predicate) {
     this.inner = super.metronome(period, metric, predicate);
     LOGGER.finest("metronome "+ period + " "+metric.name() +" with predicate ");
     return this;

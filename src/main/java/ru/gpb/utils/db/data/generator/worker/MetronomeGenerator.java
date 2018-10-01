@@ -138,24 +138,18 @@ public class MetronomeGenerator extends Generator {
     return this;
 
   }
-
   /**
-   * It is a predicate for stopping work. @See {@link MetronomePredicate}
+   * method adds rules for processing specific fields or columns or class
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param predicate condition for action. @see {@link ColumnPredicate}
+   * @param vClass value type. If it is different with field it will do nothing, in order to it is additional filter
+   * @return this
+   *
    * */
-  public interface MetronomePredicate {
-    /**
-     * @param ctx context from around class
-     * */
-    boolean test(MetronomeGenerator ctx);
-    static MetronomePredicate COUNT(int count){
-    return ctx -> ctx.log().marker() < count;
-    }
-    static MetronomePredicate COUNT_SUCCESS(int count){
-    return ctx -> ctx.log().success() < count;
-    }
-    static MetronomePredicate COUNT_FAILURE(int count){
-    return ctx -> ctx.log().failure() < count;
-    }
+  @Override
+  public <V> Generator rule(ColumnPredicate predicate, Action<V> action, Class<V> vClass) {
+    super.rule(predicate, action, vClass);
+    return this;
   }
 
   @Override

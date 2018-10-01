@@ -13,7 +13,7 @@ import java.util.function.Function;
 public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
   private Random random = new Random();
-  private Long counter = 0l;
+  private Long counter = 0L;
 
   private String counter(int max) {
     String counter = this.counter.toString();
@@ -24,7 +24,7 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
   }
 
   @Override
-  public Function<MetaData.Column, String> string() {
+  public Function<MetaData.Column, String> string()  {
     return c -> {
       int len = c.getLength();
 

@@ -30,6 +30,17 @@ public class Generator {
     this.log = new InnerLog("common generator");
   }
 
+  /**
+   * method adds rules for processing specific fields or columns or class
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param predicate condition for action. @see {@link ColumnPredicate}
+   * @param vClass value type. If it is different with field it will do nothing, in order to it is additional filter
+   * @return this
+   * */
+  public<V> Generator rule(ColumnPredicate predicate, Action<V> action,Class<V> vClass){
+    dbEntityGenerator.setPair(predicate,action,vClass);
+    return this;
+  }
 
   /**
    *
@@ -206,9 +217,9 @@ public class Generator {
    * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
    *
    * @param metronome @see {@link Metronome}
-   * @param predicate condition for stopping generator @see {@link ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate}
+   * @param predicate condition for stopping generator @see {@link ru.gpb.utils.db.data.generator.worker.MetronomePredicate}
    */
-  public Generator metronome(Metronome metronome, MetronomeGenerator.MetronomePredicate predicate) {
+  public Generator metronome(Metronome metronome, MetronomePredicate predicate) {
     return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome, predicate);
   }
 
@@ -219,7 +230,7 @@ public class Generator {
    * @param period metronome period
    * @param metric {@link TimeUnit} metric
    */
-  public Generator metronome(long period, TimeUnit metric, MetronomeGenerator.MetronomePredicate predicate) {
+  public Generator metronome(long period, TimeUnit metric, MetronomePredicate predicate) {
     return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, predicate);
   }
 

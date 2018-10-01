@@ -59,7 +59,7 @@ public class DatabaseDataGeneratorFactory {
   public Generator generator() {
 
     LOGGER.info("default generator's been created");
-    singleEntityGenerator.setGenerator(new DefaultPlainTypeGenerator());
+    singleEntityGenerator.setGenerator(new ComplexPlainTypeGenerator());
     multiEntityGenerator.cache.warm();
     return new Generator(multiEntityGenerator, singleEntityGenerator);
   }

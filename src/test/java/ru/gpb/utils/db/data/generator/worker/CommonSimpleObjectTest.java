@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.util.concurrent.TimeUnit.*;
 import static org.junit.Assert.*;
-import static ru.gpb.utils.db.data.generator.worker.MetronomeGenerator.MetronomePredicate.*;
+import static ru.gpb.utils.db.data.generator.worker.MetronomePredicate.COUNT;
 
 // 2018.07.24 
 

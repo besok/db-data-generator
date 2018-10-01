@@ -141,4 +141,29 @@ name from field name converting camel case to snake case.
         .generateBy(SimplePlainObject3.class)
         .finish();
 ```
+##### Add specific logic for generated value - rule(ColumnPredicate, Action, Class<?>)
+```
+    import static ru.gpb.utils.db.data.generator.worker.Action.*;
+    import static ru.gpb.utils.db.data.generator.worker.ColumnPredicate.*;
+    ... 
+    
+    NakedObject spo = factory
+    	  .generator()
+    	  .rule(FIELD("fieldWithCamel"), CONST("newValue"), String.class)
+    	  .generateBy(NakedObject.class)
+    	  .cache()
+    	  .getValueList(NakedObject.class)
+    	  .get(0);
+    
+    	assertEquals("newValue", spo.getFieldWithCamel());
+    	
+    NakedObject spo = factory
+          .generator()
+          .rule(COMPOSE(CLASS(NakedObject.class), FIELD("fieldWithCamel")), CONST("newValue"), String.class)
+          .generateBy(NakedObject.class)
+          .generateBy(NakedObject2.class)
+          .generateBy(NakedObject3.class)
+    	
+```
+
 
