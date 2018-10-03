@@ -27,7 +27,7 @@ public class DatabaseMetadataScanBeanPostProcessorTest {
 
 
   @Test
-  public void camelCaseToSnakeCaseIfColumnNameExists() {
+  public void camelCaseToSnakeCaseIfColumnNameExistsTest() {
 
     MetaData meta = mdl.byClass(NakedObject.class).get();
     Set<MetaData.Column> columns = meta.getPlainColumns();
@@ -43,13 +43,12 @@ public class DatabaseMetadataScanBeanPostProcessorTest {
   }
 
   @Test
-  public void ifColumnAnnExistsTakeFromEntity() {
+  public void ifColumnAnnExistsTakeFromEntityTest() {
     MetaData meta = mdl.byClass(NakedObject.class).get();
     MetaData metaCO = mdl.byClass(ComplexObject.class).get();
 
     assertEquals("",meta.getHeader().getTable());
     assertEquals("",meta.getHeader().getSchema());
-    assertEquals("",metaCO.getHeader().getTable());
     assertEquals("test",metaCO.getHeader().getSchema());
   }
 

@@ -1,5 +1,6 @@
 package ru.gpb.utils.db.data.generator.worker;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,34 +85,28 @@ public class GeneratorTest {
 
   @Test
   public void affectlessSameTypeFieldTest() {
-	SeqIncObject seqIncObject =
+	List<SeqIncObject> list =
 	  factory.generator()
 		.repeate(10)
 		.rule(FIELD("iLeft"), INCREMENT_I(0), int.class)
 		.rule(FIELD("iRight"), INCREMENT_I(0), int.class)
 		.rule(FIELD("lLeft"), INCREMENT_L(0), Long.class)
 		.rule(FIELD("lRight"), INCREMENT_L(0), long.class)
+		.rule(FIELD("random"), RANDOM(10), int.class)
 		.generateBy(SeqIncObject.class)
-		.cache().getValueList(SeqIncObject.class).get(9);
+		.cache()
+		.getValueList(SeqIncObject.class);
 
-	assertEquals(10, seqIncObject.getILeft());
-	assertEquals(10, seqIncObject.getIRight());
-	assertEquals(10, (long) seqIncObject.getLLeft());
-	assertEquals(10, seqIncObject.getLRight());
-  }
+	SeqIncObject last = list.get(9);
+	assertEquals(10, last.getILeft());
+	assertEquals(10, last.getIRight());
+	assertEquals(10, (long) last.getLLeft());
+	assertEquals(10, last.getLRight());
 
-  @Test
-  public void randomMethodTest() {
-	List<SeqIncObject> iLeft =
-	  factory.generator()
-		.repeate(10)
-		.rule(FIELD("iLeft"), RANDOM(10), int.class)
-		.generateBy(SeqIncObject.class)
-		.cache().getValueList(SeqIncObject.class);
-
-	for (SeqIncObject object : iLeft) {
-	  assertTrue(object.getILeft() < 10);
+	for (SeqIncObject object : list) {
+	  assertTrue(object.getRandom() < 10);
 	}
+
   }
 
 
@@ -129,10 +124,10 @@ public class GeneratorTest {
   public void setRuleForIdTest() {
 	List<SimplePlaiObjectGenId> id = factory
 	  .generator().repeate(10)
-	  .ruleId(SimplePlaiObjectGenId.class, RANDOM(100))
+	  .ruleId(SimplePlaiObjectGenId.class, CONST(1))
 	  .generateBy(SimplePlaiObjectGenId.class).cache()
 	  .getValueList(SimplePlaiObjectGenId.class);
 
-	System.out.println("");
+	assertEquals(id.get(10).getId(),1);
   }
 }

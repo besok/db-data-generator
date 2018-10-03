@@ -48,7 +48,7 @@ public class AsyncGeneratorTest {
 
   // FIXME: 8/13/2018 Если запустить асинк на 1 таблицу 2 раза генерайтедбай, возникает гонка - меньше 100(id generator)
   @Test
-  public void reaceConditionToDB() {
+  public void raceConditionToDB() {
     factory
         .generator()
         .async().repeate(100)

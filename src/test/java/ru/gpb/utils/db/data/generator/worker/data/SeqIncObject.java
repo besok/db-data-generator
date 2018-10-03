@@ -19,4 +19,6 @@ public class SeqIncObject {
 
   private Long lLeft;
   private long lRight;
+
+  private int random;
 }
