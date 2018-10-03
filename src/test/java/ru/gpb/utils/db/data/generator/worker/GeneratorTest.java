@@ -12,6 +12,7 @@ import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.junit.Assert.*;
@@ -33,12 +34,12 @@ public class GeneratorTest {
   // TODO: 8/6/2018 Если сначала metronome а потом  repeate то в report, и т.д. теряются все предыдущие операции. Нужен CTX
   @Test
   public void infoGetLastGeneratorOnly() {
-	String report = factory
-	  .generator()
-	  .repeate(1)
-	  .repeate(1)
-	  .generateBy(SimplePlainObject.class)
-	  .report();
+	String report =
+	  factory.generator()
+		.repeate(1)
+		.repeate(1)
+		.generateBy(SimplePlainObject.class)
+		.report();
 
 	System.out.println(report);
   }
@@ -65,11 +66,17 @@ public class GeneratorTest {
 	  .cache().getValueList(SimplePlainObject.class).get(0);
   }
 
+
+  /**
+   * This test checks the generator
+   * has been invoked by default @see {@link DatabaseDataGeneratorFactory#generator()}
+   * or inherited from {@link ComplexPlainTypeGenerator}.
+   * In other case it will throw IllegalStateGeneratorException
+   * **/
   @Test(expected = IllegalStateGeneratorException.class)
   public void ruleForNotComplexGenTestFailed() {
 	factory
-	  .generator(new AbstractPlainTypeGenerator() {
-	  })
+	  .generator(new AbstractPlainTypeGenerator() {})
 	  .rule(FIELD("FAKE"), OLD(), Object.class)
 	  .generateBy(NakedObject.class)
 	;
@@ -78,15 +85,15 @@ public class GeneratorTest {
 
   @Test
   public void affectlessSameTypeFieldTest() {
-	SeqIncObject seqIncObject = factory
-	  .generator()
-	  .repeate(10)
-	  .rule(FIELD("iLeft"), INCREMENT_I(0), int.class)
-	  .rule(FIELD("iRight"), INCREMENT_I(0), int.class)
-	  .rule(FIELD("lLeft"), INCREMENT_L(0), Long.class)
-	  .rule(FIELD("lRight"), INCREMENT_L(0), long.class)
-	  .generateBy(SeqIncObject.class)
-	  .cache().getValueList(SeqIncObject.class).get(9);
+	SeqIncObject seqIncObject =
+	  factory.generator()
+		.repeate(10)
+		.rule(FIELD("iLeft"), INCREMENT_I(0), int.class)
+		.rule(FIELD("iRight"), INCREMENT_I(0), int.class)
+		.rule(FIELD("lLeft"), INCREMENT_L(0), Long.class)
+		.rule(FIELD("lRight"), INCREMENT_L(0), long.class)
+		.generateBy(SeqIncObject.class)
+		.cache().getValueList(SeqIncObject.class).get(9);
 
 	assertEquals(10, seqIncObject.getILeft());
 	assertEquals(10, seqIncObject.getIRight());
@@ -94,5 +101,18 @@ public class GeneratorTest {
 	assertEquals(10, seqIncObject.getLRight());
   }
 
+  @Test
+  public void randomMethodTest() {
+	List<SeqIncObject> iLeft =
+	  factory.generator()
+		.repeate(10)
+		.rule(FIELD("iLeft"), RANDOM(10), int.class)
+		.generateBy(SeqIncObject.class)
+		.cache().getValueList(SeqIncObject.class);
 
+	for (SeqIncObject object : iLeft) {
+	  assertTrue(object.getILeft() < 10);
+	}
+
+  }
 }
