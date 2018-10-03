@@ -31,7 +31,7 @@ public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
   }
 
   @Override
-  public Function<MetaData.Column, Integer> integer() {
+  public Function<MetaData.Column, Integer> integerVal() {
 	return p -> 1;
   }
 
@@ -61,7 +61,7 @@ public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
   }
 
   @Override
-  public Function<MetaData.Column, Boolean> booleanV() {
+  public Function<MetaData.Column, Boolean> booleanVal() {
 	return unpack(true);
   }
 
@@ -76,7 +76,7 @@ public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
   }
 
   @Override
-  public Function<MetaData.Column, Long> longV() {
+  public Function<MetaData.Column, Long> longVal() {
 	return unpack(0L);
   }
 

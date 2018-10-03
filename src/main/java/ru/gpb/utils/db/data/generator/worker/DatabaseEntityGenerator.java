@@ -7,11 +7,12 @@ import org.springframework.data.repository.support.Repositories;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.logging.Logger;
+
+import static ru.gpb.utils.db.data.generator.worker.ColumnPredicate.*;
 
 /**
  * @author Boris Zhguchev
@@ -23,11 +24,11 @@ class DatabaseEntityGenerator {
   protected final InnerCache cache;
   private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
   private PlainTypeGenerator plainValueGenerator;
-  private IdSeqGenerator seqGen;
+  private IdSequenceRuleGenerator seqGen;
   private Repositories repositories;
 
   DatabaseEntityGenerator(ApplicationContext context, InnerCache cache) {
-	this.seqGen = new IdSeqGenerator(0);
+	this.seqGen = new IdSequenceRuleGenerator(new IdSequenceGenerator(0), new HashMap<>());
 	this.repositories = new Repositories(context);
 	this.cache = cache;
   }
@@ -38,7 +39,10 @@ class DatabaseEntityGenerator {
   }
 
   public void setStartSeq(long startSeq) {
-	seqGen = new IdSeqGenerator(startSeq);
+	seqGen = new IdSequenceRuleGenerator(
+	  new IdSequenceGenerator(startSeq),
+	  seqGen.mapperMap
+	);
   }
 
   protected Optional<Object> generateAndSaveSimpleObject(MetaData metaData) throws DataGenerationException {
@@ -51,7 +55,7 @@ class DatabaseEntityGenerator {
 	  if (!id.isGenerated()) {
 		Field idField = id.getIdField();
 		idField.setAccessible(true);
-		Object generatedId = seqGen.generate(idField.getType(), null);
+		Object generatedId = seqGen.generate(idField.getType(), metaData.getAClass());
 		idField.set(ent, generatedId);
 	  }
 
@@ -122,13 +126,13 @@ class DatabaseEntityGenerator {
 
   /**
    * method adds rules for processing specific fields or columns or class
-   * @param action Action changing or modifying old generated value. @see {@link Action}
+   *
+   * @param action    Action changing or modifying old generated value. @see {@link Action}
    * @param predicate condition for action. @see {@link ColumnPredicate}
    * @throws IllegalStateGeneratorException when invoking
-   * this method @see {@link Generator#rule(ColumnPredicate, Action, Class)} in custom generator
-   * which isn't inherited @see ComplexPlainTypeGenerator
-   *
-   * */
+   *                                        this method @see {@link Generator#rule(ColumnPredicate, Action, Class)} in custom generator
+   *                                        which isn't inherited @see ComplexPlainTypeGenerator
+   */
   public <V> void setPair(ColumnPredicate predicate, Action<V> action, Class<V> clzz) {
 	if (plainValueGenerator instanceof ComplexPlainTypeGenerator) {
 	  ((ComplexPlainTypeGenerator) plainValueGenerator).setPair(predicate, action, clzz);
@@ -139,6 +143,16 @@ class DatabaseEntityGenerator {
 			"with a class ComplexPlainTypeGenerator or it's childs.");
 	}
   }
+  /**
+   * method adds rules for processing id for specific class.
+   *
+   * @param action    Action changing or modifying old generated value. @see {@link Action}
+   * @param pojoClass pojo class. @see {@link ColumnPredicate}
+   */
+  public <V> void setPairForId(Class<?> pojoClass, Action<V> action) {
+	  seqGen.setPair(pojoClass, action);
+  }
+
 
   private Function<Object, Object> cache(MetaData metaData) {
 	return c -> {
@@ -152,13 +166,13 @@ class DatabaseEntityGenerator {
   }
 
 
-
-  private class IdSeqGenerator extends AbstractPlainTypeGenerator {
+  // generate id
+  private class IdSequenceGenerator extends AbstractPlainTypeGenerator {
 
 
 	private AtomicLong seq;
 
-	public IdSeqGenerator(long seqStart) {
+	public IdSequenceGenerator(long seqStart) {
 	  this.seq = new AtomicLong(seqStart);
 	}
 
@@ -167,14 +181,13 @@ class DatabaseEntityGenerator {
 	  return unpack(UUID.randomUUID());
 	}
 
-
 	@Override
 	public Function<MetaData.Column, BigDecimal> bigDecimal() {
 	  return unpack(BigDecimal.valueOf(seq.incrementAndGet()));
 	}
 
 	@Override
-	public Function<MetaData.Column, Integer> integer() {
+	public Function<MetaData.Column, Integer> integerVal() {
 	  return unpack(Math.toIntExact(seq.incrementAndGet()));
 	}
 
@@ -184,9 +197,39 @@ class DatabaseEntityGenerator {
 	}
 
 	@Override
-	public Function<MetaData.Column, Long> longV() {
+	public Function<MetaData.Column, Long> longVal() {
 	  return unpack(seq.incrementAndGet());
 	}
   }
+  private class IdSequenceRuleGenerator  {
+	private PlainTypeGenerator delegate;
+	protected Map<String, List<Action<Object>>> mapperMap;
 
+	IdSequenceRuleGenerator(PlainTypeGenerator delegate,
+							Map<String, List<Action<Object>>> mapperMap) {
+
+	  this.delegate = delegate;
+	  this.mapperMap = mapperMap;
+	}
+
+	public <V> void setPair(Class<?> pojoClass, Action<V> action) {
+	  mapperMap.compute(pojoClass.getName(),
+		(k, v) -> {
+		  if (v == null)
+			v = new ArrayList<>();
+		  v.add((Action<Object>) action);
+		  return v;
+		});
+	}
+
+	public Object generate(Class<?> clazz, Class<?> pojoClass) {
+	  Object generate = delegate.generate(clazz, null);
+	  List<Action<Object>> actions = mapperMap.getOrDefault(pojoClass.getName(), new ArrayList<>());
+	  for (Action<Object> action : actions) {
+		generate = action.process(generate);
+	  }
+
+	  return generate;
+	}
+  }
 }

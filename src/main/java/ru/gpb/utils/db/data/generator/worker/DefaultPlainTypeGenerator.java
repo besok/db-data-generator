@@ -52,7 +52,7 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
   }
 
   @Override
-  public Function<MetaData.Column, Integer> integer() {
+  public Function<MetaData.Column, Integer> integerVal() {
     return unpack(random.nextInt() * 10);
   }
 
@@ -78,7 +78,7 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
   }
 
   @Override
-  public Function<MetaData.Column, Long> longV() {
+  public Function<MetaData.Column, Long> longVal() {
     return unpack(random.nextLong());
   }
 

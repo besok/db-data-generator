@@ -124,4 +124,15 @@ public class GeneratorTest {
 
 	assertEquals(LocalDate.now(), obj.getLd());
   }
+
+  @Test
+  public void setRuleForIdTest() {
+	List<SimplePlaiObjectGenId> id = factory
+	  .generator().repeate(10)
+	  .ruleId(SimplePlaiObjectGenId.class, RANDOM(100))
+	  .generateBy(SimplePlaiObjectGenId.class).cache()
+	  .getValueList(SimplePlaiObjectGenId.class);
+
+	System.out.println("");
+  }
 }

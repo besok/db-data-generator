@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static ru.gpb.utils.db.data.generator.worker.MetaData.*;
-
 /**
  * Basic interface supplier for generating values for plain fields.
  *
@@ -25,7 +23,7 @@ public interface PlainTypeGenerator {
 
   Function<MetaData.Column, BigDecimal> bigDecimal();
 
-  Function<MetaData.Column, Integer> integer();
+  Function<MetaData.Column, Integer> integerVal();
 
   Function<MetaData.Column, Double> doubleVal();
 
@@ -41,9 +39,9 @@ public interface PlainTypeGenerator {
 
   Function<MetaData.Column, byte[]> bytes();
 
-  Function<MetaData.Column, Boolean> booleanV();
+  Function<MetaData.Column, Boolean> booleanVal();
 
-  Function<MetaData.Column, Long> longV();
+  Function<MetaData.Column, Long> longVal();
 
 
   default Object generate(Class<?> clazz, MetaData.Column metaDataColumn) {
@@ -56,7 +54,7 @@ public interface PlainTypeGenerator {
 		return bigDecimal().apply(metaDataColumn);
 	  case "Integer":
 	  case "int":
-		return integer().apply(metaDataColumn);
+		return integerVal().apply(metaDataColumn);
 	  case "Double":
 	  case "double":
 		return doubleVal().apply(metaDataColumn);
@@ -75,10 +73,10 @@ public interface PlainTypeGenerator {
 		return bytes().apply(metaDataColumn);
 	  case "boolean":
 	  case "Boolean":
-		return booleanV().apply(metaDataColumn);
+		return booleanVal().apply(metaDataColumn);
 	  case "long":
 	  case "Long":
-		return longV().apply(metaDataColumn);
+		return longVal().apply(metaDataColumn);
 	}
 	return null;
   }

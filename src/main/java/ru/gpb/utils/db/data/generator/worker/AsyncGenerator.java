@@ -256,6 +256,18 @@ public class AsyncGenerator extends Generator {
   }
 
   /**
+   * method adds rules for processing id field
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param pojo condition for action. @see {@link ColumnPredicate}
+   * @return this
+   * */
+  @Override
+  public<V> Generator ruleId(Class<?> pojo, Action<V> action){
+    delegate.ruleId(pojo,action);
+    return this;
+  }
+
+  /**
    * Making new {@link MetronomeGenerator} for generating repeated events with special pauses.
    * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
    *

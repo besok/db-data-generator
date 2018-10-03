@@ -23,12 +23,13 @@ public class ComplexPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
   private PlainTypeGenerator delegate;
 
-  private Map<String, List<FilterAction<?>>> mapperMap;
+  protected Map<String, List<FilterAction<?>>> mapperMap;
 
   public ComplexPlainTypeGenerator() {
 	delegate = new DefaultPlainTypeGenerator();
 	mapperMap = new HashMap<>();
   }
+
 
 
   @Override
@@ -64,14 +65,6 @@ public class ComplexPlainTypeGenerator extends AbstractPlainTypeGenerator {
 	  });
   }
 
-  private class FilterAction<V> {
-	private ColumnPredicate predicate;
-	private Action<V> action;
 
-	public FilterAction(ColumnPredicate predicate, Action<V> action) {
-	  this.predicate = predicate;
-	  this.action = action;
-	}
-  }
 
 }

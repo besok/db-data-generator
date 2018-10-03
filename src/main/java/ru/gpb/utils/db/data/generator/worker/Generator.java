@@ -41,6 +41,16 @@ public class Generator {
     dbEntityGenerator.setPair(predicate,action,vClass);
     return this;
   }
+  /**
+   * method adds rules for processing id field
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param pojo condition for action. @see {@link ColumnPredicate}
+   * @return this
+   * */
+  public<V> Generator ruleId(Class<?> pojo, Action<V> action){
+    dbEntityGenerator.setPairForId(pojo,action);
+    return this;
+  }
 
   /**
    *
