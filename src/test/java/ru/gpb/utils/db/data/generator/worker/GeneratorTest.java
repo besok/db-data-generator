@@ -7,9 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.gpb.utils.db.data.generator.worker.data.ComplexObject;
 import ru.gpb.utils.db.data.generator.worker.data.NakedObject;
+import ru.gpb.utils.db.data.generator.worker.data.SeqIncObject;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Function;
 
 import static org.junit.Assert.*;
@@ -66,11 +68,31 @@ public class GeneratorTest {
   @Test(expected = IllegalStateGeneratorException.class)
   public void ruleForNotComplexGenTestFailed() {
 	factory
-	  .generator(new AbstractPlainTypeGenerator() {})
+	  .generator(new AbstractPlainTypeGenerator() {
+	  })
 	  .rule(FIELD("FAKE"), OLD(), Object.class)
 	  .generateBy(NakedObject.class)
 	;
 
   }
+
+  @Test
+  public void affectlessSameTypeFieldTest() {
+	SeqIncObject seqIncObject = factory
+	  .generator()
+	  .repeate(10)
+	  .rule(FIELD("iLeft"), INCREMENT_I(0), int.class)
+	  .rule(FIELD("iRight"), INCREMENT_I(0), int.class)
+	  .rule(FIELD("lLeft"), INCREMENT_L(0), Long.class)
+	  .rule(FIELD("lRight"), INCREMENT_L(0), long.class)
+	  .generateBy(SeqIncObject.class)
+	  .cache().getValueList(SeqIncObject.class).get(9);
+
+	assertEquals(10, seqIncObject.getILeft());
+	assertEquals(10, seqIncObject.getIRight());
+	assertEquals(10, (long) seqIncObject.getLLeft());
+	assertEquals(10, seqIncObject.getLRight());
+  }
+
 
 }
