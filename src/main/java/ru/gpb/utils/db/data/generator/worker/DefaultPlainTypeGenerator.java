@@ -81,4 +81,5 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
   public Function<MetaData.Column, Long> longV() {
     return unpack(random.nextLong());
   }
+
 }

@@ -3,6 +3,7 @@ package ru.gpb.utils.db.data.generator.worker;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -29,7 +30,10 @@ public interface PlainTypeGenerator {
   Function<MetaData.Column, Double> doubleVal();
 
   Function<MetaData.Column, Date> date();
+
   Function<MetaData.Column, LocalDateTime> localDateTime();
+
+  Function<MetaData.Column, LocalDate> localDate();
 
   Function<MetaData.Column, Timestamp> timestamp();
 
@@ -38,41 +42,44 @@ public interface PlainTypeGenerator {
   Function<MetaData.Column, byte[]> bytes();
 
   Function<MetaData.Column, Boolean> booleanV();
+
   Function<MetaData.Column, Long> longV();
 
 
   default Object generate(Class<?> clazz, MetaData.Column metaDataColumn) {
-    switch (clazz.getSimpleName()) {
-      case "String":
-        return string().apply(metaDataColumn);
-      case "UUID":
-        return uuid().apply(metaDataColumn);
-      case "BigDecimal":
-        return bigDecimal().apply(metaDataColumn);
-      case "Integer":
-      case "int":
-        return integer().apply(metaDataColumn);
-      case "Double":
-      case "double":
-        return doubleVal().apply(metaDataColumn);
-      case "Date":
-        return date().apply(metaDataColumn);
-      case "LocalDateTime":
-        return localDateTime().apply(metaDataColumn);
-      case "Timestamp":
-        return timestamp().apply(metaDataColumn);
-      case "Character":
-      case "char":
-        return character().apply(metaDataColumn);
-      case "byte[]":
-        return bytes().apply(metaDataColumn);
-      case "boolean":
-      case "Boolean":
-        return booleanV().apply(metaDataColumn);
-      case "long":
-      case "Long":
-        return longV().apply(metaDataColumn);
-    }
-    return null;
+	switch (clazz.getSimpleName()) {
+	  case "String":
+		return string().apply(metaDataColumn);
+	  case "UUID":
+		return uuid().apply(metaDataColumn);
+	  case "BigDecimal":
+		return bigDecimal().apply(metaDataColumn);
+	  case "Integer":
+	  case "int":
+		return integer().apply(metaDataColumn);
+	  case "Double":
+	  case "double":
+		return doubleVal().apply(metaDataColumn);
+	  case "Date":
+		return date().apply(metaDataColumn);
+	  case "LocalDateTime":
+		return localDateTime().apply(metaDataColumn);
+	  case "LocalDate":
+		return localDate().apply(metaDataColumn);
+	  case "Timestamp":
+		return timestamp().apply(metaDataColumn);
+	  case "Character":
+	  case "char":
+		return character().apply(metaDataColumn);
+	  case "byte[]":
+		return bytes().apply(metaDataColumn);
+	  case "boolean":
+	  case "Boolean":
+		return booleanV().apply(metaDataColumn);
+	  case "long":
+	  case "Long":
+		return longV().apply(metaDataColumn);
+	}
+	return null;
   }
 }
