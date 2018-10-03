@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -27,6 +28,7 @@ public class SimplePlaiObjectGenId {
   private Date created;
 
   private LocalDateTime ldt;
+  private LocalDate ld;
 
   @Column(name = "add_sum", precision = 19, scale = 4)
   private BigDecimal addSum;

@@ -5,13 +5,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.gpb.utils.db.data.generator.worker.data.ComplexObject;
-import ru.gpb.utils.db.data.generator.worker.data.NakedObject;
-import ru.gpb.utils.db.data.generator.worker.data.SeqIncObject;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
+import ru.gpb.utils.db.data.generator.worker.data.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Function;
 
@@ -72,11 +70,12 @@ public class GeneratorTest {
    * has been invoked by default @see {@link DatabaseDataGeneratorFactory#generator()}
    * or inherited from {@link ComplexPlainTypeGenerator}.
    * In other case it will throw IllegalStateGeneratorException
-   * **/
+   **/
   @Test(expected = IllegalStateGeneratorException.class)
   public void ruleForNotComplexGenTestFailed() {
 	factory
-	  .generator(new AbstractPlainTypeGenerator() {})
+	  .generator(new AbstractPlainTypeGenerator() {
+	  })
 	  .rule(FIELD("FAKE"), OLD(), Object.class)
 	  .generateBy(NakedObject.class)
 	;
@@ -113,6 +112,16 @@ public class GeneratorTest {
 	for (SeqIncObject object : iLeft) {
 	  assertTrue(object.getILeft() < 10);
 	}
+  }
 
+
+  @Test
+  public void localDateTest() {
+	SimplePlaiObjectGenId obj = factory.generator()
+	  .generateBy(SimplePlaiObjectGenId.class)
+	  .cache()
+	  .getValueList(SimplePlaiObjectGenId.class).get(0);
+
+	assertEquals(LocalDate.now(), obj.getLd());
   }
 }
