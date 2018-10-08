@@ -118,7 +118,8 @@ name from field name converting camel case to snake case.
 
     InnerLog s =
         factory
-            .generator().metronome(1, TimeUnit.SECONDS,ctx -> ctx.log.markerValue() < 10)
+            .generator()
+            .metronome(1, TimeUnit.SECONDS,ctx -> ctx.log.markerValue() < 10)
             .generateBy(Customer.class)
             .log();
 ```
@@ -159,7 +160,9 @@ name from field name converting camel case to snake case.
     	
     NakedObject spo = factory
           .generator()
-          .rule(COMPOSE(CLASS(NakedObject.class), FIELD("fieldWithCamel")), CONST("newValue"), String.class)
+          .rule(
+            COMPOSE(CLASS(NakedObject.class), FIELD("fieldWithCamel")), 
+            CONST("newValue"), String.class)
           .generateBy(NakedObject.class)
           .generateBy(NakedObject2.class)
           .generateBy(NakedObject3.class)
