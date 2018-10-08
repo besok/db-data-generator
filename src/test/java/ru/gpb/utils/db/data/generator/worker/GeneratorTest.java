@@ -123,9 +123,11 @@ public class GeneratorTest {
   @Test
   public void setRuleForIdTest() {
 	List<SimplePlaiObjectGenId> id = factory
-	  .generator().repeate(10)
+	  .generator()
+	  .repeate(10)
 	  .ruleId(SimplePlaiObjectGenId.class, CONST(1))
-	  .generateBy(SimplePlaiObjectGenId.class).cache()
+	  .generateBy(SimplePlaiObjectGenId.class)
+	  .cache()
 	  .getValueList(SimplePlaiObjectGenId.class);
 
 	assertEquals(id.get(10).getId(),1);

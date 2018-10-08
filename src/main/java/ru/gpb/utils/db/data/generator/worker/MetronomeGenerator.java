@@ -7,40 +7,37 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
- *
  * Generator for generation events with special pauses
  *
  * @author Boris Zhguchev
  */
 public class MetronomeGenerator extends Generator {
+  private Logger LOGGER = Logger.getLogger(MetronomeGenerator.class.getName());
+  private Metronome metronome;
+  private MetronomePredicate predicate = ctx -> true;
+
+
   MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator,
-                     long period, TimeUnit metric,
-                     MetronomePredicate predicate) {
-    super(multiEntityGenerator, singleEntityGenerator);
-    this.metronome = Metronome.systemParker(period, metric);
-    this.predicate=predicate;
+					 long period, TimeUnit metric,
+					 MetronomePredicate predicate) {
+	super(multiEntityGenerator, singleEntityGenerator);
+	this.metronome = Metronome.systemParker(period, metric);
+	this.predicate = predicate;
   }
 
   public MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator,
-                            DatabaseEntityGenerator singleEntityGenerator,
-                            Metronome metronome, MetronomePredicate predicate) {
+							DatabaseEntityGenerator singleEntityGenerator,
+							Metronome metronome, MetronomePredicate predicate) {
 
-    super(multiEntityGenerator, singleEntityGenerator);
-    this.metronome = metronome;
-    this.predicate = predicate;
+	super(multiEntityGenerator, singleEntityGenerator);
+	this.metronome = metronome;
+	this.predicate = predicate;
   }
-
   MetronomeGenerator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator,
-                     Metronome metronome) {
-    super(multiEntityGenerator, singleEntityGenerator);
-    this.metronome = metronome;
+					 Metronome metronome) {
+	super(multiEntityGenerator, singleEntityGenerator);
+	this.metronome = metronome;
   }
-
-
-  private Logger LOGGER = Logger.getLogger(MetronomeGenerator.class.getName());
-
-  private Metronome metronome;
-  private MetronomePredicate predicate = ctx -> true;
 
   /**
    * Generate new instance for Class.
@@ -52,16 +49,16 @@ public class MetronomeGenerator extends Generator {
   @Override
   public Generator generateBy(Class<?> cl) {
 
-    while (predicate.test(this)) {
-      try {
-        metronome.pause();
-        super.generateBy(cl);
-      } catch (InterruptedException e) {
-        log.failureInc();
-        LOGGER.info("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
-      }
-    }
-    return this;
+	while (predicate.test(this)) {
+	  try {
+		metronome.pause();
+		super.generateBy(cl);
+	  } catch (InterruptedException e) {
+		log.failureInc();
+		LOGGER.info("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
+	  }
+	}
+	return this;
   }
 
   /**
@@ -74,16 +71,16 @@ public class MetronomeGenerator extends Generator {
    */
   @Override
   public Generator generateBy(String schema, String table) {
-    while (predicate.test(this)) {
-      try {
-        metronome.pause();
-        super.generateBy(schema, table);
-      } catch (InterruptedException e) {
-        log.failureInc();
-        LOGGER.info("generation by class " + schema+"."+table + "has been failed - " + e.toString());
-      }
-    }
-    return this;
+	while (predicate.test(this)) {
+	  try {
+		metronome.pause();
+		super.generateBy(schema, table);
+	  } catch (InterruptedException e) {
+		log.failureInc();
+		LOGGER.info("generation by class " + schema + "." + table + "has been failed - " + e.toString());
+	  }
+	}
+	return this;
   }
 
   /**
@@ -91,16 +88,16 @@ public class MetronomeGenerator extends Generator {
    **/
   @Override
   public Generator generateAll() {
-    while (predicate.test(this)) {
-      try {
-        metronome.pause();
-        super.generateAll();
-      } catch (InterruptedException e) {
-        log.failureInc();
-        LOGGER.info("generation has been failed - " + e.toString());
-      }
-    }
-    return this;
+	while (predicate.test(this)) {
+	  try {
+		metronome.pause();
+		super.generateAll();
+	  } catch (InterruptedException e) {
+		log.failureInc();
+		LOGGER.info("generation has been failed - " + e.toString());
+	  }
+	}
+	return this;
   }
 
   /**
@@ -108,16 +105,16 @@ public class MetronomeGenerator extends Generator {
    */
   @Override
   public Generator generateObjects() {
-    while (predicate.test(this)) {
-      try {
-        metronome.pause();
-        super.generateObjects();
-      } catch (InterruptedException e) {
-        log.failureInc();
-        LOGGER.info("generation has been failed - " + e.toString());
-      }
-    }
-    return this;
+	while (predicate.test(this)) {
+	  try {
+		metronome.pause();
+		super.generateObjects();
+	  } catch (InterruptedException e) {
+		log.failureInc();
+		LOGGER.info("generation has been failed - " + e.toString());
+	  }
+	}
+	return this;
   }
 
   /**
@@ -126,34 +123,47 @@ public class MetronomeGenerator extends Generator {
    */
   @Override
   public Generator generateRelations() {
-    while (predicate.test(this)) {
-      try {
-        metronome.pause();
-        super.generateRelations();
-      } catch (InterruptedException e) {
-        log.failureInc();
-        LOGGER.info("generation has been failed - " + e.toString());
-      }
-    }
-    return this;
+	while (predicate.test(this)) {
+	  try {
+		metronome.pause();
+		super.generateRelations();
+	  } catch (InterruptedException e) {
+		log.failureInc();
+		LOGGER.info("generation has been failed - " + e.toString());
+	  }
+	}
+	return this;
 
   }
+
   /**
    * method adds rules for processing specific fields or columns or class
-   * @param action Action changing or modifying old generated value. @see {@link Action}
-   * @param predicate condition for action. @see {@link ColumnPredicate}
-   * @param vClass value type. If it is different with field it will do nothing, in order to it is additional filter
-   * @return this
    *
-   * */
+   * @param action    Action changing or modifying old generated value. @see {@link Action}
+   * @param predicate condition for action. @see {@link ColumnPredicate}
+   * @param vClass    value type. If it is different with field it will do nothing, in order to it is additional filter
+   * @return this
+   */
   @Override
   public <V> Generator rule(ColumnPredicate predicate, Action<V> action, Class<V> vClass) {
-    super.rule(predicate, action, vClass);
-    return this;
+	super.rule(predicate, action, vClass);
+	return this;
+  }
+
+  /**
+   * method adds rules for processing id field
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param pojo condition for action. @see {@link ColumnPredicate}
+   * @return this
+   * */
+  @Override
+  public <V> Generator ruleId(Class<?> pojo, Action<V> action) {
+	super.ruleId(pojo, action);
+	return this;
   }
 
   @Override
   Generator split() {
-    return super.metronome(this.metronome,predicate);
+	return super.metronome(this.metronome, predicate);
   }
 }

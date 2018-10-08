@@ -138,8 +138,7 @@ class DatabaseEntityGenerator {
 	  ((ComplexPlainTypeGenerator) plainValueGenerator).setPair(predicate, action, clzz);
 	} else {
 	  throw
-		new IllegalStateGeneratorException(
-		  " the method rule can be invoked only " +
+		new IllegalStateGeneratorException(" the method rule can be invoked only " +
 			"with a class ComplexPlainTypeGenerator or it's childs.");
 	}
   }

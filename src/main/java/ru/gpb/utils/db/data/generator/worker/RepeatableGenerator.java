@@ -94,6 +94,18 @@ public class RepeatableGenerator extends Generator {
 	return this;
   }
 
+  /**
+   * method adds rules for processing id field
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param pojo condition for action. @see {@link ColumnPredicate}
+   * @return this
+   * */
+  @Override
+  public <V> Generator ruleId(Class<?> pojo, Action<V> action) {
+	super.ruleId(pojo, action);
+	return this;
+  }
+
   @Override
   Generator split() {
 	return super.repeate(this.limit);
