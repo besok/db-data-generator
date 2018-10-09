@@ -166,6 +166,16 @@ name from field name converting camel case to snake case.
           .generateBy(NakedObject.class)
           .generateBy(NakedObject2.class)
           .generateBy(NakedObject3.class)
+          
+    List<SeqIncObject> list =
+    	  factory.generator()
+    		.repeate(10)
+    		.rule(FIELD("lRight"), INCREMENT_L(0), long.class)
+    		.rule(FIELD("random"), RANDOM(10), int.class)
+    		.rule(FIELD("random"), PEEK(System.out::println), int.class)
+    		.generateBy(SeqIncObject.class)
+    		.cache()
+    		.getValueList(SeqIncObject.class);      
     	
 ```
 

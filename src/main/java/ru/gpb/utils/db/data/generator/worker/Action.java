@@ -25,14 +25,17 @@ public interface Action<V> {
   }
 
   /**
-   * Without change.Return old value.
+   * Without change. Return old value.
    */
   static <V> Action<V> OLD() {
 	return oldValue -> oldValue;
   }
 
 
-
+ /**
+  * do some consumer fn @see {@link Consumer}
+  *
+  * */
   static <V> Action<V> PEEK(Consumer<V> peekFn) {
 	return oldValue -> {
 	  peekFn.accept(oldValue);
@@ -40,6 +43,9 @@ public interface Action<V> {
 	};
   }
 
+  /**
+   * incrementing value fol integers
+   * */
   static Action<Integer> INCREMENT_I(int startVal) {
 	return new Action<Integer>() {
 	  private AtomicInteger delegate = new AtomicInteger(startVal);
@@ -51,6 +57,9 @@ public interface Action<V> {
 	};
   }
 
+  /**
+   * incrementing value for longs
+   * */
   static Action<Long> INCREMENT_L(int startVal) {
 	return new Action<Long>() {
 	  private AtomicLong delegate = new AtomicLong(startVal);
@@ -62,6 +71,11 @@ public interface Action<V> {
 	};
   }
 
+
+  /**
+   * random value for different types
+   *
+   * */
   @SuppressWarnings("unchecked")
   static <V> Action<V> RANDOM(int bound) {
 	return (Action<V>) new Action<Object>() {
