@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -36,6 +35,7 @@ public class InnerCacheTest {
   public void setUp() throws Exception {
   }
 
+  // FIXME: 10/9/2018 Поломался тест!
   @Test
   public void snapshot() {
     Map<MetaData, Integer> snapshot = factory.generator()
