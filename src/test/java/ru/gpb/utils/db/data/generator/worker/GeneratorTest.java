@@ -1,6 +1,5 @@
 package ru.gpb.utils.db.data.generator.worker;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.gpb.utils.db.data.generator.worker.data.*;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static ru.gpb.utils.db.data.generator.worker.Action.*;
@@ -131,5 +128,22 @@ public class GeneratorTest {
 	  .getValueList(SimplePlaiObjectGenId.class);
 
 	assertEquals(id.get(10).getId(),1);
+  }
+
+  @Test
+  public void shortNameTest() {
+	List<String> vl = factory
+	  .generator()
+	  .repeate(10)
+	  .generateBy(SimplePlainObject.class)
+	  .cache()
+	  .getValueList(SimplePlainObject.class)
+	  .stream()
+	  .map(SimplePlainObject::getShortName)
+	  .distinct().collect(Collectors.toList());
+
+	assertTrue(vl.size() > 1);
+	assertEquals(1, vl.stream().mapToInt(String::length).max().getAsInt());
+
   }
 }

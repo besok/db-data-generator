@@ -30,8 +30,6 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
       if (len == 0)
         return c.getColumn() + "-" + counter++;
-      else if (len < 4)
-        return counter(4);
       else {
         // default 127 in db...
         if (len == 255) len = 127;

@@ -20,6 +20,9 @@ public class SimplePlainObject {
   @GeneratedValue
   private int id;
 
+  @Column(length = 1)
+  private String shortName;
+
   @Column(length = 10)
   private String name;
   private BigDecimal sum;
