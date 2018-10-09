@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.gpb.utils.db.data.generator.worker.data.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,6 +83,9 @@ public class GeneratorTest {
 
   @Test
   public void affectlessSameTypeFieldTest() {
+
+    List<Integer> randomVal = new ArrayList<>();
+
 	List<SeqIncObject> list =
 	  factory.generator()
 		.repeate(10)
@@ -90,6 +94,7 @@ public class GeneratorTest {
 		.rule(FIELD("lLeft"), INCREMENT_L(0), Long.class)
 		.rule(FIELD("lRight"), INCREMENT_L(0), long.class)
 		.rule(FIELD("random"), RANDOM(10), int.class)
+		.rule(FIELD("random"), PEEK(randomVal::add), int.class)
 		.generateBy(SeqIncObject.class)
 		.cache()
 		.getValueList(SeqIncObject.class);
@@ -99,9 +104,12 @@ public class GeneratorTest {
 	assertEquals(10, last.getIRight());
 	assertEquals(10, (long) last.getLLeft());
 	assertEquals(10, last.getLRight());
+	assertEquals(10,randomVal.size());
 
+	int i = 0;
 	for (SeqIncObject object : list) {
 	  assertTrue(object.getRandom() < 10);
+	  assertTrue(randomVal.get(i++) < 10);
 	}
 
   }
