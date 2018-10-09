@@ -1,22 +1,27 @@
 ### Introduction:
-Database data generator.It based on Spring Data Repository.
+Database data generator based on Spring Data Repository. 
+This tool can be used in your spring data project for generating some data.
+
+### Requirements
+* spring data module
+* spring data repos
+* jpa entities
 
 ### Work stages:
-* Scan all JpaRepository beans. Get Entity classes. 
-* Store meta data from @Table, @ManyToMany,@OneToMany,@OneToOne,@ManyToOne and etc .
-* Traversal all entities and construct relations(dependents and neighbours).
-* Generate plain instances without dependencies.
+* Find all JpaRepository beans through @EnableJpaRepositories, @EntityScan.Get entity classes. 
+* Store metadata from @Table, @ManyToMany,@OneToMany,@OneToOne,@ManyToOne and etc .
+* Traversal all entities and construct relations(dependents and neighbours) each other.
+* Generate plain instances for entities without dependencies.
 * Generate parent instances having @OneToOne(optional=true),@OneToMany and etc
 * Generate child instances having parent object as dependency(usual haves a column with parent id)
     * Put generated objects to cache if the cache is empty. 
-* Generate neighbour relations based on cache. It's a ManyToMany link.
-
+* Generate neighbour relations(ManyToMany link).
 
 ### Properties:
 * set default jpa properties - @EnableJpaRepositories, @EntityScan and etc
 * should set **@EnableDatabaseDataGenerator**
-* for Tables with One To One relations should field optional=true to be exist for one of that tables 
-* add gradle dependency  
+* for Tables with @OneToOne relations should field optional=true to be exist for one of that tables 
+* add gradle dependency from your local repo :)  
 ```
 compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version: '0.1'
 ```
@@ -29,13 +34,14 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
 ```
 ### Subjects:
 * DatabaseDataGeneratorFactory - generator factory.
-* ? extends Generator - common class , which generates common logic.
-* InnerLog - log entity, which contains all activity.
+* <? extends Generator> - common class generates common logic.
+* InnerLog - log entity contains inner log stats.
 * InnerCache - inner cache with generated objects.It can be used for getting generated objects without an db impact.  
-* MetaData - inner data class which has all parsed information from JpaRepository.
-* AbstractPlainTypeGeneratorSupplier - class describes a method for generation plain types(integer, long, string and etc). 
+* MetaData - inner data class has all parsed information from JpaRepository.
+* PlainTypeGenerator - interface describes a method for generation plain types(integer, long, string and etc). 
     * It takes Metadata instance for custom generation.
-
+* Action - SPA for customizing generated value
+* ColumnPredicate - Spa for filtering rules.
 
 ### Notes:
 * if a field hasn't an annotation @Column with column name the generator takes column 
