@@ -18,7 +18,7 @@ import java.util.Map;
  * Created by Boris Zhguchev on 01/10/2018
  */
 
-// TODO: 10/1/2018 Тесты для всех классов + тесты с комплексными объектами.
+// FIXME: 10/1/2018 Тесты для всех классов + тесты с комплексными объектами.
 public class ComplexPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
   private PlainTypeGenerator delegate;

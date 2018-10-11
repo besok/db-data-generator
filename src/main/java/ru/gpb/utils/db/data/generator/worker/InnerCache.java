@@ -42,7 +42,7 @@ public class InnerCache {
    *
    * @return map consists of pair key + value list's size.
    */
-  // TODO: 9/9/2018 Сделать обьект Snapshot и сделать вызов
+  // FIXME: 9/9/2018 Сделать обьект Snapshot и сделать вызов
   public Map<MetaData, Integer> snapshot() {
     return cache
         .entrySet()

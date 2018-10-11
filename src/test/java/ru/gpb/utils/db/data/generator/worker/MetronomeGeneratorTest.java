@@ -10,5 +10,5 @@ import static org.junit.Assert.*;
 public class MetronomeGeneratorTest {
 
 
-  // TODO: 8/5/2018 ТЕСТ
+  // FIXME: 8/5/2018 ТЕСТ
 }

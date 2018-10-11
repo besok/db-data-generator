@@ -20,5 +20,5 @@ public class DatabaseEntityRelationsGeneratorTest {
   public void generateMultiObjects() {
   }
 
-  // TODO: 8/5/2018 Добавить тест
+  // FIXME: 8/5/2018 Добавить тест
 }
