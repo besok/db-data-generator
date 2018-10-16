@@ -21,7 +21,7 @@ apply plugin: 'io.spring.dependency-management'
 
 
 
-group = 'ru.gpb.utils.db.data.generator'
+group = 'ru.generator.db.data'
 version = '0.2'
 sourceCompatibility = 1.8
 

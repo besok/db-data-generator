@@ -23,7 +23,7 @@ This tool can be used in your spring data project for generating some data.
 * for Tables with @OneToOne relations should field optional=true to be exist for one of that tables 
 * add gradle dependency from your local repo :)  
 ```
-compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version: '0.1'
+compile group: 'ru.generator.db.data', name: 'db-data-generator', version: '0.2'
 ```
 * (optional) add property *generator.cache-entity-size* to your application file. 
     * It manages generated size between many2many relations. By default it is 20.
