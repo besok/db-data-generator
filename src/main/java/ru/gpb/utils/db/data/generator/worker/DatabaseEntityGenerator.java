@@ -75,7 +75,14 @@ class DatabaseEntityGenerator {
 	return save(aClass, ent).map(cache(metaData));
   }
 
+
   protected Optional<Object> generateAndSaveObject(MetaData metaData) throws DataGenerationException {
+	return generateAndSaveObject(metaData, new ArrayDeque<>());
+  }
+
+
+
+  protected Optional<Object> generateAndSaveObject(MetaData metaData, Deque<MetaData> path) throws DataGenerationException {
 	if (metaData.isPlain())
 	  return generateAndSaveSimpleObject(metaData);
 
@@ -91,7 +98,7 @@ class DatabaseEntityGenerator {
 			MetaData.Id id = metaData.getId();
 			Field idField = id.getIdField();
 			idField.setAccessible(true);
-			Object generatedId = seqGen.generate(idField.getType(), null);
+			Object generatedId = seqGen.generate(idField.getType(), metaData.getAClass());
 			idField.set(obj, generatedId);
 		  }
 		} else {
@@ -109,9 +116,22 @@ class DatabaseEntityGenerator {
 			  }
 			}
 		  } else {
-			Optional<Object> beforePojo = generateAndSaveObject(before);
-			if (beforePojo.isPresent())
-			  f.set(obj, beforePojo.get());
+
+		    // in that section we have to check for case when a path is cycling.
+			// cycle example: obj1 has field with obj2 and obj2 has field with obj3 and obj3 has field with obj1.
+			// if we have a cycle we will take obj from cache or do nothing.
+
+			if (path.stream().anyMatch(before::equals)) {
+			  List<Object> beforeList = cache.getValueList(before);
+			  if (!beforeList.isEmpty())
+				f.set(obj, randomFromList(beforeList));
+
+			} else {
+			  path.addFirst(before);
+			  Optional<Object> beforePojo = generateAndSaveObject(before, path);
+			  if (beforePojo.isPresent())
+				f.set(obj, beforePojo.get());
+			}
 		  }
 		}
 	  }
@@ -122,6 +142,11 @@ class DatabaseEntityGenerator {
 	LOGGER.finest("plain object is being tried to save  = " + obj);
 	return save(aClass, obj).map(cache(metaData));
 
+  }
+
+
+  private Object randomFromList(List<Object> list) {
+	return list.get(new Random().nextInt(list.size()));
   }
 
   /**
@@ -139,9 +164,10 @@ class DatabaseEntityGenerator {
 	} else {
 	  throw
 		new IllegalStateGeneratorException(" the method rule can be invoked only " +
-			"with a class ComplexPlainTypeGenerator or it's childs.");
+		  "with a class ComplexPlainTypeGenerator or it's childs.");
 	}
   }
+
   /**
    * method adds rules for processing id for specific class.
    *
@@ -149,7 +175,7 @@ class DatabaseEntityGenerator {
    * @param pojoClass pojo class. @see {@link ColumnPredicate}
    */
   public <V> void setPairForId(Class<?> pojoClass, Action<V> action) {
-	  seqGen.setPair(pojoClass, action);
+	seqGen.setPair(pojoClass, action);
   }
 
 
@@ -200,9 +226,10 @@ class DatabaseEntityGenerator {
 	  return unpack(seq.incrementAndGet());
 	}
   }
-  private class IdSequenceRuleGenerator  {
-	private PlainTypeGenerator delegate;
+
+  private class IdSequenceRuleGenerator {
 	protected Map<String, List<Action<Object>>> mapperMap;
+	private PlainTypeGenerator delegate;
 
 	IdSequenceRuleGenerator(PlainTypeGenerator delegate,
 							Map<String, List<Action<Object>>> mapperMap) {

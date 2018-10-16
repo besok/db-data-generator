@@ -46,6 +46,8 @@ compile group: 'ru.gpb.als.source.generator', name: 'db-data-generator', version
 ### Notes:
 * if a field hasn't an annotation @Column with column name the generator takes column 
 name from field name converting camel case to snake case.
+* if objects has a cycle(obj1 has obj2 field then obj2 has obj3 field then obj3 has obj1 field) 
+one of that columns must be optional.
 
 ### Usage examples:
 
