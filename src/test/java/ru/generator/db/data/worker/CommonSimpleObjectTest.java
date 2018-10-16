@@ -7,16 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.generator.data.utils.db.data.generator.worker.data.*;
 import ru.generator.db.data.worker.data.*;
-import ru.generator.db.utils.db.data.generator.worker.data.*;
-import ru.gpb.utils.db.data.generator.worker.data.*;
 
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.*;
 import static org.junit.Assert.*;
-import static ru.gpb.utils.db.data.generator.worker.MetronomePredicate.COUNT;
 
 // 2018.07.24 
 

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.SimplePlainObject;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
 
 // 2018.07.24 
 

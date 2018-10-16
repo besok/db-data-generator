@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.ManyToManyObjectLeft;
 import ru.generator.db.data.worker.data.ManyToManyObjectRight;
-import ru.gpb.utils.db.data.generator.worker.data.*;
 
 import java.util.Map;
 

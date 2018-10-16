@@ -10,10 +10,6 @@ import ru.generator.db.data.worker.data.ComplexObject;
 import ru.generator.db.data.worker.data.ComplexObjectRepository;
 import ru.generator.db.data.worker.data.SimplePlainObject;
 import ru.generator.db.data.worker.data.SimplePlainObjectRepository;
-import ru.gpb.utils.db.data.generator.worker.data.ComplexObject;
-import ru.gpb.utils.db.data.generator.worker.data.ComplexObjectRepository;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
 
 import static org.junit.Assert.*;
 

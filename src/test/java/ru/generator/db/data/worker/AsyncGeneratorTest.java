@@ -10,9 +10,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.SimplePlainObject;
 import ru.generator.db.data.worker.data.SimplePlainObject2;
 import ru.generator.db.data.worker.data.SimplePlainObjectRepository;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject2;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
 
 import static org.junit.Assert.*;
 

@@ -9,7 +9,6 @@ import ru.generator.db.data.worker.data.NakedObject;
 import ru.generator.db.data.worker.data.SeqIncObject;
 import ru.generator.db.data.worker.data.SimplePlaiObjectGenId;
 import ru.generator.db.data.worker.data.SimplePlainObject;
-import ru.gpb.utils.db.data.generator.worker.data.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,8 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
-import static ru.gpb.utils.db.data.generator.worker.Action.*;
-import static ru.gpb.utils.db.data.generator.worker.ColumnPredicate.*;
+import static ru.generator.db.data.worker.ColumnPredicate.CLASS;
+import static ru.generator.db.data.worker.ColumnPredicate.COMPOSE;
+import static ru.generator.db.data.worker.ColumnPredicate.FIELD;
 
 // 2018.08.05 
 

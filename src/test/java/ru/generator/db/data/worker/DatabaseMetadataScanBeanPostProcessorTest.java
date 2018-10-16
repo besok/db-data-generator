@@ -7,8 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.ComplexObject;
 import ru.generator.db.data.worker.data.NakedObject;
-import ru.gpb.utils.db.data.generator.worker.data.ComplexObject;
-import ru.gpb.utils.db.data.generator.worker.data.NakedObject;
 
 import java.util.Set;
 

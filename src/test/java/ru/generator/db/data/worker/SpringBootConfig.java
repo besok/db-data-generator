@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EnableJpaRepositories(basePackages = {"ru.gpb.utils.db.data.generator.worker.data"})
+@EnableJpaRepositories(basePackages = {"ru.generator.db.data.worker.data"})
 @EntityScan("ru.gpb.utils.db.data.generator.worker.data")
 @Configuration
 @SpringBootApplication

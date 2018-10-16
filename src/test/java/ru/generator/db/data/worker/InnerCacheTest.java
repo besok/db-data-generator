@@ -8,8 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.SimplePlainObject;
 import ru.generator.db.data.worker.data.SimplePlainObjectRepository;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObjectRepository;
 
 import java.util.List;
 import java.util.Map;

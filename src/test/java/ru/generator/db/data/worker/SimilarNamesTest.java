@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.gpb.utils.db.data.generator.worker.data.similar.ForSimilarObject;
+import ru.generator.db.data.worker.data.similar.ForSimilarObject;
 
 /**
  * Created by Boris Zhguchev on 16/10/2018

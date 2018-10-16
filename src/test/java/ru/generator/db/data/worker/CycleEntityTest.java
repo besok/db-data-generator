@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.gpb.utils.db.data.generator.worker.data.cycle.CycleObject3;
-import ru.gpb.utils.db.data.generator.worker.data.cycle.CycleObjectRepository;
+import ru.generator.db.data.worker.data.cycle.CycleObject3;
+import ru.generator.db.data.worker.data.cycle.CycleObjectRepository;
 
 import java.util.List;
 import java.util.Objects;
