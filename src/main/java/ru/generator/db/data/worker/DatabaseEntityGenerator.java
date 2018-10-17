@@ -80,7 +80,6 @@ class DatabaseEntityGenerator {
   }
 
 
-
   protected Optional<Object> generateAndSaveObject(MetaData metaData, Deque<MetaData> path) throws DataGenerationException {
 	if (metaData.isPlain())
 	  return generateAndSaveSimpleObject(metaData);
@@ -122,15 +121,18 @@ class DatabaseEntityGenerator {
 
 			if (path.stream().anyMatch(before::equals)) {
 			  List<Object> beforeList = cache.getValueList(before);
-			  if (!beforeList.isEmpty())
+			  if (!beforeList.isEmpty()) {
 				f.set(obj, randomFromList(beforeList));
+			  }
 
 			} else {
 			  path.addFirst(before);
 			  Optional<Object> beforePojo = generateAndSaveObject(before, path);
-			  if (beforePojo.isPresent())
+			  if (beforePojo.isPresent()) {
 				f.set(obj, beforePojo.get());
+			  }
 			}
+
 		  }
 		}
 	  }

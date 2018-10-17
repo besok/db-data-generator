@@ -35,7 +35,9 @@ public class MetaDataGraphBuilder {
 
     for (MetaData md : mdList) {
       for (Field field : md.getDependencies().keySet()) {
-        this.mdList.byClass(field.getType()).ifPresent(p -> md.getDependencies().putIfAbsent(field, p));
+        this.mdList
+		  .byClass(field.getType())
+		  .ifPresent(p -> md.getDependencies().putIfAbsent(field, p));
       }
 
       for (Field field : md.getNeighbours().keySet()) {

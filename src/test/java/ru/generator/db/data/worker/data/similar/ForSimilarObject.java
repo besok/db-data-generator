@@ -2,8 +2,6 @@ package ru.generator.db.data.worker.data.similar;
 
 import lombok.Data;
 import ru.generator.db.data.worker.data.similar.p1.SimilarObject;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject2;
-import ru.gpb.utils.db.data.generator.worker.data.similar.p1.SimilarObject;
 
 import javax.persistence.*;
 

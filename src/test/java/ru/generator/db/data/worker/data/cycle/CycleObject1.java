@@ -21,4 +21,7 @@ public class CycleObject1 {
   @JoinColumn
   private CycleObject2 cycleField;
 
+
+
+
 }

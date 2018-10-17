@@ -3,7 +3,6 @@ package ru.generator.db.data.worker.data.similar.p2;
 
 import lombok.Data;
 import ru.generator.db.data.worker.data.SimplePlainObject2;
-import ru.gpb.utils.db.data.generator.worker.data.SimplePlainObject2;
 
 import javax.persistence.*;
 
@@ -21,7 +20,4 @@ public class SimilarObject {
 
   private String name;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "plain_id")
-  private SimplePlainObject2 plain;
 }

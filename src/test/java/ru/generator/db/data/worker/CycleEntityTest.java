@@ -28,7 +28,7 @@ public class CycleEntityTest {
   public void cycleTest() throws DataGenerationException {
 	List<CycleObject3> chObjs = factory
 	  .generator()
-	  .repeate(10)
+	  .repeate(3)
 	  .generateBy(CycleObject3.class)
 	  .withException()
 	  .cache()

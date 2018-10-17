@@ -22,5 +22,9 @@ public class CycleObject3 {
   private CycleObject1 cycleField;
 
   @ManyToOne
+  @JoinColumn
+  private CycleObject1 cycleField2;
+
+  @ManyToOne
   private CycleObject3 selfCycleField;
 }

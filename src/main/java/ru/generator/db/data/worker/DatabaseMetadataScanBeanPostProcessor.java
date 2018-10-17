@@ -1,6 +1,8 @@
 package ru.generator.db.data.worker;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
@@ -27,6 +29,7 @@ import java.util.*;
 @Component
 public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor {
   private final MetaDataList metaDataList;
+
 
   @Autowired
   public DatabaseMetadataScanBeanPostProcessor(MetaDataList metaDataList) {
