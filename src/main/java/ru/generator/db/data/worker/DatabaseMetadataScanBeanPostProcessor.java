@@ -77,7 +77,7 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
               metaData.getDependencies().put(f, null);
           }
 
-          if (isNeighbour(f)) {
+          if (f.isAnnotationPresent(ManyToMany.class)) {
             plain = false;
             metaData.getNeighbours().put(f, null);
           }
@@ -114,9 +114,6 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
       return true;
     }
     return false;
-  }
-  private boolean isNeighbour(Field f) {
-    return f.isAnnotationPresent(ManyToMany.class);
   }
   private boolean isCollection(Field field) {
     return Collection.class.isAssignableFrom(field.getType());

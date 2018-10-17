@@ -6,6 +6,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -79,6 +81,15 @@ public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
   public Function<MetaData.Column, Long> longVal() {
 	return unpack(0L);
   }
+
+  @Override
+  public Function<MetaData.Column, ? extends Enum<?>> enumVal() {
+    return col ->{
+	  Object[] consts = col.getAClass().getEnumConstants();
+	  return (Enum<?>) consts[new Random().nextInt(consts.length)];
+	};
+  }
+
 
   protected <R> Function<MetaData.Column, R> unpack(R r) {
 	return p -> r;

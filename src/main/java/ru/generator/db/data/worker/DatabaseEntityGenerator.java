@@ -110,7 +110,11 @@ class DatabaseEntityGenerator {
 			  f.set(obj, generate);
 			} else {
 			  if (metaData.neighbour(f) == null) {
-				throw new InstantiationException();
+				// FIXME: 10/17/2018 Define all cases for that.
+				// -> not in neighbours,depends,plains
+				// - optional = true
+				// - it is not entity(enum)
+
 			  }
 			}
 		  } else {

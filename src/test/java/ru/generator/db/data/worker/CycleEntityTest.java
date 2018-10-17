@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.cycle.CycleObject3;
+import ru.generator.db.data.worker.data.cycle.CycleObjectOneToOne1;
+import ru.generator.db.data.worker.data.cycle.CycleObjectOneToOne2;
 import ru.generator.db.data.worker.data.cycle.CycleObjectRepository;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public class CycleEntityTest {
 
 
   @Test
-  public void cycleTest() throws DataGenerationException {
+  public void manyToOneCycleTest() throws DataGenerationException {
 	List<CycleObject3> chObjs = factory
 	  .generator()
 	  .repeate(3)
@@ -40,6 +42,20 @@ public class CycleEntityTest {
 	Assert.assertTrue(notNullSelf(dbObjs));
 	Assert.assertTrue(notNullCyclic(dbObjs));
 
+  }
+
+
+  @Test
+  public void oneToOneCycleTest() throws DataGenerationException {
+	String report = factory
+	  .generator()
+	  .repeate(3)
+	  .generateBy(CycleObjectOneToOne1.class)
+	  .generateBy(CycleObjectOneToOne2.class)
+	  .withException()
+	  .report();
+
+	System.out.println(report);
   }
 
   private boolean notNullSelf(List<CycleObject3> dbObjs) {

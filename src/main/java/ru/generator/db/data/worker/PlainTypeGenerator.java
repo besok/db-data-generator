@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -43,6 +44,7 @@ public interface PlainTypeGenerator {
 
   Function<MetaData.Column, Long> longVal();
 
+  Function<MetaData.Column, ? extends Enum<?>> enumVal();
 
   default Object generate(Class<?> clazz, MetaData.Column metaDataColumn) {
 	switch (clazz.getSimpleName()) {
@@ -77,6 +79,10 @@ public interface PlainTypeGenerator {
 	  case "long":
 	  case "Long":
 		return longVal().apply(metaDataColumn);
+	}
+
+	if(!Objects.isNull(clazz.getSuperclass()) && clazz.getSuperclass().equals(Enum.class)){
+	  return enumVal().apply(metaDataColumn);
 	}
 	return null;
   }
