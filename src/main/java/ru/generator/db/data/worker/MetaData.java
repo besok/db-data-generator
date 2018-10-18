@@ -23,7 +23,7 @@ public class MetaData {
   private Header header;
   private boolean plain;
   private Id id;
-  private Map<Field, MetaData> dependencies;
+  private Map<Field, Dependency> dependencies;
   private Map<Field, MetaData> neighbours;
   private Set<Column> plainColumns;
 
@@ -41,7 +41,7 @@ public class MetaData {
 	return Objects.hash(aClass, header);
   }
 
-  public MetaData dependency(Field f) {
+  public Dependency dependency(Field f) {
 	return dependencies.get(f);
   }
 
@@ -115,5 +115,11 @@ public class MetaData {
 
   }
 
-
+  @AllArgsConstructor(staticName = "of")
+  @Getter
+  protected static class Dependency {
+	private MetaData md;
+	private boolean optional;
+	private boolean alwaysNew;
+  }
 }

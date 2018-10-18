@@ -28,7 +28,7 @@ public class MetaDataGraphBuilder {
 
 
   /**
-   * @throws DataGenerationException it is wrapper for {@link ClassNotFoundException}
+   * @throws DataGenerationException it depends on class neighbours.
    */
   public void buildRelation() throws DataGenerationException {
     List<MetaData> mdList = this.mdList.getMetaDataList();
@@ -37,7 +37,12 @@ public class MetaDataGraphBuilder {
       for (Field field : md.getDependencies().keySet()) {
         this.mdList
 		  .byClass(field.getType())
-		  .ifPresent(p -> md.getDependencies().putIfAbsent(field, p));
+		  .ifPresent(
+		    p ->
+			  md
+				.getDependencies()
+				.compute(field,
+				  (k,v)-> MetaData.Dependency.of(p,v.isOptional(),v.isAlwaysNew())));
       }
 
       for (Field field : md.getNeighbours().keySet()) {

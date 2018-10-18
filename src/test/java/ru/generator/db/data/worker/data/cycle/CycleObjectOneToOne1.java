@@ -17,7 +17,7 @@ public class CycleObjectOneToOne1 {
   private int id;
 
 
-  @OneToOne()
+  @OneToOne
   private CycleObjectOneToOne2 cycle;
 
 

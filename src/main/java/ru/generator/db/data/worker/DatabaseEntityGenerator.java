@@ -100,7 +100,7 @@ class DatabaseEntityGenerator {
 			idField.set(obj, generatedId);
 		  }
 		} else {
-		  MetaData before = metaData.dependency(f);
+		  MetaData.Dependency before = metaData.dependency(f);
 		  if (before == null) {
 			Class<?> type = f.getType();
 			Optional<MetaData.Column> column = metaData.findByField(f);
@@ -111,10 +111,8 @@ class DatabaseEntityGenerator {
 			} else {
 			  if (metaData.neighbour(f) == null) {
 				// FIXME: 10/17/2018 Define all cases for that.
-				// -> not in neighbours,depends,plains
-				// - optional = true
-				// - it is not entity(enum)
-
+				// -> not in neighbours,depends items or plain items
+				// may be it is optional
 			  }
 			}
 		  } else {
@@ -123,15 +121,27 @@ class DatabaseEntityGenerator {
 //			cycle example: obj1 has field with obj2 and obj2 has field with obj3 and obj3 has field with obj1.
 //			if we have a cycle we will take obj from cache or do nothing.
 
-			if (path.stream().anyMatch(before::equals)) {
-			  List<Object> beforeList = cache.getValueList(before);
-			  if (!beforeList.isEmpty()) {
-				f.set(obj, randomFromList(beforeList));
+			MetaData md = before.getMd();
+			if (path.stream().anyMatch(md::equals)) {
+
+// 			we have to process case when we have a cycle but it's a OneToOne relation.
+//			In that case, if it is field isn't optional we have to generate it.
+//			Otherwise, we try to get it from cache.
+			  if (before.isAlwaysNew() && !before.isOptional()) {
+			    Optional<Object> beforePojo = generateAndSaveObject(md, path);
+				if (beforePojo.isPresent()) {
+				  f.set(obj, beforePojo.get());
+				}
+			  } else {
+				Optional<Object> valOpt = randomFromCache(md);
+				if (valOpt.isPresent()) {
+				  f.set(obj, valOpt.get());
+				}
 			  }
 
 			} else {
-			  path.addFirst(before);
-			  Optional<Object> beforePojo = generateAndSaveObject(before, path);
+			  path.addFirst(md);
+			  Optional<Object> beforePojo = generateAndSaveObject(md, path);
 			  if (beforePojo.isPresent()) {
 				f.set(obj, beforePojo.get());
 			  }
@@ -150,8 +160,11 @@ class DatabaseEntityGenerator {
   }
 
 
-  private Object randomFromList(List<Object> list) {
-	return list.get(new Random().nextInt(list.size()));
+  private Optional<Object> randomFromCache(MetaData md) {
+	List<Object> list = cache.getValueList(md);
+	if (Objects.isNull(list) || list.size() == 0)
+	  return Optional.empty();
+	return Optional.of(list.get(new Random().nextInt(list.size())));
   }
 
   /**
@@ -169,7 +182,7 @@ class DatabaseEntityGenerator {
 	} else {
 	  throw
 		new IllegalStateGeneratorException(" the method rule can be invoked only " +
-		  "with a class ComplexPlainTypeGenerator or it's childs.");
+		  "with a class ComplexPlainTypeGenerator or it's children.");
 	}
   }
 

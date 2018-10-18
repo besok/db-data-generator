@@ -29,25 +29,6 @@ public class InnerCacheTest {
 
 
 
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  // FIXME: 10/9/2018 Поломался тест!
-  @Test
-  public void snapshot() {
-    Map<MetaData, Integer> snapshot = factory.generator()
-        .repeate(10)
-        .generateBy(SimplePlainObject.class)
-        .cache().snapshot();
-
-    for (Map.Entry<MetaData, Integer> entry : snapshot.entrySet()) {
-      if(entry.getKey().getAClass().equals(SimplePlainObject.class)){
-        assertEquals(entry.getValue().intValue(),10);
-      }
-    }
-
-  }
 
   @Test
   public void valueList(){

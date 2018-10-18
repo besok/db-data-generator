@@ -81,9 +81,11 @@ public interface PlainTypeGenerator {
 		return longVal().apply(metaDataColumn);
 	}
 
-	if(!Objects.isNull(clazz.getSuperclass()) && clazz.getSuperclass().equals(Enum.class)){
+	if(!Objects.isNull(clazz.getSuperclass())
+	  && clazz.getSuperclass().equals(Enum.class)){
 	  return enumVal().apply(metaDataColumn);
 	}
+
 	return null;
   }
 }
