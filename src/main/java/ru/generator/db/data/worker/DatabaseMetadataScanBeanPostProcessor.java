@@ -53,8 +53,7 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 		Table tbl = jt.getDeclaredAnnotation(Table.class);
 		metaData.setHeader(jt.getName(), tbl.name(), tbl.schema());
 	  } else {
-		// FIXME: 10/18/2018 Сделать генерацию из имени класса
-		metaData.setHeader(jt.getName(), "", "");
+		metaData.setHeader(jt.getName(), fromClass(jt), "");
 	  }
 	  initMd(metaData);
 
@@ -86,6 +85,11 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 
 	}
 	return bean;
+  }
+
+  private String fromClass(Class<?> jt) {
+	String name = jt.getClass().getSimpleName();
+	return name.substring(0,1).toLowerCase() + name.substring(1);
   }
 
   private boolean processOneToOne(MetaData metaData, Field f) {
