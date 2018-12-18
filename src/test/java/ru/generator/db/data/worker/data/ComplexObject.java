@@ -19,7 +19,7 @@ public class ComplexObject {
 
   private String name;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "plain_id")
   private SimplePlainObject2 plain;
 }

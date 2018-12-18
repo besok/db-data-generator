@@ -6,10 +6,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.generator.db.data.worker.data.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.concurrent.TimeUnit.*;
 import static org.junit.Assert.*;
@@ -21,6 +24,7 @@ import static org.junit.Assert.*;
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@Transactional
 public class CommonSimpleObjectTest {
 
 
@@ -30,10 +34,6 @@ public class CommonSimpleObjectTest {
   private SimplePlainObjectRepository repository;
   @Autowired
   private ComplexObjectRepository complexObjectRepository;
-  @Autowired
-  private SimplePlainObject2Repository simplePlainObject2Repository;
-  @Autowired
-  private SimplePlaiObjectGenIdRepository simplePlaiObjectGenIdRepository;
 
   @Before
   public void clean() {
@@ -147,6 +147,12 @@ public class CommonSimpleObjectTest {
         .finish();
 
     assertEquals(500,complexObjectRepository.findAll().size());
+	int id = generator.cache().getValueList(ComplexObject.class).get(0).getId();
+	Optional<ComplexObject> co = complexObjectRepository.findById(id);
+	assertTrue(co.isPresent());
+
+	SimplePlainObject2 plain = co.get().getPlain();
+	assertNotNull(plain);
   }
 
   private Object[] toArray(List<SimplePlainObject> objs) {
