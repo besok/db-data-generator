@@ -133,6 +133,8 @@ class DatabaseEntityGenerator {
 				  Object beforePojo = beforePojoOpt.get();
 				  f.set(obj, beforePojo);
 				  if (before.isForJoinPrimaryKey()) {
+// 			we must check and if we have JoinPrimaryKey for OneToOne
+//			we must set id from relation and set itself to the related entity
 					MetaData beforeMd = before.getMd();
 					Object idValue = beforeMd.getIdValue(beforePojo);
 					metaData.setIdValue(obj, idValue);
