@@ -88,21 +88,25 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
   }
 
   private String fromClass(Class<?> jt) {
-	String name = jt.getClass().getSimpleName();
-	return name.substring(0,1).toLowerCase() + name.substring(1);
+	String name = jt.getSimpleName();
+	return name.substring(0, 1).toLowerCase() + name.substring(1);
   }
 
   private boolean processOneToOne(MetaData metaData, Field f) {
 	OneToOne an = f.getDeclaredAnnotation(OneToOne.class);
+	boolean joinPrimaryKey = false;
+	if (f.isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
+	  joinPrimaryKey = true;
+	}
 	metaData
 	  .getDependencies()
-	  .put(f, of(null, an.optional(), true));
+	  .put(f, of(null, an.optional(), true, joinPrimaryKey));
 	return false;
   }
 
   private boolean processManyToOne(MetaData metaData, Field f) {
 	ManyToOne an = f.getDeclaredAnnotation(ManyToOne.class);
-	metaData.getDependencies().put(f, of(null, an.optional(), false));
+	metaData.getDependencies().put(f, of(null, an.optional(), false,false));
 	return false;
   }
 
@@ -112,6 +116,7 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 	metaData.setPlainColumns(new HashSet<>());
 	metaData.setPlain(false);
   }
+
   private void processPlainObj(MetaData metaData, Field f) {
 	if (f.isAnnotationPresent(Column.class)) {
 	  Column col = f.getAnnotation(Column.class);

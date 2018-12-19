@@ -10,12 +10,17 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.generator.db.data.worker.data.*;
+import ru.generator.db.data.worker.data.similar.p1.SimilarObject;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static java.util.concurrent.TimeUnit.*;
 import static org.junit.Assert.*;
+import static ru.generator.db.data.worker.Action.*;
+import static ru.generator.db.data.worker.ColumnPredicate.*;
 
 // 2018.07.24 
 
@@ -119,13 +124,14 @@ public class CommonSimpleObjectTest {
   }
   @Test
   public void asyncTest(){
-    factory
-        .generator().async()
-        .repeate(100)
-        .generateBy(SimplePlainObject.class)
-        .finish();
+	factory
+	  .generator()
+	  .async()
+	  .repeate(100)
+	  .generateBy(SimplePlainObject.class)
+	  .finish();
 
-   assertEquals(100,repository.findAll().size());
+	assertEquals(100,repository.findAll().size());
 
   }
   @Test

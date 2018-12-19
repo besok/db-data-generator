@@ -36,6 +36,44 @@ public class MetaData {
 	  Objects.equals(header, metaData.header);
   }
 
+  public Optional<MetaData> findForId() {
+	return this.dependencies.values().stream()
+	  .filter(Dependency::isForJoinPrimaryKey)
+	  .map(Dependency::getMd)
+	  .findAny();
+  }
+
+  public Object getIdValue(Object entity) {
+	Field idField = this.getId().idField;
+	try {
+	  return idField.get(entity);
+	} catch (IllegalAccessException e) {
+	  throw new IllegalStateGeneratorException(e, "get error from id field");
+	}
+  }
+
+  public Object setIdValue(Object entity, Object idValue) {
+	try {
+	  id.getIdField().set(entity, idValue);
+	  return entity;
+	} catch (IllegalAccessException e) {
+	  throw new IllegalStateGeneratorException(e, "get error from id field");
+	}
+  }
+
+  public Object setValue(Object entity, MetaData fieldMetaData, Object value) {
+	for (Map.Entry<Field, Dependency> e : dependencies.entrySet()) {
+	  if (e.getValue().getMd().equals(fieldMetaData)) {
+		try {
+		  e.getKey().set(entity, value);
+		} catch (IllegalAccessException e1) {
+		  throw new IllegalStateGeneratorException(e1, "get error from id field");
+		}
+	  }
+	}
+	return entity;
+  }
+
   @Override
   public int hashCode() {
 	return Objects.hash(aClass, header);
@@ -51,7 +89,7 @@ public class MetaData {
 
   Optional<Column> findByField(Field field) {
 	for (Column c : plainColumns) {
-	  if (Objects.equals(field.getName(), c.getField()))
+	  if (Objects.equals(field.getName(), c.field))
 		return Optional.of(c);
 	}
 	return Optional.empty();
@@ -81,12 +119,28 @@ public class MetaData {
 	return id.idField.equals(field);
   }
 
-  @AllArgsConstructor
+  @AllArgsConstructor(staticName = "of")
+  @Getter
+  @Setter
+  protected static class Dependency {
+	private MetaData md;
+	private boolean optional;
+	private boolean alwaysNew;
+	private boolean forJoinPrimaryKey;
+
+  }
+
   @Getter
   public class Header {
 	private String name;
 	private String table;
 	private String schema;
+
+	public Header(String name, String table, String schema) {
+	  this.name = name;
+	  this.table = table;
+	  this.schema = schema;
+	}
 
 	public String toString() {
 	  return "[" + name + "][" + schema + "." + table + "]";
@@ -94,7 +148,7 @@ public class MetaData {
   }
 
   @Getter
-  @Setter(AccessLevel.PACKAGE)
+  @Setter
   @AllArgsConstructor
   public class Column {
 	private String field;
@@ -112,14 +166,5 @@ public class MetaData {
   public class Id {
 	private Field idField;
 	private boolean generated;
-
-  }
-
-  @AllArgsConstructor(staticName = "of")
-  @Getter
-  protected static class Dependency {
-	private MetaData md;
-	private boolean optional;
-	private boolean alwaysNew;
   }
 }

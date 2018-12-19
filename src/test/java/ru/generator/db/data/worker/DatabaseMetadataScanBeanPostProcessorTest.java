@@ -46,7 +46,7 @@ public class DatabaseMetadataScanBeanPostProcessorTest {
     MetaData meta = mdl.byClass(NakedObject.class).get();
     MetaData metaCO = mdl.byClass(ComplexObject.class).get();
 
-    assertEquals("",meta.getHeader().getTable());
+    assertEquals("nakedObject",meta.getHeader().getTable());
     assertEquals("",meta.getHeader().getSchema());
     assertEquals("test",metaCO.getHeader().getSchema());
   }

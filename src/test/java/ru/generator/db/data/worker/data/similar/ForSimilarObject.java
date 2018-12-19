@@ -11,7 +11,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@Table(schema = "test",name = "for_similar_object")
+@Table(schema = "test", name = "for_similar_object")
 public class ForSimilarObject {
 
   @Id
@@ -19,7 +19,11 @@ public class ForSimilarObject {
   private int id;
 
 
-  @ManyToOne @JoinColumn
+  private String name;
+
+
+  @ManyToOne
+  @JoinColumn
   private SimilarObject obj;
 
 }

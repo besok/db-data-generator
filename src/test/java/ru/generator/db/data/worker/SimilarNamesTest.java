@@ -10,6 +10,10 @@ import ru.generator.db.data.worker.data.similar.ForSimilarObject;
 import ru.generator.db.data.worker.data.similar.p1.SimilarObject;
 import ru.generator.db.data.worker.data.similar.p2.SimilarObjectRepository;
 
+import java.util.concurrent.TimeUnit;
+
+import static ru.generator.db.data.worker.MetronomePredicate.*;
+
 /**
  * Created by Boris Zhguchev on 16/10/2018
  */

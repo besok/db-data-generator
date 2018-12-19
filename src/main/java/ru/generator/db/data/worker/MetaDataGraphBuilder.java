@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * MetaData relations builder.
@@ -23,7 +24,7 @@ public class MetaDataGraphBuilder {
 
   @Autowired
   public MetaDataGraphBuilder(MetaDataList mdList) {
-    this.mdList = mdList;
+	this.mdList = mdList;
   }
 
 
@@ -31,35 +32,39 @@ public class MetaDataGraphBuilder {
    * @throws DataGenerationException it depends on class neighbours.
    */
   public void buildRelation() throws DataGenerationException {
-    List<MetaData> mdList = this.mdList.getMetaDataList();
+	List<MetaData> mdList = this.mdList.getMetaDataList();
 
-    for (MetaData md : mdList) {
-      for (Field field : md.getDependencies().keySet()) {
-        this.mdList
+	for (MetaData md : mdList) {
+	  for (Field field : md.getDependencies().keySet()) {
+		this.mdList
 		  .byClass(field.getType())
-		  .ifPresent(
-		    p ->
-			  md
-				.getDependencies()
-				.compute(field,
-				  (k,v)-> MetaData.Dependency.of(p,v.isOptional(),v.isAlwaysNew())));
-      }
+		  .ifPresent(p -> md.getDependencies().compute(field, compute(p)));
+	  }
 
-      for (Field field : md.getNeighbours().keySet()) {
-        try {
-          this.mdList.byClass(fromColl(field)).ifPresent(p -> md.getNeighbours().put(field, p));
-        } catch (ClassNotFoundException e) {
-          throw new DataGenerationException(
-              "Class not found = [" + md.getAClass().getSimpleName() + "] , field = [" + field.getName() + "]", e);
-        }
-      }
-    }
+	  for (Field field : md.getNeighbours().keySet()) {
+		try {
+		  this.mdList.byClass(fromColl(field)).ifPresent(p -> md.getNeighbours().put(field, p));
+		} catch (ClassNotFoundException e) {
+		  throw new DataGenerationException(
+			"Class not found = [" + md.getAClass().getSimpleName() + "] , field = [" + field.getName() + "]", e);
+		}
+	  }
+	}
 
 
   }
 
+  // we have to reverse JoinPrimaryKey flag because it shows parent class but we have to get child class.
+  private BiFunction<Field, MetaData.Dependency, MetaData.Dependency> compute(MetaData p) {
+	return (k, v) -> {
+	  boolean forJoinPrimaryKey = v.isForJoinPrimaryKey();
+	  v.setForJoinPrimaryKey(!forJoinPrimaryKey);
+	  return MetaData.Dependency.of(p, v.isOptional(), v.isAlwaysNew(), !forJoinPrimaryKey);
+	};
+  }
+
   private Class<?> fromColl(Field f) throws ClassNotFoundException {
-    Type type = ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0];
-    return Class.forName(type.getTypeName());
+	Type type = ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0];
+	return Class.forName(type.getTypeName());
   }
 }

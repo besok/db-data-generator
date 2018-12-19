@@ -128,9 +128,19 @@ class DatabaseEntityGenerator {
 //			In that case, if it is field isn't optional we have to generate it.
 //			Otherwise, we try to get it from cache.
 			  if (before.isAlwaysNew() && !before.isOptional()) {
-			    Optional<Object> beforePojo = generateAndSaveObject(md, path);
-				if (beforePojo.isPresent()) {
-				  f.set(obj, beforePojo.get());
+				Optional<Object> beforePojoOpt = generateAndSaveObject(md, path);
+				if (beforePojoOpt.isPresent()) {
+				  Object beforePojo = beforePojoOpt.get();
+				  f.set(obj, beforePojo);
+				  if (before.isForJoinPrimaryKey()) {
+					MetaData beforeMd = before.getMd();
+					Object idValue = beforeMd.getIdValue(beforePojo);
+					metaData.setIdValue(obj, idValue);
+					save(aClass, obj).ifPresent(o -> {
+					  beforeMd.setValue(beforePojo, metaData, o);
+					  save(beforeMd.getAClass(), beforePojo);
+					});
+				  }
 				}
 			  } else {
 				Optional<Object> valOpt = randomFromCache(md);
@@ -146,10 +156,10 @@ class DatabaseEntityGenerator {
 				f.set(obj, beforePojo.get());
 			  }
 			}
-
 		  }
 		}
 	  }
+
 	} catch (InstantiationException | IllegalAccessException e) {
 	  LOGGER.info("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
 	  throw new DataGenerationException("Reflection exception ", e);

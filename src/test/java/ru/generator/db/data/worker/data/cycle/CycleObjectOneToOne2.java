@@ -1,6 +1,7 @@
 package ru.generator.db.data.worker.data.cycle;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Data
+@ToString(exclude = "cycle")
 @Table(schema = "test",name = "cycle_object_121_2")
 public class CycleObjectOneToOne2 {
 
