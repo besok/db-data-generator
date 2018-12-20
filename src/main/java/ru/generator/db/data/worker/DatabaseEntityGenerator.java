@@ -85,7 +85,7 @@ class DatabaseEntityGenerator {
 	  return generateAndSaveSimpleObject(metaData);
 
 	Class<?> aClass = metaData.getAClass();
-	Object obj = null;
+	Object obj;
 	try {
 	  obj = aClass.newInstance();
 
@@ -116,46 +116,29 @@ class DatabaseEntityGenerator {
 			  }
 			}
 		  } else {
-
-//		    in that section we have to check for case when a path is cycling.
-//			cycle example: obj1 has field with obj2 and obj2 has field with obj3 and obj3 has field with obj1.
-//			if we have a cycle we will take obj from cache or do nothing.
-
 			MetaData md = before.getMd();
-			if (path.stream().anyMatch(md::equals)) {
 
 // 			we have to process case when we have a cycle but it's a OneToOne relation.
 //			In that case, if it is field isn't optional we have to generate it.
 //			Otherwise, we try to get it from cache.
-			  if (before.isAlwaysNew() && !before.isOptional()) {
-				Optional<Object> beforePojoOpt = generateAndSaveObject(md, path);
-				if (beforePojoOpt.isPresent()) {
-				  Object beforePojo = beforePojoOpt.get();
-				  f.set(obj, beforePojo);
-				  if (before.isForJoinPrimaryKey()) {
+			if (!before.isOptional()) {
+			  Optional<Object> beforePojoOpt = generateAndSaveObject(md, path);
+			  if (beforePojoOpt.isPresent()) {
+				Object beforePojo = beforePojoOpt.get();
+				f.set(obj, beforePojo);
+				if (before.isForJoinPrimaryKey()) {
 // 			we must check and if we have JoinPrimaryKey for OneToOne
 //			we must set id from relation and set itself to the related entity
-					MetaData beforeMd = before.getMd();
-					Object idValue = beforeMd.getIdValue(beforePojo);
-					metaData.setIdValue(obj, idValue);
-					save(aClass, obj).ifPresent(o -> {
-					  beforeMd.setValue(beforePojo, metaData, o);
-					  save(beforeMd.getAClass(), beforePojo);
-					});
-				  }
-				}
-			  } else {
-				Optional<Object> valOpt = randomFromCache(md);
-				if (valOpt.isPresent()) {
-				  f.set(obj, valOpt.get());
+				  MetaData beforeMd = before.getMd();
+				  Object idValue = beforeMd.getIdValue(beforePojo);
+				  metaData.setIdValue(obj, idValue);
+				  beforeMd.setValue(beforePojo, metaData, obj);
 				}
 			  }
-
 			} else {
-			  path.addFirst(md);
-			  Optional<Object> beforePojo = generateAndSaveObject(md, path);
-			  if (beforePojo.isPresent()) {
-				f.set(obj, beforePojo.get());
+			  Optional<Object> valOpt = randomFromCache(md);
+			  if (valOpt.isPresent()) {
+				f.set(obj, valOpt.get());
 			  }
 			}
 		  }
@@ -168,7 +151,6 @@ class DatabaseEntityGenerator {
 	}
 	LOGGER.finest("plain object is being tried to save  = " + obj);
 	return save(aClass, obj).map(cache(metaData));
-
   }
 
 

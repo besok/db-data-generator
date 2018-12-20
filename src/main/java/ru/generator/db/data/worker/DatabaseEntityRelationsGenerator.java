@@ -47,7 +47,6 @@ class DatabaseEntityRelationsGenerator {
         if (Objects.isNull(collection)) {
           collection = createColFromInterface(f.getType()).newInstance();
         }
-        // FIXME: 8/13/2018 Изменить фунцию, что бы сначала брать из кеша, а затем генерить.
         ((Collection) collection).addAll(cache.getValueList(rightMetaData));
         save(metaData, e);
       } catch (InstantiationException | IllegalAccessException ex) {

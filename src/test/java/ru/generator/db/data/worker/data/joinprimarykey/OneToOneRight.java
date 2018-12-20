@@ -15,7 +15,8 @@ public class OneToOneRight {
   @Id
   private UUID id;
 
-  @OneToOne(optional = false)
+  @OneToOne(cascade = CascadeType.MERGE)
+  @PrimaryKeyJoinColumn
   private OneToOneLeft ent;
 
 }

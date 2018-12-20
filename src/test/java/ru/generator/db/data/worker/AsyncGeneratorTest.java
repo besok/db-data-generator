@@ -38,8 +38,6 @@ public class AsyncGeneratorTest {
         .generateBy(SimplePlainObject.class)
         .finish()
     ;
-
-
     assertEquals(50, repository.findAll().size());
   }
 
@@ -67,7 +65,6 @@ public class AsyncGeneratorTest {
             .generateBy(SimplePlainObject.class) // дубли
             .report()
             .split(System.lineSeparator()).length;
-
     assertEquals(2, length);
   }
 

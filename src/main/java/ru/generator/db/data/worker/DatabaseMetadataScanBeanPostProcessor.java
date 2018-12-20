@@ -165,4 +165,6 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 	}
 	return sb.toString();
   }
+
+  // TODO: 20.12.2018 process cascades
 }

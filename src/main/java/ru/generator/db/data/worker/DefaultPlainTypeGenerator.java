@@ -15,14 +15,6 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
   private Random random = new Random();
   private Long counter = 0L;
 
-  private String counter(int max) {
-    String counter = this.counter.toString();
-    if (counter.length() < max) {
-      return counter;
-    }
-    return counter.substring(0, max);
-  }
-
   @Override
   public Function<MetaData.Column, String> string()  {
     return c -> {
@@ -31,8 +23,6 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
       if (len == 0)
         return c.getColumn() + "-" + counter++;
       else {
-        // default 127 in db...
-        if (len == 255) len = 127;
         Random rand = new Random();
         char[] chars = new char[len];
         for (int i = 0; i < chars.length; i++) {

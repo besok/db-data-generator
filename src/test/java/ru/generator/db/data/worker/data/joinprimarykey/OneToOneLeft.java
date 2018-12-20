@@ -18,7 +18,6 @@ public class OneToOneLeft {
   private UUID id;
 
   @OneToOne
-  @PrimaryKeyJoinColumn
   private OneToOneRight ent;
 
 }

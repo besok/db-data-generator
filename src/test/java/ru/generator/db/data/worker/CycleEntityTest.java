@@ -59,8 +59,8 @@ public class CycleEntityTest {
 	  .withException()
 	  .cache();
 
-	Assert.assertEquals(12, cache.getValueList(CycleObjectOneToOne1.class).size());
-	Assert.assertEquals(9, cache.getValueList(CycleObjectOneToOne2.class).size());
+	Assert.assertEquals(6, cache.getValueList(CycleObjectOneToOne1.class).size());
+	Assert.assertEquals(6, cache.getValueList(CycleObjectOneToOne2.class).size());
   }
 
   private boolean notNullSelf(List<CycleObject3> dbObjs) {

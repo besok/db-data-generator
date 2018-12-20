@@ -22,6 +22,7 @@ This tool can be used in your spring data project for generating some data.
 * should set **@EnableDatabaseDataGenerator**
 * Tables with @OneToOne relations should field optional=true to be exist for one of that tables 
 * Tables with @oneToOne relations and @PrimaryKeyJoinColumn should have this annotation only one for this relation
+    * should have cascade for secondary entity with merge or all
 * add gradle dependency from your local repo :)  
 ```
 compile group: 'ru.generator.db.data', name: 'db-data-generator', version: '0.2'

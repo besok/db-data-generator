@@ -57,12 +57,13 @@ public class JoinPrimaryColumnTest {
   @Test
   @Transactional
   public void withGeneratorTest() throws DataGenerationException {
-    factory.generator()
+	InnerCache cache = factory.generator()
 	  .generateBy(OneToOneRight.class)
-	  .withException();
+	  .withException()
+	  .cache();
 
 	List<OneToOneLeft> leftAll = leftRepo.findAll();
-	List<OneToOneRight> rightAll =  rightRepo.findAll();
+	List<OneToOneRight> rightAll = rightRepo.findAll();
 
 	Assert.assertEquals(leftAll.size(), rightAll.size());
 	Assert.assertEquals(leftAll.get(0).getEnt(), rightAll.get(0));

@@ -6,21 +6,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import ru.generator.db.data.worker.data.*;
-import ru.generator.db.data.worker.data.similar.p1.SimilarObject;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.*;
-import static ru.generator.db.data.worker.Action.*;
-import static ru.generator.db.data.worker.ColumnPredicate.*;
 
 // 2018.07.24 
 
@@ -29,7 +22,6 @@ import static ru.generator.db.data.worker.ColumnPredicate.*;
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@Transactional
 public class CommonSimpleObjectTest {
 
 

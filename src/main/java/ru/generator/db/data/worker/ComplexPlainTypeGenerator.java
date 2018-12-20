@@ -36,14 +36,11 @@ public class ComplexPlainTypeGenerator extends AbstractPlainTypeGenerator {
   @SuppressWarnings("unchecked")
   public Object generate(Class<?> clazz, MetaData.Column metaDataColumn) {
 	Object val = delegate.generate(clazz, metaDataColumn);
-
 	List<FilterAction<?>> actions = mapperMap.getOrDefault(clazz.getSimpleName(), new ArrayList<>());
-
 	for (FilterAction action : actions) {
 	  if(action.predicate.test(metaDataColumn))
 	    val = action.action.process(val);
 	}
-
 	return val;
   }
 

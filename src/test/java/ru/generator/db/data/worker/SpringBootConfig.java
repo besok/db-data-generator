@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 @EntityScan("ru.generator.db.data.worker.data")
 @Configuration
 @SpringBootApplication
-@EnableTransactionManagement
 public class SpringBootConfig {
 
 
