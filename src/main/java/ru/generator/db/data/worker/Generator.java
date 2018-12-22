@@ -143,9 +143,9 @@ public class Generator {
       try {
         dbEntityGenerator.generateAndSaveObject(md);
         log.successInc();
-      } catch (DataGenerationException e) {
+      } catch (Throwable e) {
         log.failureInc();
-        this.exception=e;
+        this.exception=new DataGenerationException(e);
       }
     }
 
@@ -273,9 +273,13 @@ public class Generator {
   }
 
   private void process(MetaData metaData) throws DataGenerationException {
-    dbEntityGenerator.generateAndSaveObject(metaData);
-    dbEntityRelationsGenerator.generateMultiObjects(metaData);
-    log.successInc();
+    try {
+	  dbEntityGenerator.generateAndSaveObject(metaData);
+	  dbEntityRelationsGenerator.generateMultiObjects(metaData);
+	  log.successInc();
+	}catch (Throwable tr){
+      throw new DataGenerationException(tr);
+	}
   }
 
   /**

@@ -7,9 +7,9 @@ package ru.generator.db.data.worker;
  * @author Boris Zhguchev
  */
 public class DataGenerationException extends Exception {
-  private Exception exception;
+  private Throwable exception;
   private String mes;
-  public DataGenerationException(Exception exception) {
+  public DataGenerationException(Throwable exception) {
     this.exception = exception;
   }
 
