@@ -1,7 +1,9 @@
 package ru.generator.db.data.worker;
 // 2018.07.24 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.support.Repositories;
 
@@ -25,6 +27,7 @@ class DatabaseEntityGenerator {
   private PlainTypeGenerator plainValueGenerator;
   private IdSequenceRuleGenerator seqGen;
   private Repositories repositories;
+
 
   DatabaseEntityGenerator(ApplicationContext context, InnerCache cache) {
 	this.seqGen = new IdSequenceRuleGenerator(new IdSequenceGenerator(0), new HashMap<>());
@@ -76,11 +79,20 @@ class DatabaseEntityGenerator {
 
 
   protected Optional<Object> generateAndSaveObject(MetaData metaData) throws DataGenerationException {
-	return generateAndSaveObject(metaData, new ArrayDeque<>());
+
+	if (cache.alwaysNew)
+	  return generateAndSaveObject(metaData, true);
+
+	try {
+	  return generateAndSaveObject(metaData, false);
+	} catch (DataIntegrityViolationException ex) {
+	  LOGGER.info("exception[" + ex.getClass() + "] - " + ex.getMessage() + " trying generate a new one.");
+	  return generateAndSaveObject(metaData, true);
+	}
   }
 
 
-  protected Optional<Object> generateAndSaveObject(MetaData metaData, Deque<MetaData> path) throws DataGenerationException {
+  protected Optional<Object> generateAndSaveObject(MetaData metaData, boolean shouldNew) throws DataGenerationException {
 	if (metaData.isPlain())
 	  return generateAndSaveSimpleObject(metaData);
 
@@ -118,11 +130,15 @@ class DatabaseEntityGenerator {
 		  } else {
 			MetaData md = before.getMd();
 
+			if (md == null) {
+			  throw new NoRepositoryException(f.getType().getName());
+			}
+
 // 			we have to process case when we have a cycle but it's a OneToOne relation.
 //			In that case, if it is field isn't optional we have to generate it.
 //			Otherwise, we try to get it from cache.
-			if (!before.isOptional()) {
-			  Optional<Object> beforePojoOpt = generateAndSaveObject(md, path);
+			if (!before.isOptional() || shouldNew) {
+			  Optional<Object> beforePojoOpt = generateAndSaveObject(md);
 			  if (beforePojoOpt.isPresent()) {
 				Object beforePojo = beforePojoOpt.get();
 				f.set(obj, beforePojo);

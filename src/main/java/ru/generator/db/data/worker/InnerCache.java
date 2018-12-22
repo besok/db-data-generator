@@ -32,6 +32,9 @@ public class InnerCache {
   @Value("${generator.cache-entity-size:20}")
   private int cacheSize;
 
+  @Value("${generator.always-new:false}")
+  protected boolean alwaysNew;
+
   protected Repositories repositories;
   protected final MetaDataList metaDataList;
 

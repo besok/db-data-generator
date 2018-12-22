@@ -44,7 +44,10 @@ public interface PlainTypeGenerator {
 
   Function<MetaData.Column, Long> longVal();
 
+  Function<MetaData.Column, Short> shortVal();
+
   Function<MetaData.Column, ? extends Enum<?>> enumVal();
+
 
   default Object generate(Class<?> clazz, MetaData.Column metaDataColumn) {
 	switch (clazz.getSimpleName()) {
@@ -62,6 +65,9 @@ public interface PlainTypeGenerator {
 		return doubleVal().apply(metaDataColumn);
 	  case "Date":
 		return date().apply(metaDataColumn);
+	  case "short":
+	  case "Short":
+	    return shortVal().apply(metaDataColumn);
 	  case "LocalDateTime":
 		return localDateTime().apply(metaDataColumn);
 	  case "LocalDate":
@@ -81,8 +87,8 @@ public interface PlainTypeGenerator {
 		return longVal().apply(metaDataColumn);
 	}
 
-	if(!Objects.isNull(clazz.getSuperclass())
-	  && clazz.getSuperclass().equals(Enum.class)){
+	if (!Objects.isNull(clazz.getSuperclass())
+	  && clazz.getSuperclass().equals(Enum.class)) {
 	  return enumVal().apply(metaDataColumn);
 	}
 

@@ -27,6 +27,9 @@ public class SimplePlainObject {
   private String name;
   private BigDecimal sum;
 
+  private short shortV1;
+  private Short shortV2;
+
   private boolean plain;
   private Integer code;
   private Date created;

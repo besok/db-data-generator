@@ -83,7 +83,7 @@ public class Generator {
     } else {
       DataGenerationException ex =
           new DataGenerationException("MetaData class " + cl.getName()
-              + " is not found. Please check your configuration", new IllegalAccessException());
+              + " is not found. Please check your configuration", new IllegalArgumentException());
       LOGGER.finest("generation by class " + cl.getSimpleName() + "has been failed - " + ex.toString());
       log.failureInc();
       this.exception=ex;

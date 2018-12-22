@@ -83,8 +83,13 @@ public abstract class AbstractPlainTypeGenerator implements PlainTypeGenerator {
   }
 
   @Override
+  public Function<MetaData.Column, Short> shortVal() {
+	return unpack((short) 0);
+  }
+
+  @Override
   public Function<MetaData.Column, ? extends Enum<?>> enumVal() {
-    return col ->{
+	return col -> {
 	  Object[] consts = col.getAClass().getEnumConstants();
 	  return (Enum<?>) consts[new Random().nextInt(consts.length)];
 	};
