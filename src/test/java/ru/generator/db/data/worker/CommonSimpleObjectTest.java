@@ -10,6 +10,7 @@ import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -161,13 +162,26 @@ public class CommonSimpleObjectTest {
   @Test
   public void shortValTest() {
 	SimplePlainObject v = factory.generator()
-	  .rule(FIELD("shortV1"),CONST((short)1),short.class)
-	  .rule(FIELD("shortV2"),CONST((short)2),Short.class)
+	  .rule(FIELD("shortV1"), CONST((short) 1), short.class)
+	  .rule(FIELD("shortV2"), CONST((short) 2), Short.class)
 	  .generateBy(SimplePlainObject.class)
 	  .cache().getValueList(SimplePlainObject.class)
 	  .get(0);
 	Assert.assertEquals(v.getShortV1(), (short) 1);
-	Assert.assertEquals(v.getShortV2(), new Short((short)2));
+	Assert.assertEquals(v.getShortV2(), new Short((short) 2));
+  }
+
+  @Test
+  public void precisionAndScaleTest() throws DataGenerationException {
+	Optional<SimplePlainObject2> lastOpt = factory.generator()
+	  .generateBy(SimplePlainObject2.class)
+	  .withException()
+	  .cache().last(SimplePlainObject2.class);
+	Assert.assertTrue(lastOpt.isPresent());
+	SimplePlainObject2 last = lastOpt.get();
+	Assert.assertTrue(last.getField1().compareTo(new BigDecimal(100000)) < 0);
+	Assert.assertTrue(last.getField2().compareTo(new BigDecimal(10000000000L)) < 0);
+	Assert.assertTrue(last.getField3()< 10);
   }
 
   private Object[] toArray(List<SimplePlainObject> objs) {

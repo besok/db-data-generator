@@ -123,9 +123,11 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 	  metaData.addPlainColumn(
 		f.getName(),
 		col.name().equals("") ? camelToSnake(f.getName()) : col.name(),
-		col.length(), f.getType(), col.nullable(), isCollection(f), f);
+		col.length(), f.getType(), col.nullable(), isCollection(f),
+		f,col.precision(),col.scale());
 	} else {
-	  metaData.addPlainColumn(f.getName(), camelToSnake(f.getName()), 0, f.getType(), true, isCollection(f), f);
+	  metaData.addPlainColumn(f.getName(), camelToSnake(f.getName()), 0, f.getType(), true,
+		isCollection(f), f,0,0);
 	}
   }
 

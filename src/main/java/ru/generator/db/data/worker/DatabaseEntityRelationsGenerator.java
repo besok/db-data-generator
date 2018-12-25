@@ -13,72 +13,77 @@ import java.util.logging.Logger;
 
 /**
  * @author Boris Zhguchev
- *
+ * <p>
  * inner generator for db relations
  */
 @Service
 @SuppressWarnings("unchecked")
 class DatabaseEntityRelationsGenerator {
 
-  private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
-
   @Getter
   protected final InnerCache cache;
+  private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
 
 
   @Autowired
   public DatabaseEntityRelationsGenerator(InnerCache cache) {
-    this.cache = cache;
+	this.cache = cache;
+  }
+
+  void generateRelates(MetaData md, Object obj) throws DataGenerationException {
+	for (Map.Entry<Field, MetaData> nEntry : md.getNeighbours().entrySet()) {
+	  processCollection(md, obj, nEntry.getKey(), nEntry.getValue());
+	}
   }
 
   void generateMultiObjects(MetaData metaData) throws DataGenerationException {
-    for (Object valueList : cache.getValueList(metaData)) {
-      for (Map.Entry<Field, MetaData> neigbourEntry : metaData.getNeighbours().entrySet()) {
-        processCollection(metaData, valueList, neigbourEntry.getKey(), neigbourEntry.getValue());
-      }
-    }
+	for (Object valueList : cache.getValueList(metaData)) {
+	  for (Map.Entry<Field, MetaData> neigbourEntry : metaData.getNeighbours().entrySet()) {
+		processCollection(metaData, valueList, neigbourEntry.getKey(), neigbourEntry.getValue());
+	  }
+	}
   }
 
   private void processCollection(MetaData metaData, Object e, Field f, MetaData rightMetaData) throws DataGenerationException {
-    if (Collection.class.isAssignableFrom(f.getType())) {
-      f.setAccessible(true);
-      try {
-        Object collection = f.get(e);
-        if (Objects.isNull(collection)) {
-          collection = createColFromInterface(f.getType()).newInstance();
-        }
-        ((Collection) collection).addAll(cache.getValueList(rightMetaData));
-        save(metaData, e);
-      } catch (InstantiationException | IllegalAccessException ex) {
-        LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
-        throw new DataGenerationException("Reflection exception ", ex);
-      }
-    }
+	if (Collection.class.isAssignableFrom(f.getType())) {
+	  f.setAccessible(true);
+	  try {
+		Object collection = f.get(e);
+		if (Objects.isNull(collection)) {
+		  collection = createColFromInterface(f.getType()).newInstance();
+		}
+		((Collection) collection).addAll(cache.getValueList(rightMetaData));
+		save(metaData, e);
+	  } catch (InstantiationException | IllegalAccessException ex) {
+		LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
+		throw new DataGenerationException("Reflection exception ", ex);
+	  }
+	}
   }
 
   private Object save(MetaData metaData, Object o) throws DataGenerationException {
-    Optional<Object> rep = cache.repositories.getRepositoryFor(metaData.getAClass());
-    if (rep.isPresent()) {
-      try {
-        return ((JpaRepository) rep.get()).save(o);
-      } catch (DataIntegrityViolationException e) {
-        LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
-        throw new DataGenerationException("in most cases relation has already been", e);
-      }
-    } else
-      throw new DataGenerationException("repository not found", new IllegalArgumentException());
+	Optional<Object> rep = cache.repositories.getRepositoryFor(metaData.getAClass());
+	if (rep.isPresent()) {
+	  try {
+		return ((JpaRepository) rep.get()).save(o);
+	  } catch (DataIntegrityViolationException e) {
+		LOGGER.finest("exception's been caught: " + e.getClass().getSimpleName() + " for " + metaData.getAClass().getSimpleName());
+		throw new DataGenerationException("in most cases relation has already been", e);
+	  }
+	} else
+	  throw new DataGenerationException("repository not found", new IllegalArgumentException());
 
   }
 
 
   private Class<?> createColFromInterface(Class<?> cl) {
-    switch (cl.getSimpleName()) {
-      case "Set":
-        return HashSet.class;
-      case "List":
-        return ArrayList.class;
-    }
-    return cl;
+	switch (cl.getSimpleName()) {
+	  case "Set":
+		return HashSet.class;
+	  case "List":
+		return ArrayList.class;
+	}
+	return cl;
   }
 
 }

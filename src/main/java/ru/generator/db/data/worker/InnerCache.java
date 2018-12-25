@@ -24,21 +24,27 @@ import static java.util.stream.Collectors.*;
 @Service
 @SuppressWarnings("unchecked")
 public class InnerCache {
+  protected final MetaDataList metaDataList;
+  /**
+   * this is a condition for generate always new entities.
+   */
+  @Value("${generator.always-new:false}")
+  protected boolean alwaysNew;
+  protected Repositories repositories;
   private Logger LOGGER = Logger.getLogger(DatabaseDataGeneratorFactory.class.getName());
-
   /**
    * this is a cache size for generation many2many relation.
    */
   @Value("${generator.cache-entity-size:20}")
   private int cacheSize;
-
-  @Value("${generator.always-new:false}")
-  protected boolean alwaysNew;
-
-  protected Repositories repositories;
-  protected final MetaDataList metaDataList;
-
   private ConcurrentMap<MetaData, List<Object>> cache;
+
+  public InnerCache(MetaDataList metaDataList, ApplicationContext context) {
+	this.metaDataList = metaDataList;
+	repositories = new Repositories(context);
+	cache = new ConcurrentHashMap<>();
+  }
+
   /**
    * Get cache snapshot
    *
@@ -46,112 +52,113 @@ public class InnerCache {
    */
   // FIXME: 9/9/2018 Сделать обьект Snapshot и сделать вызов
   public Map<MetaData, Integer> snapshot() {
-    return cache
-        .entrySet()
-        .stream()
-        .collect(toMap(Map.Entry::getKey, e -> e.getValue().size()));
+	return cache
+	  .entrySet()
+	  .stream()
+	  .collect(toMap(Map.Entry::getKey, e -> e.getValue().size()));
   }
 
   public int cacheEntitySize() {
-    return cacheSize;
+	return cacheSize;
   }
 
   /**
    * get value list by Class
    */
   public <T> List<T> getValueList(Class<T> cl) {
-    return
-        metaDataList
-            .byClass(cl)
-            .map(cache::get)
-            .map(l -> castList(l, cl))
-            .orElseGet(ArrayList::new);
+	return
+	  metaDataList
+		.byClass(cl)
+		.map(cache::get)
+		.map(l -> castList(l, cl))
+		.orElseGet(ArrayList::new);
   }
 
+  /**
+   * get last inserted value
+   */
+  public <T> Optional<T> last(Class<T> cl) {
+	List<T> valueList = getValueList(cl);
+	if (valueList.isEmpty())
+	  return Optional.empty();
+	return Optional.of(valueList.get(valueList.size() - 1));
+  }
 
   /**
    * get value list by {@link MetaData}
    */
   List<Object> getValueList(MetaData p) {
-    List<Object> obj = cache.get(p);
-    return obj == null ? new ArrayList<>() : obj;
+	List<Object> obj = cache.get(p);
+	return obj == null ? new ArrayList<>() : obj;
   }
 
   private <T> List<T> castList(List<Object> list, Class<T> cl) {
-    return list.stream().map(cl::cast).collect(toList());
+	return list.stream().map(cl::cast).collect(toList());
   }
-
-
-  public InnerCache(MetaDataList metaDataList, ApplicationContext context) {
-    this.metaDataList = metaDataList;
-    repositories = new Repositories(context);
-    cache = new ConcurrentHashMap<>();
-  }
-
 
   void put(MetaData metaData, Object o) {
-    cache.compute(metaData, (p, l) -> {
-      if (l == null)
-        l = new ArrayList<>();
-      if (l.size() >= cacheSize) {
-        int s = l.size();
-        l = new ArrayList<>(l.subList(s / 4, s));
-      }
-      l.add(o);
-      return l;
-    });
+	cache.compute(metaData, (p, l) -> {
+	  if (l == null)
+		l = new ArrayList<>();
+	  if (l.size() >= cacheSize) {
+		int s = l.size();
+		l = new ArrayList<>(l.subList(s / 4, s));
+	  }
+	  l.add(o);
+	  return l;
+	});
   }
 
   int getValueSize(MetaData p) {
-    List<Object> obj = cache.get(p);
-    return obj == null ? 0 : obj.size();
+	List<Object> obj = cache.get(p);
+	return obj == null ? 0 : obj.size();
   }
 
   Set<MetaData> metas() {
-    return cache.keySet();
+	return cache.keySet();
   }
 
   /**
    * filling cache from db.
    */
   void warm() {
-    init();
-    for (MetaData metaData : metas()) {
-      warmingByMetaData(metaData);
-    }
-    LOGGER.info("cache's been initialized : " + mapToString(snapshot()));
+	init();
+	for (MetaData metaData : metas()) {
+	  warmingByMetaData(metaData);
+	}
+	LOGGER.info("cache's been initialized : " + mapToString(snapshot()));
   }
 
   private void init() {
-    assertCacheSizeIsNull();
-    for (MetaData metaData : this.metaDataList.getMetaDataList()) {
-      cache.put(metaData, new ArrayList<>());
-    }
+	assertCacheSizeIsNull();
+	for (MetaData metaData : this.metaDataList.getMetaDataList()) {
+	  cache.put(metaData, new ArrayList<>());
+	}
   }
 
   private void assertCacheSizeIsNull() {
-    if (cacheSize == 0) {
-      throw new IllegalStateGeneratorException("generator.cache-entity-size must not be 0 or null. By default it is 20.");
-    }
+	if (cacheSize == 0) {
+	  throw new IllegalStateGeneratorException("generator.cache-entity-size must not be 0 or null. By default it is 20.");
+	}
   }
 
   private void warmingByMetaData(MetaData metaData) {
-    if (getValueSize(metaData) == 0) {
-      repositories
-          .getRepositoryFor(metaData.getAClass())
-          .ifPresent(r -> findPage(metaData, (JpaRepository) r));
-    }
+	if (getValueSize(metaData) == 0) {
+	  repositories
+		.getRepositoryFor(metaData.getAClass())
+		.ifPresent(r -> findPage(metaData, (JpaRepository) r));
+	}
   }
 
   private void findPage(MetaData metaData, JpaRepository r) {
-    r.findAll(PageRequest.of(0, cacheSize)).forEach(o -> put(metaData, o));
+	r.findAll(PageRequest.of(0, cacheSize)).forEach(o -> put(metaData, o));
   }
 
   private String mapToString(Map<? extends MetaData, ? extends Number> map) {
-    return map.entrySet()
-        .stream()
-        .map(e -> e.getKey().getAClass().getName() + "=" + e.getValue())
-        .collect(joining(","));
+	return map.entrySet()
+	  .stream()
+	  .map(e -> e.getKey().getAClass().getName() + "=" + e.getValue())
+	  .collect(joining(","));
   }
 
 

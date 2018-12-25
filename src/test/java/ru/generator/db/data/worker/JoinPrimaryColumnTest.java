@@ -22,7 +22,6 @@ import java.util.UUID;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@EnableTransactionManagement
 public class JoinPrimaryColumnTest {
 
   @Autowired
@@ -33,8 +32,7 @@ public class JoinPrimaryColumnTest {
   private OneToOneRightRepository rightRepo;
 
   @Test
-  @Transactional
-  public void withoutGeneratorTest() throws DataGenerationException {
+  public void withoutGeneratorTest() {
 	OneToOneLeft left = new OneToOneLeft();
 	left.setId(UUID.randomUUID());
 	leftRepo.save(left);
@@ -57,10 +55,11 @@ public class JoinPrimaryColumnTest {
   @Test
   @Transactional
   public void withGeneratorTest() throws DataGenerationException {
-	InnerCache cache = factory.generator()
-	  .generateBy(OneToOneRight.class)
-	  .withException()
-	  .cache();
+	InnerCache cache =
+	  factory.generator()
+		.generateBy(OneToOneRight.class)
+		.withException()
+		.cache();
 
 	List<OneToOneLeft> leftAll = leftRepo.findAll();
 	List<OneToOneRight> rightAll = rightRepo.findAll();
@@ -68,5 +67,12 @@ public class JoinPrimaryColumnTest {
 	Assert.assertEquals(leftAll.size(), rightAll.size());
 	Assert.assertEquals(leftAll.get(0).getEnt(), rightAll.get(0));
 	Assert.assertEquals(leftAll.get(0), rightAll.get(0).getEnt());
+  }
+
+  @Test
+  public void nullTest() {
+	OneToOneRight right = new OneToOneRight();
+	right.setId(UUID.randomUUID());
+	rightRepo.save(right);
   }
 }

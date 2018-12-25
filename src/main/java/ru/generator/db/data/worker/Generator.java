@@ -18,48 +18,49 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("unchecked")
 public class Generator {
+  protected InnerLog log;
   private Logger LOGGER = Logger.getLogger(Generator.class.getName());
   private DatabaseEntityRelationsGenerator dbEntityRelationsGenerator;
   private DatabaseEntityGenerator dbEntityGenerator;
   private DataGenerationException exception;
-  protected InnerLog log;
 
 
   Generator(DatabaseEntityRelationsGenerator multiEntityGenerator, DatabaseEntityGenerator singleEntityGenerator) {
-    this.dbEntityRelationsGenerator = multiEntityGenerator;
-    this.dbEntityGenerator = singleEntityGenerator;
-    this.log = new InnerLog("common generator");
+	this.dbEntityRelationsGenerator = multiEntityGenerator;
+	this.dbEntityGenerator = singleEntityGenerator;
+	this.log = new InnerLog("common generator");
   }
 
   /**
    * method adds rules for processing specific fields or columns or class
-   * @param action Action changing or modifying old generated value. @see {@link Action}
+   *
+   * @param action    Action changing or modifying old generated value. @see {@link Action}
    * @param predicate condition for action. @see {@link ColumnPredicate}
-   * @param vClass value type. If it is different with field it will do nothing, in order to it is additional filter
+   * @param vClass    value type. If it is different with field it will do nothing, in order to it is additional filter
    * @return this
-   * */
-  public<V> Generator rule(ColumnPredicate predicate, Action<V> action,Class<V> vClass){
-    dbEntityGenerator.setPair(predicate,action,vClass);
-    return this;
-  }
-  /**
-   * method adds rules for processing id field
-   * @param action Action changing or modifying old generated value. @see {@link Action}
-   * @param pojo condition for action. @see {@link ColumnPredicate}
-   * @return this
-   * */
-  public<V> Generator ruleId(Class<?> pojo, Action<V> action){
-    dbEntityGenerator.setPairForId(pojo,action);
-    return this;
+   */
+  public <V> Generator rule(ColumnPredicate predicate, Action<V> action, Class<V> vClass) {
+	dbEntityGenerator.setPair(predicate, action, vClass);
+	return this;
   }
 
   /**
+   * method adds rules for processing id field
    *
+   * @param action Action changing or modifying old generated value. @see {@link Action}
+   * @param pojo   condition for action. @see {@link ColumnPredicate}
+   * @return this
+   */
+  public <V> Generator ruleId(Class<?> pojo, Action<V> action) {
+	dbEntityGenerator.setPairForId(pojo, action);
+	return this;
+  }
+
+  /**
    * @return report @see {@link InnerLog#toString()}
-   *
-   * */
+   */
   public String report() {
-    return log.toString();
+	return log.toString();
   }
 
   /**
@@ -70,26 +71,26 @@ public class Generator {
    * @param cl class for searching. Must have {@link javax.persistence.Entity} annotation.
    */
   public Generator generateBy(Class<?> cl) {
-    Optional<MetaData> pojoOpt = dbEntityRelationsGenerator.cache.metaDataList.byClass(cl);
-    if (pojoOpt.isPresent()) {
-      MetaData metaData = pojoOpt.get();
-      try {
-        process(metaData);
-      } catch (DataGenerationException e) {
-        LOGGER.finest("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
-        log.failureInc();
-        this.exception=e;
-      }
-    } else {
-      DataGenerationException ex =
-          new DataGenerationException("MetaData class " + cl.getName()
-              + " is not found. Please check your configuration", new IllegalArgumentException());
-      LOGGER.finest("generation by class " + cl.getSimpleName() + "has been failed - " + ex.toString());
-      log.failureInc();
-      this.exception=ex;
-    }
+	Optional<MetaData> pojoOpt = dbEntityRelationsGenerator.cache.metaDataList.byClass(cl);
+	if (pojoOpt.isPresent()) {
+	  MetaData metaData = pojoOpt.get();
+	  try {
+		process(metaData);
+	  } catch (DataGenerationException e) {
+		LOGGER.finest("generation by class " + cl.getSimpleName() + "has been failed - " + e.toString());
+		log.failureInc();
+		this.exception = e;
+	  }
+	} else {
+	  DataGenerationException ex =
+		new DataGenerationException("MetaData class " + cl.getName()
+		  + " is not found. Please check your configuration", new IllegalArgumentException());
+	  LOGGER.finest("generation by class " + cl.getSimpleName() + "has been failed - " + ex.toString());
+	  log.failureInc();
+	  this.exception = ex;
+	}
 
-    return this;
+	return this;
   }
 
 
@@ -102,26 +103,26 @@ public class Generator {
    * @param table  sch for searching. Must be present in {@link javax.persistence.Table} annotation.
    */
   public Generator generateBy(String schema, String table) {
-    Optional<MetaData> pojoOpt = dbEntityRelationsGenerator.cache.metaDataList.bySchemaTable(schema, table);
-    if (pojoOpt.isPresent()) {
-      MetaData metaData = pojoOpt.get();
-      try {
-        process(metaData);
-      } catch (DataGenerationException e) {
-        LOGGER.finest("generation by table " + schema + "." + table + "has been failed - " + e.toString());
-        log.failureInc();
-        this.exception=e;
-      }
-    } else {
-      DataGenerationException ex = new DataGenerationException("MetaData class for table " + schema
-          + "." + table + " is not found. Please check your configuration", new IllegalAccessException());
-      LOGGER.finest("generation by table " + schema + "." + table + "has been failed - " + ex.toString());
-      log.failureInc();
-      this.exception=ex;
+	Optional<MetaData> pojoOpt = dbEntityRelationsGenerator.cache.metaDataList.bySchemaTable(schema, table);
+	if (pojoOpt.isPresent()) {
+	  MetaData metaData = pojoOpt.get();
+	  try {
+		process(metaData);
+	  } catch (DataGenerationException e) {
+		LOGGER.finest("generation by table " + schema + "." + table + "has been failed - " + e.toString());
+		log.failureInc();
+		this.exception = e;
+	  }
+	} else {
+	  DataGenerationException ex = new DataGenerationException("MetaData class for table " + schema
+		+ "." + table + " is not found. Please check your configuration", new IllegalAccessException());
+	  LOGGER.finest("generation by table " + schema + "." + table + "has been failed - " + ex.toString());
+	  log.failureInc();
+	  this.exception = ex;
 
-    }
+	}
 
-    return this;
+	return this;
   }
 
 
@@ -129,7 +130,7 @@ public class Generator {
    * Generate new instance and relations for all founded Class
    **/
   public Generator generateAll() {
-    return generateObjects().generateRelations();
+	return generateObjects().generateRelations();
   }
 
 
@@ -137,19 +138,19 @@ public class Generator {
    * generate all instances except m2m relations.
    */
   public Generator generateObjects() {
-    Set<MetaData> metaData = dbEntityGenerator.cache.metas();
+	Set<MetaData> metaData = dbEntityGenerator.cache.metas();
 
-    for (MetaData md : metaData) {
-      try {
-        dbEntityGenerator.generateAndSaveObject(md);
-        log.successInc();
-      } catch (Throwable e) {
-        log.failureInc();
-        this.exception=new DataGenerationException(e);
-      }
-    }
+	for (MetaData md : metaData) {
+	  try {
+		dbEntityGenerator.generateAndSaveObject(md);
+		log.successInc();
+	  } catch (Throwable e) {
+		log.failureInc();
+		this.exception = new DataGenerationException(e);
+	  }
+	}
 
-    return this;
+	return this;
   }
 
   /**
@@ -157,16 +158,16 @@ public class Generator {
    * They can be found in the cache {@link InnerCache}
    */
   public Generator generateRelations() {
-    for (MetaData metaData : dbEntityRelationsGenerator.cache.metas()) {
-      try {
-        dbEntityRelationsGenerator.generateMultiObjects(metaData);
-        log.successInc();
-      } catch (DataGenerationException e) {
-        log.failureInc();
-        this.exception=e;
-      }
-    }
-    return this;
+	for (MetaData metaData : dbEntityRelationsGenerator.cache.metas()) {
+	  try {
+		dbEntityRelationsGenerator.generateMultiObjects(metaData);
+		log.successInc();
+	  } catch (DataGenerationException e) {
+		log.failureInc();
+		this.exception = e;
+	  }
+	}
+	return this;
   }
 
 
@@ -177,31 +178,31 @@ public class Generator {
    */
 
   public Generator withException() throws DataGenerationException {
-    if (Objects.nonNull(exception))
-      throw exception;
+	if (Objects.nonNull(exception))
+	  throw exception;
 
-    return this;
+	return this;
   }
 
   /**
    * inner cache {@link InnerCache}
    */
   public InnerCache cache() {
-    return dbEntityRelationsGenerator.getCache();
+	return dbEntityRelationsGenerator.getCache();
   }
 
   /**
    * returning log entity @see {@link InnerLog}
    */
   public InnerLog log() {
-    return new InnerLog(log);
+	return new InnerLog(log);
   }
 
   /**
    * returning last cached exception
    */
   public Exception lastExeption() {
-    return exception;
+	return exception;
   }
 
   /**
@@ -210,7 +211,7 @@ public class Generator {
    * @param cycles - cycles for repeate
    */
   public Generator repeate(int cycles) {
-    return new RepeatableGenerator(dbEntityRelationsGenerator, dbEntityGenerator, cycles);
+	return new RepeatableGenerator(dbEntityRelationsGenerator, dbEntityGenerator, cycles);
   }
 
 
@@ -222,8 +223,9 @@ public class Generator {
    * @param metric {@link TimeUnit} metric
    */
   public Generator metronome(long period, TimeUnit metric) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, ctx -> true);
+	return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, ctx -> true);
   }
+
   /**
    * Making new {@link MetronomeGenerator} for generating repeated events with special pauses.
    * Ihis method uses default implementation for Metronome @see {@link Metronome#systemParker(long, TimeUnit)}
@@ -232,7 +234,7 @@ public class Generator {
    * @param predicate condition for stopping generator @see {@link MetronomePredicate}
    */
   public Generator metronome(Metronome metronome, MetronomePredicate predicate) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome, predicate);
+	return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, metronome, predicate);
   }
 
   /**
@@ -243,42 +245,42 @@ public class Generator {
    * @param metric {@link TimeUnit} metric
    */
   public Generator metronome(long period, TimeUnit metric, MetronomePredicate predicate) {
-    return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, predicate);
+	return new MetronomeGenerator(dbEntityRelationsGenerator, dbEntityGenerator, period, metric, predicate);
   }
 
 
   /**
    * set startId for default id generator(incrementing from 0 by default).
-   *
+   * <p>
    * If annotation Id has no annotation GeneratedValue a generator will be generate id from sequence
    * by incrementing numbers or making random values from UUID or String
    *
    * @param val initial value for generating id.
-   *
-   * */
+   */
   public Generator startId(long val) {
-    this.dbEntityGenerator.setStartSeq(val);
-    return this;
+	this.dbEntityGenerator.setStartSeq(val);
+	return this;
   }
 
   /**
    * Making new {@link AsyncGenerator} for generating events each in separate thread .
    */
   public Generator async() {
-    return new AsyncGenerator(dbEntityRelationsGenerator, dbEntityGenerator, this);
+	return new AsyncGenerator(dbEntityRelationsGenerator, dbEntityGenerator, this);
   }
 
   public Generator async(int nThreads) {
-    return new AsyncGenerator(dbEntityRelationsGenerator, dbEntityGenerator, this, nThreads);
+	return new AsyncGenerator(dbEntityRelationsGenerator, dbEntityGenerator, this, nThreads);
   }
 
   private void process(MetaData metaData) throws DataGenerationException {
-    try {
-	  dbEntityGenerator.generateAndSaveObject(metaData);
-	  dbEntityRelationsGenerator.generateMultiObjects(metaData);
+	try {
+	  Optional<Object> generatedObjOpt = dbEntityGenerator.generateAndSaveObject(metaData);
+	  if (generatedObjOpt.isPresent())
+		dbEntityRelationsGenerator.generateRelates(metaData, generatedObjOpt.get());
 	  log.successInc();
-	}catch (Throwable tr){
-      throw new DataGenerationException(tr);
+	} catch (Throwable tr) {
+	  throw new DataGenerationException(tr);
 	}
   }
 
@@ -288,10 +290,10 @@ public class Generator {
    * @return this
    */
   public Generator finish() {
-    return this;
+	return this;
   }
 
   Generator split() {
-    return new Generator(this.dbEntityRelationsGenerator, this.dbEntityGenerator);
+	return new Generator(this.dbEntityRelationsGenerator, this.dbEntityGenerator);
   }
 }

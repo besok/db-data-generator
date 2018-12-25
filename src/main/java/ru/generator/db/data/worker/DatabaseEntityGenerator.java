@@ -253,6 +253,11 @@ class DatabaseEntityGenerator {
 	public Function<MetaData.Column, Long> longVal() {
 	  return unpack(seq.incrementAndGet());
 	}
+
+	@Override
+	public Function<MetaData.Column, String> string() {
+	  return unpack(UUID.randomUUID().toString());
+	}
   }
 
   private class IdSequenceRuleGenerator {

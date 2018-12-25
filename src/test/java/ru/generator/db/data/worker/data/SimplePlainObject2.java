@@ -12,7 +12,8 @@ import java.util.Date;
  * @author Boris Zhguchev
  */
 @Table(schema = "test", name = "simple_plain_object_2")
-@Entity @Data
+@Entity
+@Data
 public class SimplePlainObject2 {
   @Id
   @GeneratedValue
@@ -20,5 +21,11 @@ public class SimplePlainObject2 {
 
   private String name;
 
+  @Column(precision = 10,scale = 5)
+  private BigDecimal field1;
+  @Column(precision = 10)
+  private BigDecimal field2;
+  @Column(precision = 10,scale = 9)
+  private double field3;
 
 }

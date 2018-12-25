@@ -5,7 +5,10 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+
+import static java.lang.Math.*;
 
 /**
  * @author Boris Zhguchev
@@ -36,7 +39,14 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
   @Override
   public Function<MetaData.Column, BigDecimal> bigDecimal() {
-    return unpack(BigDecimal.valueOf(random.nextInt()));
+
+    return c ->{
+	  int pr = c.getPrecision();
+	  int sc = c.getScale();
+	  if(pr == 0)
+	    return new BigDecimal(random.nextDouble());
+	  return new BigDecimal(ThreadLocalRandom.current().nextLong(round(pow(10,pr-sc))));
+	};
   }
 
   @Override
@@ -46,7 +56,14 @@ public class DefaultPlainTypeGenerator extends AbstractPlainTypeGenerator {
 
   @Override
   public Function<MetaData.Column, Double> doubleVal() {
-    return unpack(random.nextDouble());
+
+    return c -> {
+	  int pr = c.getPrecision();
+	  int sc = c.getScale();
+	  if(pr == 0)
+		return random.nextDouble();
+	  return (double) ThreadLocalRandom.current().nextLong(round(pow(10, pr - sc)));
+	};
   }
 
   @Override

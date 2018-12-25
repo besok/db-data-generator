@@ -106,9 +106,10 @@ public class MetaData {
 	Class<?> aClass,
 	boolean nullable,
 	boolean collection,
-	Field f
+	Field f,
+	int precision,int scale
   ) {
-	plainColumns.add(new Column(field, column, length, aClass, f, nullable, collection, this));
+	plainColumns.add(new Column(field, column, length, aClass, f, nullable, collection, this,precision,scale));
   }
 
   void setHeader(String className, String tableName, String schemaName) {
@@ -159,6 +160,8 @@ public class MetaData {
 	private boolean nullable;
 	private boolean collection;
 	private MetaData parent;
+	private int precision;
+	private int scale;
   }
 
   @AllArgsConstructor
