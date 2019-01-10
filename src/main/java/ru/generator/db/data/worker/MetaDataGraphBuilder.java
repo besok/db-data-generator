@@ -59,7 +59,7 @@ public class MetaDataGraphBuilder {
 	return (k, v) -> {
 	  boolean forJoinPrimaryKey = v.isForJoinPrimaryKey();
 	  v.setForJoinPrimaryKey(!forJoinPrimaryKey);
-	  return MetaData.Dependency.of(p, !forJoinPrimaryKey && v.isOptional(), v.isAlwaysNew(), forJoinPrimaryKey);
+	  return MetaData.Dependency.of(p, !forJoinPrimaryKey && v.isOptional(), v.isAlwaysNew(), forJoinPrimaryKey,v.getColumn());
 	};
   }
 

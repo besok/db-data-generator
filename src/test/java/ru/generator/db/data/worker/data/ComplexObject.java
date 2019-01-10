@@ -18,6 +18,9 @@ public class ComplexObject {
   private int id;
 
   private String name;
+  private String name1;
+  private String name2;
+  private String name3;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "plain_id")

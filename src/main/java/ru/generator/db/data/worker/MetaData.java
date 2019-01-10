@@ -4,10 +4,7 @@ package ru.generator.db.data.worker;
 import lombok.*;
 
 import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * meta data object.
@@ -25,7 +22,7 @@ public class MetaData {
   private Id id;
   private Map<Field, Dependency> dependencies;
   private Map<Field, MetaData> neighbours;
-  private Set<Column> plainColumns;
+  private List<Column> plainColumns;
 
   @Override
   public boolean equals(Object o) {
@@ -49,6 +46,14 @@ public class MetaData {
 	  return idField.get(entity);
 	} catch (IllegalAccessException e) {
 	  throw new IllegalStateGeneratorException(e, "get error from id field");
+	}
+  }
+
+  public Object getValue(Object entity, Field field) {
+	try {
+	  return field.get(entity);
+	} catch (IllegalAccessException e) {
+	  throw new IllegalStateGeneratorException(e, "get error from field " + field.getName());
 	}
   }
 
@@ -95,8 +100,8 @@ public class MetaData {
 	return Optional.empty();
   }
 
-  void addId(Field id, boolean generated) {
-	this.id = new Id(id, generated);
+  void addId(Field id, boolean generated,String column) {
+	this.id = new Id(id, generated,column);
   }
 
   void addPlainColumn(
@@ -107,9 +112,9 @@ public class MetaData {
 	boolean nullable,
 	boolean collection,
 	Field f,
-	int precision,int scale
+	int precision, int scale
   ) {
-	plainColumns.add(new Column(field, column, length, aClass, f, nullable, collection, this,precision,scale));
+	plainColumns.add(new Column(field, column, length, aClass, f, nullable, collection, this, precision, scale));
   }
 
   void setHeader(String className, String tableName, String schemaName) {
@@ -123,12 +128,12 @@ public class MetaData {
   @AllArgsConstructor(staticName = "of")
   @Getter
   @Setter
-  protected static class Dependency {
+  public static class Dependency {
 	private MetaData md;
 	private boolean optional;
 	private boolean alwaysNew;
 	private boolean forJoinPrimaryKey;
-
+	private String column;
   }
 
   @Getter
@@ -141,6 +146,10 @@ public class MetaData {
 	  this.name = name;
 	  this.table = table;
 	  this.schema = schema;
+	}
+
+	public String tbl() {
+	  return schema + "." + table;
 	}
 
 	public String toString() {
@@ -169,5 +178,6 @@ public class MetaData {
   public class Id {
 	private Field idField;
 	private boolean generated;
+	private String column;
   }
 }

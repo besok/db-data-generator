@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.generator.db.data.worker.data.ComplexObject;
 import ru.generator.db.data.worker.data.NakedObject;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -29,7 +30,7 @@ public class DatabaseMetadataScanBeanPostProcessorTest {
   public void camelCaseToSnakeCaseIfColumnNameExistsTest() {
 
     MetaData meta = mdl.byClass(NakedObject.class).get();
-    Set<MetaData.Column> columns = meta.getPlainColumns();
+    List<MetaData.Column> columns = meta.getPlainColumns();
 
     for (MetaData.Column column : columns) {
       String field = column.getField();

@@ -98,22 +98,30 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 	if (f.isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
 	  joinPrimaryKey = true;
 	}
+
 	metaData
 	  .getDependencies()
-	  .put(f, of(null, an.optional(), true, joinPrimaryKey));
+	  .put(f, of(null, an.optional(), true, joinPrimaryKey, columnForDependency(f)));
 	return false;
+  }
+
+  private String columnForDependency(Field f) {
+	String column = camelToSnake(f.getName());
+	if (f.isAnnotationPresent(JoinColumn.class))
+	  column = f.getDeclaredAnnotation(JoinColumn.class).name();
+	return column;
   }
 
   private boolean processManyToOne(MetaData metaData, Field f) {
 	ManyToOne an = f.getDeclaredAnnotation(ManyToOne.class);
-	metaData.getDependencies().put(f, of(null, an.optional(), false,false));
+	metaData.getDependencies().put(f, of(null, an.optional(), false, false,columnForDependency(f)));
 	return false;
   }
 
   private void initMd(MetaData metaData) {
 	metaData.setDependencies(new HashMap<>());
 	metaData.setNeighbours(new HashMap<>());
-	metaData.setPlainColumns(new HashSet<>());
+	metaData.setPlainColumns(new ArrayList<>());
 	metaData.setPlain(false);
   }
 
@@ -124,19 +132,23 @@ public class DatabaseMetadataScanBeanPostProcessor implements BeanPostProcessor 
 		f.getName(),
 		col.name().equals("") ? camelToSnake(f.getName()) : col.name(),
 		col.length(), f.getType(), col.nullable(), isCollection(f),
-		f,col.precision(),col.scale());
+		f, col.precision(), col.scale());
 	} else {
 	  metaData.addPlainColumn(f.getName(), camelToSnake(f.getName()), 0, f.getType(), true,
-		isCollection(f), f,0,0);
+		isCollection(f), f, 0, 0);
 	}
   }
 
   private boolean checkIdField(MetaData metaData, Field f) {
 	if (f.isAnnotationPresent(Id.class)) {
+	  String column = camelToSnake(f.getName());
+
+	  if (f.isAnnotationPresent(Column.class))
+		column = f.getDeclaredAnnotation(Column.class).name();
 	  if (f.isAnnotationPresent(GeneratedValue.class)) {
-		metaData.addId(f, true);
+		metaData.addId(f, true, column);
 	  } else {
-		metaData.addId(f, false);
+		metaData.addId(f, false, column);
 	  }
 	  return true;
 	}
