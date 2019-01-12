@@ -1,0 +1,6 @@
+@@@test.hard_object
+id;name;big_decimal;uuid;null_lazy_object_id;null_lazy_object_id_always_null;lazy_object_id
+1000;+++;1.00;7090ac98-a9a7-4864-b0e0-07165465b539;10;;10
+@@@test.lazy_object
+id;name;a_double;character;
+10;lazy_object_1;1000.1;a;

@@ -17,7 +17,7 @@ import java.util.Date;
 public class SimplePlainObject2 {
   @Id
   @GeneratedValue
-  private int id;
+  private Integer id;
 
   private String name;
 
