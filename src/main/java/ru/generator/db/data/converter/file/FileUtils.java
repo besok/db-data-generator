@@ -22,7 +22,7 @@ public class FileUtils {
   }
 
   static String validateHeader(String header) {
-	String[] split = header.split(".");
+	String[] split = header.split("\\.");
 	if (split.length == 2) {
 	  return header;
 	}

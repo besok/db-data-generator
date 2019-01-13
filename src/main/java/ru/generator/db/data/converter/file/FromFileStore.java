@@ -41,7 +41,6 @@ class FromFileStore {
 				  .ifPresent(o -> md.setDependencyValue(pair.object, column, depMd, o)));
 			});
 		}
-
 	  }
 	}
 
