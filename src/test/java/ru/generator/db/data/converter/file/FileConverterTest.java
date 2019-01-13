@@ -41,18 +41,24 @@ public class FileConverterTest {
   @Before
   public void setUp() throws Exception {
 	LazyObject lo = new LazyObject();
-	lo.setId(10);
+	lo.setId(1);
 	lo.setName("lazy_object_1");
 	lo.setADouble(1000.1000);
 	lo.setCharacter('a');
+	LazyObject lo1 = new LazyObject();
+	lo1.setId(2);
+	lo1.setName("lazy_object_2");
+	lo1.setADouble(2.2);
+	lo1.setCharacter('b');
 	lazyObjectRepository.save(lo);
+	lazyObjectRepository.save(lo1);
 	MainObject mo = new MainObject();
 	mo.setLazyObject(lo);
-	mo.setLazyObject2(lo);
+	mo.setLazyObject2(lo1);
 	mo.setName("+++");
 	mo.setUuid(UUID.fromString("8d64483c-6f83-40a9-9449-f0d8d736c49e"));
 	mo.setBigDecimal(BigDecimal.ONE);
-	mo.setId(1000);
+	mo.setIdField(1000);
 	mainObjectRepository.save(mo);
 	NullLazyObject nlo = new NullLazyObject();
 	nlo.setId(100);
@@ -63,11 +69,12 @@ public class FileConverterTest {
   public void commonTest() throws IOException, URISyntaxException {
 	List<String> template = new ArrayList<>();
 	template.add("@@@test.hard_object" );
-	template.add("id;name;big_decimal;uuid;null_lazy_object_id;null_lazy_object_id_always_null;lazy_object_id" );
-	template.add("1000;+++;1.00;8d64483c-6f83-40a9-9449-f0d8d736c49e;10;;10" );
+	template.add("id_field;name;big_decimal;uuid;null_lazy_object_id;null_lazy_object_id_always_null;lazy_object_id" );
+	template.add("1000;+++;1.00;8d64483c-6f83-40a9-9449-f0d8d736c49e;1;;2" );
 	template.add("@@@test.lazy_object" );
 	template.add("id;name;a_double;character;" );
-	template.add("10;lazy_object_1;1000.1;a;" );
+	template.add("2;lazy_object_2;2.2;b;" );
+	template.add("1;lazy_object_1;1000.1;a;" );
 
 	URL resource = this.getClass().getClassLoader().getResource("\\");
 	Path file = Paths.get(resource.toURI()).resolve("test.csv");

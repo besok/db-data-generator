@@ -1,7 +1,6 @@
 package ru.generator.db.data.worker;
 // 2018.07.24 
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -148,7 +147,7 @@ class DatabaseEntityGenerator {
 				  MetaData beforeMd = before.getMd();
 				  Object idValue = beforeMd.getIdValue(beforePojo);
 				  metaData.setIdValue(obj, idValue);
-				  beforeMd.setValue(beforePojo, metaData, obj);
+				  beforeMd.setDependencyValue(beforePojo, metaData, obj);
 				}
 			  }
 			} else {

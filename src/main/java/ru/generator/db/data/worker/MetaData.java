@@ -66,13 +66,13 @@ public class MetaData {
 	}
   }
 
-  public Object setValue(Object entity, MetaData fieldMetaData, Object value) {
+  public Object setDependencyValue(Object entity, MetaData fieldMetaData, Object value) {
 	for (Map.Entry<Field, Dependency> e : dependencies.entrySet()) {
 	  if (e.getValue().getMd().equals(fieldMetaData)) {
 		try {
 		  e.getKey().set(entity, value);
 		} catch (IllegalAccessException e1) {
-		  throw new IllegalStateGeneratorException(e1, "get error from id field");
+		  throw new IllegalStateGeneratorException(e1, "get error from field" );
 		}
 	  }
 	}
@@ -171,6 +171,7 @@ public class MetaData {
 	private MetaData parent;
 	private int precision;
 	private int scale;
+
   }
 
   @AllArgsConstructor
@@ -179,5 +180,6 @@ public class MetaData {
 	private Field idField;
 	private boolean generated;
 	private String column;
+
   }
 }

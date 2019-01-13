@@ -16,7 +16,7 @@ import java.util.UUID;
 @Data
 public class MainObject {
   @Id
-  private int id;
+  private int idField;
 
   private String name;
   private BigDecimal bigDecimal;

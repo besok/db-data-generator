@@ -26,9 +26,9 @@ public class FileConverter {
   private Path path;
 
 
-  public FileConverter(MetaDataList mdStore,Path p) {
+  public FileConverter(MetaDataList mdStore, Path p) {
 	this.mdStore = mdStore;
-	this.path=p;
+	this.path = p;
 	this.store = new TempStore();
   }
 
@@ -55,9 +55,13 @@ public class FileConverter {
 	  .flatMap(e -> makeData(md.getValue(data, e.getKey()), e.getValue().getMd()).stream())
 	  .collect(Collectors.toList());
 
-	return Files.write(path,store.prepare(),CREATE,WRITE);
+	return Files.write(path, store.prepare(), CREATE, WRITE);
   }
+  public <V> V from(Path path, Class<V> vClass) throws IOException {
 
+	List<String> rawRecords = Files.readAllLines(path);
+	return null;
+  }
 
   private MetaData byClass(Object data) {
 	return mdStore.byClass(data.getClass())
@@ -95,16 +99,15 @@ public class FileConverter {
 	  .map(this::toString)
 	  .collect(Collectors.joining(";"));
 
-	String dep =
-	  md.getDependencies().entrySet()
-		.stream()
-		.map(e -> {
-		  Object fieldValue = unproxy(md.getValue(entity, e.getKey()));
-		  if (Objects.isNull(fieldValue))
-			return "";
-		  return toString(e.getValue().getMd().getIdValue(fieldValue));
-		})
-		.collect(Collectors.joining(";"));
+	String dep = md.getDependencies().entrySet()
+	  .stream()
+	  .map(e -> {
+		Object fieldValue = unproxy(md.getValue(entity, e.getKey()));
+		if (Objects.isNull(fieldValue))
+		  return "";
+		return toString(e.getValue().getMd().getIdValue(fieldValue));
+	  })
+	  .collect(Collectors.joining(";"));
 
 	String record = id + ";" + plainCols + ";" + dep;
 	store.addRecord(md.getHeader().tbl(), record);
@@ -115,7 +118,10 @@ public class FileConverter {
   }
 
   // TODO: 12.01.2019 It is a temporary solution. We skip all OnetoMany relations.
-  private boolean isNotCol(Field f){
-    return !Collection.class.isAssignableFrom(f.getType());
+  private boolean isNotCol(Field f) {
+	return !Collection.class.isAssignableFrom(f.getType());
   }
+
+
+
 }
