@@ -21,13 +21,22 @@ public class FileConverter {
   private ToFileStore toFileStore;
   private FromFileStore fromFileStore;
   private Path path;
-
+  private StringTransformer transformer;
 
   public FileConverter(MetaDataList mdStore, Path p) {
+	this.transformer = new DummyStringTransformer();
 	this.mdStore = mdStore;
 	this.path = p;
 	this.toFileStore = new ToFileStore();
   }
+
+  public FileConverter(MetaDataList mdStore, Path p, StringTransformer transformer) {
+	this.transformer = Objects.isNull(transformer) ? new DummyStringTransformer() : transformer;
+	this.mdStore = mdStore;
+	this.path = p;
+	this.toFileStore = new ToFileStore();
+  }
+
 
   private List<String> makeData(Object data, MetaData md) {
 	List<String> res = new ArrayList<>();
@@ -54,10 +63,11 @@ public class FileConverter {
 
 	return Files.write(path, toFileStore.prepare(), CREATE, WRITE);
   }
-  public <V> List<V> from( Class<V> vClass) throws IOException {
+
+  public <V> List<V> from(Class<V> vClass) throws IOException {
 
 	List<String> rawRecords = Files.readAllLines(path);
-	this.fromFileStore=FromFileStore.init(mdStore,rawRecords,new DummyStringTransformer());
+	this.fromFileStore = FromFileStore.init(mdStore, rawRecords, transformer);
 
 	return this.fromFileStore.find(vClass);
   }
@@ -66,11 +76,13 @@ public class FileConverter {
 	return mdStore.byClass(data.getClass())
 	  .orElseThrow(ConverterMetadataException::new);
   }
+
   private String header(MetaData md) {
 	String h = md.getHeader().tbl();
 	toFileStore.init(h);
 	return h;
   }
+
   protected String colHeader(MetaData md) {
 	String plainCol = md.getPlainColumns()
 	  .stream()
@@ -88,6 +100,7 @@ public class FileConverter {
 	toFileStore.addColHeader(md.getHeader().tbl(), colHeader);
 	return colHeader;
   }
+
   public String record(MetaData md, Object entity) {
 	if (Objects.isNull(entity)) return "";
 	String id = toString(md.getIdValue(entity));
@@ -112,6 +125,7 @@ public class FileConverter {
 	toFileStore.addRecord(md.getHeader().tbl(), record);
 	return record;
   }
+
   private String toString(Object obj) {
 	return Objects.isNull(obj) ? "" : obj.toString();
   }
@@ -120,7 +134,6 @@ public class FileConverter {
   private boolean isNotCol(Field f) {
 	return !Collection.class.isAssignableFrom(f.getType());
   }
-
 
 
 }
