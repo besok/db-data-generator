@@ -66,7 +66,7 @@ public class FileConverterTest {
   }
 
   @Test
-  public void commonTest() throws IOException, URISyntaxException {
+  public void commonToFileTest() throws IOException, URISyntaxException {
 	List<String> template = new ArrayList<>();
 	template.add("@@@test.hard_object" );
 	template.add("id_field;name;big_decimal;uuid;null_lazy_object_id;null_lazy_object_id_always_null;lazy_object_id" );
@@ -83,4 +83,20 @@ public class FileConverterTest {
 	Assert.assertEquals(res,template);
   }
 
+  @Test
+  public void commonFromFileTest() throws URISyntaxException, IOException {
+	URL resource = this.getClass().getClassLoader().getResource("\\");
+	Path file = Paths.get(resource.toURI()).resolve("test.csv");
+	List<MainObject> mainObjects = converter.fromFile(file, MainObject.class);
+	Assert.assertEquals(mainObjects.size(),1);
+
+	MainObject mainObject = mainObjects.get(0);
+	Assert.assertEquals(mainObject.getIdField(),1000);
+	Assert.assertEquals(mainObject.getName(),"+++");
+	Assert.assertEquals(mainObject.getBigDecimal(),new BigDecimal("1.00"));
+	Assert.assertEquals(mainObject.getUuid(),UUID.fromString("8d64483c-6f83-40a9-9449-f0d8d736c49e"));
+	Assert.assertEquals(1, (int) mainObject.getLazyObject().getId());
+	Assert.assertEquals(2, (int) mainObject.getLazyObject2().getId());
+	Assert.assertNull( mainObject.getLazyObjectAlwaysNull());
+  }
 }

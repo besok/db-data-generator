@@ -66,13 +66,16 @@ public class MetaData {
 	}
   }
 
-  public Object setDependencyValue(Object entity, MetaData fieldMetaData, Object value) {
+  public Object setDependencyValue(Object entity, String column, MetaData fieldMetaData, Object value) {
 	for (Map.Entry<Field, Dependency> e : dependencies.entrySet()) {
-	  if (e.getValue().getMd().equals(fieldMetaData)) {
+	  MetaData md = e.getValue().getMd();
+	  String col = e.getValue().getColumn();
+	  if (Objects.equals(md, fieldMetaData)
+		&& Objects.equals(col, column)) {
 		try {
 		  e.getKey().set(entity, value);
 		} catch (IllegalAccessException e1) {
-		  throw new IllegalStateGeneratorException(e1, "get error from field" );
+		  throw new IllegalStateGeneratorException(e1, "get error from field");
 		}
 	  }
 	}
@@ -100,8 +103,8 @@ public class MetaData {
 	return Optional.empty();
   }
 
-  void addId(Field id, boolean generated,String column) {
-	this.id = new Id(id, generated,column);
+  void addId(Field id, boolean generated, String column) {
+	this.id = new Id(id, generated, column);
   }
 
   void addPlainColumn(

@@ -7,12 +7,12 @@ import java.util.stream.Stream;
 /**
  * Created by Boris Zhguchev on 12/01/2019
  */
-public class TempStore {
+public class ToFileStore {
 
   private Map<String, Value> store;
 
 
-  public TempStore() {
+  public ToFileStore() {
 	store = new HashMap<>();
   }
 

@@ -6,15 +6,11 @@ import ru.generator.db.data.worker.MetaDataList;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.nio.file.*;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.*;
-import static java.time.ZoneOffset.*;
 
 /**
  * Created by Boris Zhguchev on 10/01/2019
@@ -22,14 +18,15 @@ import static java.time.ZoneOffset.*;
 public class FileConverter {
 
   private final MetaDataList mdStore;
-  private TempStore store;
+  private ToFileStore toFileStore;
+  private FromFileStore fromFileStore;
   private Path path;
 
 
   public FileConverter(MetaDataList mdStore, Path p) {
 	this.mdStore = mdStore;
 	this.path = p;
-	this.store = new TempStore();
+	this.toFileStore = new ToFileStore();
   }
 
   private List<String> makeData(Object data, MetaData md) {
@@ -55,12 +52,14 @@ public class FileConverter {
 	  .flatMap(e -> makeData(md.getValue(data, e.getKey()), e.getValue().getMd()).stream())
 	  .collect(Collectors.toList());
 
-	return Files.write(path, store.prepare(), CREATE, WRITE);
+	return Files.write(path, toFileStore.prepare(), CREATE, WRITE);
   }
-  public <V> V from(Path path, Class<V> vClass) throws IOException {
+  public <V> List<V> from( Class<V> vClass) throws IOException {
 
 	List<String> rawRecords = Files.readAllLines(path);
-	return null;
+	this.fromFileStore=FromFileStore.init(mdStore,rawRecords,new DummyStringTransformer());
+
+	return this.fromFileStore.find(vClass);
   }
 
   private MetaData byClass(Object data) {
@@ -69,7 +68,7 @@ public class FileConverter {
   }
   private String header(MetaData md) {
 	String h = md.getHeader().tbl();
-	store.init(h);
+	toFileStore.init(h);
 	return h;
   }
   protected String colHeader(MetaData md) {
@@ -86,7 +85,7 @@ public class FileConverter {
 	  .map(MetaData.Dependency::getColumn)
 	  .collect(Collectors.joining(";"));
 	String colHeader = id + ";" + plainCol + ";" + deps;
-	store.addColHeader(md.getHeader().tbl(), colHeader);
+	toFileStore.addColHeader(md.getHeader().tbl(), colHeader);
 	return colHeader;
   }
   public String record(MetaData md, Object entity) {
@@ -110,7 +109,7 @@ public class FileConverter {
 	  .collect(Collectors.joining(";"));
 
 	String record = id + ";" + plainCols + ";" + dep;
-	store.addRecord(md.getHeader().tbl(), record);
+	toFileStore.addRecord(md.getHeader().tbl(), record);
 	return record;
   }
   private String toString(Object obj) {

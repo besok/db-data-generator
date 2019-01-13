@@ -3,7 +3,6 @@ package ru.generator.db.data.converter.file;
 import ru.generator.db.data.worker.MetaData;
 import ru.generator.db.data.worker.MetaDataList;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,7 +11,7 @@ import static ru.generator.db.data.converter.file.RawUtility.*;
 /**
  * Created by Boris Zhguchev on 13/01/2019
  */
-class RecordStore {
+class FromFileStore {
 
   List<RawRecordMd> richRawRecords;
   MetaDataList mdList;
@@ -54,8 +53,8 @@ class RecordStore {
 	return raws;
   }
 
-  static RecordStore init(MetaDataList mdList, List<String> records, StringTransformer transformer) {
-	RecordStore store = new RecordStore();
+  static FromFileStore init(MetaDataList mdList, List<String> records, StringTransformer transformer) {
+	FromFileStore store = new FromFileStore();
 	store.richRawRecords = matchRaw(mdList, splitRaw(records));
 	store.mdList = mdList;
 	for (RawRecordMd rec : store.richRawRecords) {
@@ -69,16 +68,16 @@ class RecordStore {
 		MetaData md = recordMd.md;
 		for (MetaData.Dependency dep : md.getDependencies().values()) {
 		  String column = dep.getColumn();
-		  Optional<String> idOpt = recordMd.record.findValueBy(column, rawRecords);
-		  if (idOpt.isPresent()) {
-			String idStr = idOpt.get();
-			MetaData depMd = dep.getMd();
-			Class<?> type = depMd.getId().getIdField().getType();
-			Object id = transformer.transform(type, idStr);
-			findByMd(depMd, store.richRawRecords)
-			  .ifPresent(rawRecordMd -> findById(rawRecordMd.getObjects(), id, depMd)
-				.ifPresent(o -> md.setDependencyValue(object, depMd, o)));
-		  }
+		  recordMd.record.findValueBy(column, rawRecords).ifPresent(idStr -> {
+			if (idStr.length() > 0) {
+			  MetaData depMd = dep.getMd();
+			  Class<?> type = depMd.getId().getIdField().getType();
+			  Object id = transformer.transform(type, idStr);
+			  findByMd(depMd, store.richRawRecords)
+				.ifPresent(rawRecordMd -> findById(rawRecordMd.getObjects(), id, depMd)
+				  .ifPresent(o -> md.setDependencyValue(object,column, depMd, o)));
+			}
+		  });
 		}
 
 	  }

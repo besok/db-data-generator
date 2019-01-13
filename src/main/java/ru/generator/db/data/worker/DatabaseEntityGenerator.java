@@ -147,7 +147,7 @@ class DatabaseEntityGenerator {
 				  MetaData beforeMd = before.getMd();
 				  Object idValue = beforeMd.getIdValue(beforePojo);
 				  metaData.setIdValue(obj, idValue);
-				  beforeMd.setDependencyValue(beforePojo, metaData, obj);
+				  beforeMd.setDependencyValue(beforePojo,before.getColumn(), metaData, obj);
 				}
 			  }
 			} else {
