@@ -3,6 +3,7 @@ package ru.generator.db.data.converter.file;
 import ru.generator.db.data.worker.MetaData;
 import ru.generator.db.data.worker.MetaDataList;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,6 @@ class RecordStore {
 
   List<RawRecordMd> richRawRecords;
   MetaDataList mdList;
-  Map<MetaData,List<?>> objectsStore;
 
 
   private static List<RawRecordMd> matchRaw(MetaDataList mdList, List<RawRecord> records) {
@@ -28,6 +28,7 @@ class RecordStore {
 	  })
 	  .collect(Collectors.toList());
   }
+
   private static List<RawRecord> splitRaw(List<String> records) {
 
 	List<RawRecord> raws = new ArrayList<>();
@@ -52,34 +53,71 @@ class RecordStore {
 	raws.removeIf(el -> Objects.isNull(el.header));
 	return raws;
   }
-  static RecordStore init(MetaDataList mdList, List<String> records,StringTransformer transformer) {
-    RecordStore store = new RecordStore();
+
+  static RecordStore init(MetaDataList mdList, List<String> records, StringTransformer transformer) {
+	RecordStore store = new RecordStore();
 	store.richRawRecords = matchRaw(mdList, splitRaw(records));
-	store.mdList=mdList;
-	store.objectsStore=new HashMap<>();
+	store.mdList = mdList;
 	for (RawRecordMd rec : store.richRawRecords) {
-	  List<Object> obj = rec.buildPlain(transformer);
-	  store.objectsStore.put(rec.md,obj);
+	  rec.buildPlain(transformer);
 	}
 
-	for (RawRecordMd record : store.richRawRecords) {
+	for (RawRecordMd recordMd : store.richRawRecords) {
+	  for (RawRecordMd.Pair pair : recordMd.pairs) {
+		Object object = pair.object;
+		String[] rawRecords = pair.records;
+		MetaData md = recordMd.md;
+		for (MetaData.Dependency dep : md.getDependencies().values()) {
+		  String column = dep.getColumn();
+		  Optional<String> idOpt = recordMd.record.findValueBy(column, rawRecords);
+		  if (idOpt.isPresent()) {
+			String idStr = idOpt.get();
+			MetaData depMd = dep.getMd();
+			Class<?> type = depMd.getId().getIdField().getType();
+			Object id = transformer.transform(type, idStr);
+			findByMd(depMd, store.richRawRecords)
+			  .ifPresent(rawRecordMd -> findById(rawRecordMd.getObjects(), id, depMd)
+				.ifPresent(o -> md.setDependencyValue(object, depMd, o)));
+		  }
+		}
 
+	  }
 	}
+
 
 	return store;
   }
 
-  @SuppressWarnings("unchecked")
-  <V> List<V> find(Class<V> vClass){
-	MetaData md = mdList.byClass(vClass).orElseThrow(ConverterMetadataException::new);
-	List<?> objects = objectsStore.get(md);
-	if(Objects.isNull(objects))
-	  throw  new ConverterMetadataException();
-
-	return (List<V>) objects;
-
+  private static Optional<Object> findById(List<Object> objects, Object id, MetaData md) {
+	for (Object object : objects) {
+	  Object idValue = md.getIdValue(object);
+	  if (Objects.equals(idValue, id))
+		return Optional.of(object);
+	}
+	return Optional.empty();
   }
 
+  private static Optional<RawRecordMd> findByMd(MetaData md, List<RawRecordMd> rawRecordMds) {
+	for (RawRecordMd rawRecordMd : rawRecordMds) {
+	  if (Objects.equals(rawRecordMd.md, md))
+		return Optional.of(rawRecordMd);
+	}
+	return Optional.empty();
+  }
+
+  @SuppressWarnings("unchecked")
+  <V> List<V> find(Class<V> vClass) {
+	MetaData md = mdList.byClass(vClass).orElseThrow(ConverterMetadataException::new);
+	for (RawRecordMd rawRecord : richRawRecords) {
+	  if (Objects.equals(rawRecord.md, md))
+		return
+		  rawRecord.pairs.stream()
+			.map(e -> (V) e.object)
+			.collect(Collectors.toList());
+	}
+
+	return new ArrayList<>();
+  }
 
 
 }

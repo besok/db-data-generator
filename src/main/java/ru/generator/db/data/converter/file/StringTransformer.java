@@ -46,6 +46,7 @@ public interface StringTransformer {
   StringFunction< ? extends Enum<?>> enumVal();
 
   default Object transform(Class<?> clazz, String val) {
+
 	switch (clazz.getSimpleName()) {
 	  case "String":
 		return string().apply(val);
