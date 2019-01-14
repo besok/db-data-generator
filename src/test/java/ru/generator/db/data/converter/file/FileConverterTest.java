@@ -78,7 +78,7 @@ public class FileConverterTest {
 
 	URL resource = this.getClass().getClassLoader().getResource("\\");
 	Path file = Paths.get(resource.toURI()).resolve("test.csv");
-	Path path = converter.toFile(mainObjectRepository.getOne(1000), file);
+	Path path = converter.toFile(file,mainObjectRepository.getOne(1000));
 	List<String> res = Files.readAllLines(path);
 	Assert.assertEquals(res,template);
   }

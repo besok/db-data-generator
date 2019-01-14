@@ -28,12 +28,12 @@ public class DbDataConverter {
 	return this;
   }
 
-  public <V> Path toFile(V data, Path file) throws IOException {
+  public <V> Path toFile(Path file, V data) throws IOException {
 	return new FileConverter(metaDataList, file, transformer).to(unproxy(data));
   }
 
-  public <V> List<V> fromFile(Path p, Class<V> vClass) throws IOException {
-	return new FileConverter(metaDataList, p, transformer).from(vClass);
+  public <V> List<V> fromFile(Path file, Class<V> vClass) throws IOException {
+	return new FileConverter(metaDataList, file, transformer).from(vClass);
   }
 
   @SuppressWarnings("unchecked")
